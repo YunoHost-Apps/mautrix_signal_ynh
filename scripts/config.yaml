@@ -1,32 +1,40 @@
 # Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: https://example.com
+    # address: https://example.com
+    address: __DOMAIN__
     # The domain of the homeserver (for MXIDs, etc).
-    domain: example.com
+    # domain: example.com
+    domain: __SERVER_NAME__
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
-    verify_ssl: true
+    # verify_ssl: true
+    verify_ssl: __VERIFY_SERVER_SSL_CERTIFICATES__
     # Whether or not the homeserver supports asmux-specific endpoints,
     # such as /_matrix/client/unstable/net.maunium.asmux/dms for atomically
     # updating m.direct.
-    asmux: false
+    # asmux: false
+    asmux: __MATRIX_SERVER_SUPPORTS_ASMUX__
 
 # Application service host/registration related details
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: http://localhost:29319
+    # address: http://localhost:29319
+    address: http://localhost:__PORT__
 
     # The hostname and port where this appservice should listen.
-    hostname: localhost
-    port: 29319
+    # hostname: localhost
+    hostname: 0.0.0.0
+    # port: 29319
+    port: __PORT__
     # The maximum body size of appservice API requests (from the homeserver) in mebibytes
     # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
     max_body_size: 1
 
     # The full URI to the database. Only Postgres is currently supported.
-    database: postgres://username:password@hostname/db
+    # database: postgres://username:password@hostname/db
+    database: postgres://__MAUTRIX_FACEBOOK_DB_USER__:__MAUTRIX_FACEBOOK_DB_PWD__@localhost:5432/__MAUTRIX_FACEBOOK_DB_NAME__
 
     # Public part of web server for out-of-Matrix interaction with the bridge.
     public:
