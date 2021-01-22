@@ -24,84 +24,82 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
-is_public=$YNH_APP_ARG_IS_PUBLIC
-language=$YNH_APP_ARG_LANGUAGE
-password=$YNH_APP_ARG_PASSWORD
+synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
+facebookbot=$YNH_APP_ARG_FACEBOOKBOT
+bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
+encryption=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
+botadmin=$YNH_APP_ARG_BOTADMIN
+botusers=$YNH_APP_ARG_BOTUSERS
 
-### If it's a multi-instance app, meaning it can be installed several times independently
-### The id of the app as stated in the manifest is available as $YNH_APP_ID
-### The instance number is available as $YNH_APP_INSTANCE_NUMBER (equals "1", "2"...)
-### The app instance name is available as $YNH_APP_INSTANCE_NAME
-###    - the first time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample
-###    - the second time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample__2
-###    - ynhexample__{N} for the subsequent installations, with N=3,4...
-### The app instance name is probably what interests you most, since this is
-### guaranteed to be unique. This is a good unique identifier to define installation path,
-### db names...
 app=$YNH_APP_INSTANCE_NAME
+final_path=/opt/yunohost/$app
+
+# ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_facebook bridge
+if [ $synapsenumber -eq "1" ]
+then
+synapse_instance="synapse"
+else
+synapse_instance="synapse__$synapsenumber"
+fi
+server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+synapse_config_path="/etc/matrix-$synapse_instance"
+app_service_registration_path="/etc/matrix-$synapse_instance/app-service"
+synapse_name="matrix-$synapse_instance"
+synapse_user="matrix-$synapse_instance"
+synapse_db_name="matrix_$synapse_instance"
+synapse_db_user="matrix_$synapse_instance"
+
+#=================================================
+# SET CONSTANTS
+#=================================================
+
+facebookbot_synapse_db_user="@$facebookbot:$server_name"
+mautrix_facebook_user=$app
+mautrix_facebook_db_name=$app
+mautrix_facebook_db_user=$app
+upstream_version=$(ynh_app_upstream_version)
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-### About --weight and --time
-### ynh_script_progression will show to your final users the progression of each scripts.
-### In order to do that, --weight will represent the relative time of execution compared to the other steps in the script.
-### --time is a packager option, it will show you the execution time since the previous call.
-### This option should be removed before releasing your app.
-### Use the execution time, given by --time, to estimate the weight of a step.
-### A common way to do it is to set a weight equal to the execution time in second +1.
-### The execution time is given for the duration since the previous call. So the weight should be applied to this previous call.
-ynh_script_progression --message="Validating installation parameters..." --time --weight=1
+ynh_script_progression --message="Validating installation parameters..." --weight=1
 
-### If the app uses NGINX as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
-### If the app provides an internal web server (or uses another application server such as uWSGI), the final path should be "/opt/yunohost/$app"
-final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-
-# Register (book) web path
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
-
-#=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-ynh_script_progression --message="Storing installation settings..." --time --weight=1
-
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
-ynh_app_setting_set --app=$app --key=language --value=$language
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Configuring firewall..." --time --weight=1
+ynh_script_progression --message="Configuring firewall..." --weight=1
 
-### Use these lines if you have to open a port for the application
-### `ynh_find_port` will find the first available port starting from the given port.
-### If you're not using these lines:
-###		- Remove the section "CLOSE A PORT" in the remove script
+# Find a free port for communication between your local synapse instance (home server) and its app service mautrix_facebook.
+port=$(ynh_find_port --port=8449)
 
-# Find an available port
-port=$(ynh_find_port --port=8095)
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+ynh_script_progression --message="Storing installation settings..." --weight=7
+
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=server_name --value=$server_name
 ynh_app_setting_set --app=$app --key=port --value=$port
-
-# Optional: Expose this port publicly
-# (N.B.: you only need to do this if the app actually needs to expose the port publicly.
-# If you do this and the app doesn't actually need you are CREATING SECURITY HOLES IN THE SERVER !)
-
-# Open the port
-# ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
+ynh_app_setting_set --app=$app --key=facebookbot --value=$facebookbot
+ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
+ynh_app_setting_set --app=$app --key=app_service_registration_path --value=$app_service_registration_path
+ynh_app_setting_set --app=$app --key=bot_is_synapse_admin --value=$bot_is_synapse_admin
+ynh_app_setting_set --app=$app --key=encryption --value=$encryption
+ynh_app_setting_set --app=$app --key=mautrix_facebook_db_name --value=$mautrix_facebook_db_name
+ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
+ynh_app_setting_set --app=$app --key=botusers --value=$botusers
+ynh_app_setting_set --app=$app --key=mautrix_version --value=$upstream_version
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --time --weight=1
+ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ### `ynh_install_app_dependencies` allows you to add any "apt" dependencies to the package.
 ### Those deb packages will be installed as dependencies of this package.
@@ -114,138 +112,123 @@ ynh_script_progression --message="Installing dependencies..." --time --weight=1
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# CREATE A MYSQL DATABASE
+# CREATE A POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Creating a MySQL database..." --time --weight=1
+ynh_script_progression --message="Creating a PostgreSQL database..." --weight=3
 
-### Use these lines if you need a database for the application.
-### `ynh_mysql_setup_db` will create a database, an associated user and a ramdom password.
-### The password will be stored as 'mysqlpwd' into the app settings,
-### and will be available as $db_pwd
-### If you're not using these lines:
-###		- Remove the section "BACKUP THE MYSQL DATABASE" in the backup script
-###		- Remove also the section "REMOVE THE MYSQL DATABASE" in the remove script
-###		- As well as the section "RESTORE THE MYSQL DATABASE" in the restore script
+ynh_print_OFF
+mautrix_facebook_db_pwd=$(ynh_string_random --length=30)
+ynh_app_setting_set --app=$app --key=mautrix_facebook_db_pwd --value=$mautrix_facebook_db_pwd
+ynh_print_ON
 
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+# Create postgresql database
+ynh_psql_test_if_first_run
+ynh_print_OFF
+ynh_psql_create_user $mautrix_facebook_db_user $mautrix_facebook_db_pwd
+ynh_print_ON
+ynh_psql_execute_as_root \
+--sql="CREATE DATABASE ""$mautrix_facebook_db_name"" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER ""$mautrix_facebook_db_user"";"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --time --weight=1
+ynh_script_progression --message="Setting up source files..." --weight=3
 
 ### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
 ### downloaded from an upstream source, like a git repository.
 ### `ynh_setup_source` use the file conf/app.src
 
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+
+# WARNING : theses command are used in INSTALL, UPGRADE (2 times)
+# For any update do it in all files
+#if [ -n "$(uname -m | grep 64)" ]
+#then
+#    ynh_setup_source --dest_dir=$final_path/ --source_id="amd64_$(lsb_release --codename --short)"
+#else
+
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
 
 #=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --time --weight=1
-
-### `ynh_add_nginx_config` will use the file conf/nginx.conf
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
-
-#=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --time --weight=1
+ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
-ynh_system_user_create --username=$app
-
-#=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring PHP-FPM..." --time --weight=1
-
-### `ynh_add_fpm_config` is used to set up a PHP config.
-### You can remove it if your app doesn't use PHP.
-### `ynh_add_fpm_config` will use the files conf/php-fpm.conf
-### If you're not using these lines:
-###		- You can remove these files in conf/.
-###		- Remove the section "BACKUP THE PHP-FPM CONFIGURATION" in the backup script
-###		- Remove also the section "REMOVE PHP-FPM CONFIGURATION" in the remove script
-###		- As well as the section "RESTORE THE PHP-FPM CONFIGURATION" in the restore script
-###		  with the reload at the end of the script.
-###		- And the section "PHP-FPM CONFIGURATION" in the upgrade script
-
-# Create a dedicated PHP-FPM config
-ynh_add_fpm_config
-
-#=================================================
-# SPECIFIC SETUP
-#=================================================
-# ...
-#=================================================
+ynh_system_user_create --username=$mautrix_facebook_user
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --time --weight=1
+ynh_script_progression --message="Configuring a systemd service..." --weight=20
 
-### `ynh_systemd_config` is used to configure a systemd script for an app.
-### It can be used for apps that use sysvinit (with adaptation) or systemd.
-### Have a look at the app to be sure this app needs a systemd script.
-### `ynh_systemd_config` will use the file conf/systemd.service
-### If you're not using these lines:
-###		- You can remove those files in conf/.
-###		- Remove the section "BACKUP SYSTEMD" in the backup script
-###		- Remove also the section "STOP AND REMOVE SERVICE" in the remove script
-###		- As well as the section "RESTORE SYSTEMD" in the restore script
-###		- And the section "SETUP SYSTEMD" in the upgrade script
-
-# Create a dedicated systemd config
-ynh_add_systemd_config
+# Create systemd config for mautrix-facebook
+#cp ../conf/default_mautrix-facebook /etc/default/$app
+ynh_add_systemd_config --service=$app
 
 #=================================================
-# SETUP APPLICATION WITH CURL
+
 #=================================================
+# SET MAUTRIX-FACEBOOK CONFIG
+#=================================================
+ynh_script_progression --message="Configuring Mautrix-Facebook..." --weight=2
 
-### Use these lines only if the app installation needs to be finalized through
-### web forms. We generally don't want to ask the final user,
-### so we're going to use curl to automatically fill the fields and submit the
-### forms.
+# Configure Mautrix-Facebook
+python3 -m venv $final_path
 
-# Set right permissions for curl install
-chown -R $app: $final_path
+pip install --upgrade mautrix-facebook
 
-# Set the app as temporarily public for curl call
-ynh_script_progression --message="Configuring SSOwat..." --time --weight=1
-ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
-# Reload SSOwat config
-yunohost app ssowatconf
 
-# Reload NGINX
-ynh_systemd_action --service_name=nginx --action=reload
+# WARNING : theses command are used in INSTALL, UPGRADE, CONFIG, CHANGE-URL (4 times)
+# For any update do it in all files
 
-# Installation with curl
-ynh_script_progression --message="Finalizing installation..." --time --weight=1
-ynh_local_curl "/INSTALL_PATH" "key1=value1" "key2=value2" "key3=value3"
+mautrix_config_path="$final_path/config.yaml"
 
-# Remove the public access
-if [ $is_public -eq 0 ]
+#Copy example-config.yaml to config.yaml
+cp ../conf/config.yaml "$mautrix_config_path"
+
+ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_USER__ --replace_string=$mautrix_facebook_user --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_DB_PWD__ --replace_string=$mautrix_facebook_db_pwd --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_DB_NAME__ --replace_string=$mautrix_facebook_db_name --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__FACEBOOKBOT__ --replace_string=$facebookbot --target_file="$mautrix_config_path"
+if [ "$botusers" = "local" ]
 then
-	ynh_app_setting_delete --app=$app --key=skipped_uris
+ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"
+elif [ "$botusers" = "admin" ]
+then
+ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botadmin --target_file="$mautrix_config_path"
+else
+ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
 fi
+ynh_replace_string --match_string=__BOTADMIN__ --replace_string=$botadmin --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__ENABLE_RELAYBOT__ --replace_string="true" --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__RELAYBOT_MANAGEMENT_ROOM__ --replace_string="highwaytohell" --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__RELAYBOT_INVITE__ --replace_string=$botadmin --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__APP__ --replace_string=$app --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__LOG_FORMAT__ --replace_string="log.log" --target_file="$mautrix_config_path"
+    # Options: debug, info, warn, error, fatal
+ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --target_file="$mautrix_config_path"
 
-#=================================================
-# MODIFY A CONFIG FILE
-#=================================================
+#cd $final_path
+#Generate the appservice registration file by running ./mautrix-facebook -g.
+    #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
+#mkdir -p $app_service_registration_path
+python -m $final_path/mautrix-facebook -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
+#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
+#cd $base_directory
+#cp ../conf/$app.yaml $app_service_registration_path
 
-### `ynh_replace_string` is used to replace a string in a file.
-### (It's compatible with sed regular expressions syntax)
-
-ynh_replace_string --match_string="match_string" --replace_string="replace_string" --target_file="$final_path/CONFIG_FILE"
+#$as_token=;
+#$hs_token=;
+#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
+#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
+    || ynh_die "Synapse can't restart with the appservice configuration"
+# Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
@@ -256,7 +239,8 @@ ynh_replace_string --match_string="match_string" --replace_string="replace_strin
 ### you can make a backup of this file before modifying it again if the admin had modified it.
 
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum --file="$final_path/CONFIG_FILE"
+ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
+ynh_store_file_checksum --file="$mautrix_config_path"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -271,99 +255,45 @@ ynh_store_file_checksum --file="$final_path/CONFIG_FILE"
 # Set permissions to app files
 chown -R root: $final_path
 
+# WARNING : theses command are used in INSTALL, UPGRADE, RESTORE
+# For any update do it in all files
+chown $mautrix_facebook_user:root -R $final_path
+
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..." --time --weight=1
-
-### `ynh_use_logrotate` is used to configure a logrotate configuration for the logs of this app.
-### Use this helper only if there is effectively a log file for this app.
-### If you're not using this helper:
-###		- Remove the section "BACKUP LOGROTATE" in the backup script
-###		- Remove also the section "REMOVE LOGROTATE CONFIGURATION" in the remove script
-###		- As well as the section "RESTORE THE LOGROTATE CONFIGURATION" in the restore script
-###		- And the section "SETUP LOGROTATE" in the upgrade script
+ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+ynh_use_logrotate --logfile "/var/log/$app/log.log"
+chown $mautrix_facebook_user:root -R /var/log/$app
 
 #=================================================
-# INTEGRATE SERVICE IN YUNOHOST
+# ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --time --weight=1
-
-### `yunohost service add` integrates a service in YunoHost. It then gets 
-### displayed in the admin interface and through the others `yunohost service` commands.
-### (N.B.: this line only makes sense if the app adds a service to the system!)
-### If you're not using these lines:
-###		- You can remove these files in conf/.
-###		- Remove the section "REMOVE SERVICE INTEGRATION IN YUNOHOST" in the remove script
-###		- As well as the section "INTEGRATE SERVICE IN YUNOHOST" in the restore script
-###		- And the section "INTEGRATE SERVICE IN YUNOHOST" in the upgrade script
-
-yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
-
-### Additional options starting with 3.8:
-###
-### --needs_exposed_ports "$port" a list of ports that needs to be publicly exposed
-###                               which will then be checked by YunoHost's diagnosis system
-###                               (N.B. DO NOT USE THIS is the port is only internal!!!)
-###
-### --test_status "some command"  a custom command to check the status of the service
-###                               (only relevant if 'systemctl status' doesn't do a good job)
-###
-### --test_conf "some command"    some command similar to "nginx -t" that validates the conf of the service
-###
-### Re-calling 'yunohost service add' during the upgrade script is the right way
-### to proceed if you later realize that you need to enable some flags that
-### weren't enabled on old installs (be careful it'll override the existing
-### service though so you should re-provide all relevant flags when doing so)
+#yunohost service add $app --log "/var/log/$app/log.log"
+# if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
+yunohost service add $app --description "$app daemon for bridging Facebook and Matrix messages" --log "/var/log/$app/log.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --time --weight=1
-
-### `ynh_systemd_action` is used to start a systemd service for an app.
-### Only needed if you have configure a systemd service
-### If you're not using these lines:
-###		- Remove the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the backup script
-###		- As well as the section "START SYSTEMD SERVICE" in the restore script
-###		- As well as the section"STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the upgrade script
-###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
+ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-ynh_script_progression --message="Configuring Fail2Ban..." --time --weight=1
-
-# Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Configuring SSOwat..." --time --weight=1
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
-fi
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --time --weight=1
-
-ynh_systemd_action --service_name=nginx --action=reload
+ynh_systemd_action --service_name=$app --action="start"
+# Wait until the synapse user is created
+sleep 30
+    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
+    if [ "$bot_is_synapse_admin" = true ]
+    then
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$facebookbot"";"
+    #yunohost app action run $synapse_instance set_admin_user -a username=$facebookbot
+    fi
+ynh_systemd_action --service_name=$app --action="restart"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --time --last
+ynh_script_progression --message="Installation of $app completed" --last
