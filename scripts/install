@@ -146,7 +146,7 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 #else
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path"
+ynh_setup_source --dest_dir="$final_path/src"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -207,7 +207,7 @@ ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --targe
 
 # Configure Mautrix-Facebook
 python3 -m venv $final_path
-pip install --upgrade ./mautrix-facebook.tar.gz
+pip install --upgrade $final_path/src/mautrix-facebook.tar.gz
 python -m $final_path/mautrix-facebook -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
