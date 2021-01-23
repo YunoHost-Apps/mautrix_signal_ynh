@@ -26,7 +26,6 @@ ynh_abort_if_errors
 
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 facebookbot=$YNH_APP_ARG_FACEBOOKBOT
-bot_is_synapse_admin=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
 encryption=$YNH_APP_ARG_BOT_IS_SYNAPSE_ADMIN
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
