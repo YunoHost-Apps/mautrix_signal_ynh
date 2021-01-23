@@ -1,7 +1,7 @@
-SOURCE_URL=url of app's source
-SOURCE_SUM=sha256 checksum
+SOURCE_URL=https://github.com/tulir/mautrix-facebook/tarball/7b2246099d3d6ac52061f82315460415eb22219b
+SOURCE_SUM=fd9d4f2b2feec390fb35b56f3a5e4a26234f9ed5029eb3950bea4b7dc55bef49
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=
-SOURCE_EXTRACT=true
+SOURCE_FILENAME=mautrix-facebook
+SOURCE_EXTRACT=false

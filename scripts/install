@@ -172,13 +172,7 @@ ynh_add_systemd_config --service=$app
 #=================================================
 # SET MAUTRIX-FACEBOOK CONFIG
 #=================================================
-ynh_script_progression --message="Configuring Mautrix-Facebook..." --weight=2
-
-# Configure Mautrix-Facebook
-python3 -m venv $final_path
-
-pip install --upgrade mautrix-facebook
-
+ynh_script_progression --message="Configuring Mautrix-FB..." --weight=2
 
 # WARNING : theses command are used in INSTALL, UPGRADE, CONFIG, CHANGE-URL (4 times)
 # For any update do it in all files
@@ -190,6 +184,8 @@ cp ../conf/config.yaml "$mautrix_config_path"
 
 ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__VERIFY_SERVER_SSL_CERTIFICATES__ --replace_string=true --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__MATRIX_SERVER_SUPPORTS_ASMUX__ --replace_string=false --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_USER__ --replace_string=$mautrix_facebook_user --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_DB_PWD__ --replace_string=$mautrix_facebook_db_pwd --target_file="$mautrix_config_path"
@@ -205,27 +201,16 @@ else
 ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
 fi
 ynh_replace_string --match_string=__BOTADMIN__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__ENABLE_RELAYBOT__ --replace_string="true" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_MANAGEMENT_ROOM__ --replace_string="highwaytohell" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__RELAYBOT_INVITE__ --replace_string=$botadmin --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__APP__ --replace_string=$app --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__LOG_FORMAT__ --replace_string="log.log" --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__LOG_FILENAME__ --replace_string="/var/log/$app/$app.log" --target_file="$mautrix_config_path"
     # Options: debug, info, warn, error, fatal
 ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --target_file="$mautrix_config_path"
 
-#cd $final_path
-#Generate the appservice registration file by running ./mautrix-facebook -g.
-    #You can use the -c and -r flags to change the location of the config and registration files. They default to config.yaml and registration.yaml respectively.
-#mkdir -p $app_service_registration_path
+# Configure Mautrix-Facebook
+python3 -m venv $final_path
+pip install --upgrade ./mautrix-facebook.tar.gz
 python -m $final_path/mautrix-facebook -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
-#Add the path to the registration file (registration.yaml by default) to your synapse homeserver.yaml under app_service_config_files.
-#cd $base_directory
-#cp ../conf/$app.yaml $app_service_registration_path
 
-#$as_token=;
-#$hs_token=;
-#ynh_replace_string --match_string=__AS_TOKEN__ --replace_string="$as_token" --target_file=$app_service_registration_path/$app.yaml
-#ynh_replace_string --match_string=__HS_TOKEN__ --replace_string="$hs_token" --target_file=$app_service_registration_path/$app.yaml
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
 # Handled by synapse: synapse_ynh adds all registration files added in $app_service_registration_path to the app_service_config_files list
@@ -265,7 +250,7 @@ chown $mautrix_facebook_user:root -R $final_path
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/log.log"
+ynh_use_logrotate --logfile "/var/log/$app/$app.log"
 chown $mautrix_facebook_user:root -R /var/log/$app
 
 #=================================================
@@ -273,7 +258,7 @@ chown $mautrix_facebook_user:root -R /var/log/$app
 #=================================================
 #yunohost service add $app --log "/var/log/$app/log.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
-yunohost service add $app --description "$app daemon for bridging Facebook and Matrix messages" --log "/var/log/$app/log.log"
+yunohost service add $app --description "$app daemon for bridging FB and Matrix messages" --log "/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
