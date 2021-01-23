@@ -209,7 +209,7 @@ ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --targe
 python3 -m venv $final_path
 pip3 install --upgrade setuptools
 pip3 install --upgrade $final_path/src/mautrix-facebook.tar.gz
-python3 -m $final_path/mautrix-facebook -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
+python3 -m mautrix-facebook -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
