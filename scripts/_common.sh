@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="postgresql"
+pkg_dependencies="postgresql python3"
 
 #=================================================
 # PERSONAL HELPERS
