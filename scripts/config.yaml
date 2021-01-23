@@ -122,7 +122,7 @@ bridge:
     sync_direct_chat_list: false
     # Servers to always allow double puppeting from
     double_puppet_server_map:
-        example.com: https://__BOTUSERS__
+        example.com: https://__SERVER_NAME__
     # Allow using double puppeting from any server with a valid client .well-known file.
     double_puppet_allow_discovery: false
     # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
@@ -146,7 +146,7 @@ bridge:
     # application service.
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: false
+        allow: __ENCRYPTION__
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
         default: false

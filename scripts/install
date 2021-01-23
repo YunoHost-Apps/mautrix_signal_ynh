@@ -191,6 +191,7 @@ ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_USER__ --replace_string=$ma
 ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_DB_PWD__ --replace_string=$mautrix_facebook_db_pwd --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__MAUTRIX_FACEBOOK_DB_NAME__ --replace_string=$mautrix_facebook_db_name --target_file="$mautrix_config_path"
 ynh_replace_string --match_string=__FACEBOOKBOT__ --replace_string=$facebookbot --target_file="$mautrix_config_path"
+ynh_replace_string --match_string=__ENCRYPTION__ --replace_string=$encryption --target_file="$mautrix_config_path"
 if [ "$botusers" = "local" ]
 then
 ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"

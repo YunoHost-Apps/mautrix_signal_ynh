@@ -1,90 +1,98 @@
 {
-    "name": "YunoHost example app",
-    "id": "ynhexample",
-    "packaging_format": 1,
-    "description": {
-        "en": "Explain in *a few (10~15) words* the purpose of the app or what it actually does (it is meant to give a rough idea to users browsing a catalog of 100+ apps)",
-        "fr": "Expliquez en *quelques* (10~15) mots l'utilité de l'app ou ce qu'elle fait (l'objectif est de donner une idée grossière pour des utilisateurs qui naviguent dans un catalogue de 100+ apps)"
-    },
-    "version": "1.0~ynh1",
-    "url": "https://example.com",
-    "license": "free",
-    "maintainer": {
-        "name": "John doe",
-        "email": "john.doe@example.com",
-        "url": "http://example.com"
-    },
-    "requirements": {
-        "yunohost": ">= 3.5"
-    },
-    "multi_instance": true,
-    "services": [
-        "nginx",
-        "php7.0-fpm",
-        "mysql"
-    ],
-    "arguments": {
-        "install" : [
-            {
-                "name": "domain",
-                "type": "domain",
-                "ask": {
-                    "en": "Choose a domain name for ynhexample",
-                    "fr": "Choisissez un nom de domaine pour ynhexample"
-                },
-                "example": "example.com"
-            },
-            {
-                "name": "path",
-                "type": "path",
-                "ask": {
-                    "en": "Choose a path for ynhexample",
-                    "fr": "Choisissez un chemin pour ynhexample"
-                },
-                "example": "/example",
-                "default": "/example"
-            },
-            {
-                "name": "admin",
-                "type": "user",
-                "ask": {
-                    "en": "Choose an admin user",
-                    "fr": "Choisissez l'administrateur"
-                },
-                "example": "johndoe"
-            },
-            {
-                "name": "is_public",
-                "type": "boolean",
-                "ask": {
-                    "en": "Is it a public application?",
-                    "fr": "Est-ce une application publique ?"
-                },
-                "default": true
-            },
-            {
-                "name": "language",
-                "type": "string",
-                "ask": {
-                    "en": "Choose the application language",
-                    "fr": "Choisissez la langue de l'application"
-                },
-                "choices": ["fr", "en"],
-                "default": "fr"
-            },
-            {
-                "name": "password",
-                "type": "password",
-                "ask": {
-                    "en": "Set the administrator password",
-                    "fr": "Définissez le mot de passe administrateur"
-                },
-                "help": {
-                    "en": "Use the help field to add an information for the admin about this question.",
-                    "fr": "Utilisez le champ aide pour ajouter une information à l'intention de l'administrateur à propos de cette question."
-                },
-                "example": "Choose a password"
-            }
-        ]
-    }
+	"name": "Matrix-Facebook bridge",
+	"id": "mautrix_facebook",
+	"packaging_format": 1,
+	"description": {
+		"en": "A Facebook puppeting bridge for Matrix/Synapse.",
+		"fr": "Passerelle Facebook pour Matrix/Synapse."
+	},
+	"version": "0.2.2~ynh1",
+	"url": "https://github.com/tulir/mautrix-facebook",
+	"license": "AGPL-3.0-or-later",
+	"maintainer": {
+		"name": "Gredin67",
+		"email": "mautrix_facebook_ynh@sans-nuage.fr",
+		"url": "https://github.com/YunoHost-Apps/mautrix_facebook_ynh"
+	},
+	"requirements": {
+		"yunohost": ">= 4.0"
+	},
+	"multi_instance": true,
+	"services": [
+        "postgresql"
+    	],
+	"arguments": {
+		"install": [
+			{
+				"name": "synapsenumber",
+				"type": "string",
+				"ask": {
+					"en": "Choose the local synapse instance number to communicate with mautrix_facebook",
+					"fr": "Choisissez le numéro de l'instance synapse qui doit communiquer avec mautrix_facebook"
+				},
+				"example": "2 (for instance synapse__2)",
+				"help": {
+					"en": "If you installed synapse only once time, then leave default value 1.",
+					"fr": "Si vous n'avez installé qu'une fois synapse, gardez la valeur par défaut 1."
+				},
+				"default": "1"
+			},
+			{
+				"name": "facebookbot",
+				"type": "string",
+				"ask": {
+					"en": "Choose a local synapse user name for the Facebook bot",
+					"fr": "Choisissez un nom d'utilisateur synapse local pour le robot Facebook"
+				},
+				"example": "facebookbot",
+				"help": {
+					"en": "A system user will be created. Invite @facebookbot:localsynapse.servername from an authorized Matrix account to start bridging. Give the matrix server_name, not the full domain/url.",
+					"fr": "Un utilisateur système sera créé. Inviter @facebookbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle. Donner le nom du serveur matrix, pas le domaine/url complet."
+				},
+				"default": "facebookbot"
+			},
+			{
+				"name": "encryption",
+				"type": "boolean",
+				"ask": {
+					"en": "Enable end-to-bridge encryption ?",
+					"fr": "Activer le chiffrement entre synapse et le bridge ?"
+				},
+				"help": {
+					"en": "Only activate if you know the prerequisites and constraints related to e2b.",
+					"fr": "N'activer que si vous connaissez les prérequis et constraintes liées à e2b."
+				},
+				"default": false
+
+			},			
+			{
+				"name": "botadmin",
+				"type": "string",
+				"ask": {
+					"en": "Choose the Matrix account administrator of the Facebook bot",
+					"fr": "Choisissez le compte Matrix administrateur du robot Facebook"
+				},
+				"example": "@johndoe:localsynapse.servername or @johndoe:matrix.org",
+				"help": {
+					"en": "The Facebook bot administrator does not need to be a local synapse account.",
+					"fr": "Le compte administrateur du robot Facebook peut ne pas être un compte local synapse."
+				},
+				"default": "Your main Matrix account"
+			},
+			{
+				"name": "botusers",
+				"type": "string",
+				"ask": {
+					"en": "Choose Matrix user(s) authorized to bridge with the Facebook bot",
+					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot Facebook"
+				},
+				"example": "admin or local or @johndoe:server.name or server.name or *",
+				"default": "admin",
+				"help": {
+					"en": "Either the administrator only (admin), all local synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the matrix server_name, not the full domain/url.",
+					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur matrix, pas le domaine/url complet."
+				}
+			}
+		]
+	}
 }
