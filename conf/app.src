@@ -3,5 +3,5 @@ SOURCE_SUM=fd9d4f2b2feec390fb35b56f3a5e4a26234f9ed5029eb3950bea4b7dc55bef49
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=mautrix-facebook
+SOURCE_FILENAME=mautrix-facebook.tar.gz
 SOURCE_EXTRACT=false
