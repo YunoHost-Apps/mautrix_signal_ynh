@@ -207,7 +207,7 @@ ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --targe
 
 # Configure Mautrix-Facebook
 python3 -m venv $final_path
-$final_path/bin/pip3 install --upgrade setuptools
+$final_path/bin/pip3 install --upgrade setuptools wheel
 $final_path/bin/pip3 install --upgrade $final_path/src/mautrix-facebook.tar.gz
 $final_path/bin/python3 -m mautrix-facebook -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 
