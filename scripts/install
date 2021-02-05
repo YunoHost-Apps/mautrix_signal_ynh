@@ -210,7 +210,7 @@ ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --targe
 # INSTALL MAUTRIX-FACEBOOK PYTHON MODULE
 #=================================================
 
-mkdir -p /var/log/$app/$app.log
+mkdir -p /var/log/$app
 # Configure Mautrix-Facebook
 python3 -m venv $final_path
 $final_path/bin/pip3 install --upgrade setuptools wheel
