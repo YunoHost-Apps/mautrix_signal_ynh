@@ -193,9 +193,6 @@ ynh_replace_string --match_string=__ENCRYPTION__ --replace_string=$encryption --
 if [ "$botusers" = "local" ]
 then
 ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"
-elif [ "$botusers" = "admin" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botadmin --target_file="$mautrix_config_path"
 else
 ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
 fi
@@ -274,14 +271,14 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
 # Wait until the synapse user is created
-#sleep 30
+sleep 30
 #    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
 #    if [ "$bot_is_synapse_admin" = true ]
 #    then
-#    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$facebookbot"";"
+    ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$facebookbot"";"
 #    #yunohost app action run $synapse_instance set_admin_user -a username=$facebookbot
 #    fi
-#ynh_systemd_action --service_name=$app --action="restart"
+ynh_systemd_action --service_name=$app --action="restart"
 
 #=================================================
 # END OF SCRIPT

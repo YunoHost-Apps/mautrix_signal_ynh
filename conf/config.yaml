@@ -88,7 +88,7 @@ bridge:
     # (Note that, by default, non-admins might not have your homeserver's permission to create
     # communities. You should set `enable_group_creation: true` in homeserver.yaml to fix this.)
     # `facebook_{localpart}={server}` is a good value.
-    community_template: null
+    community_template: 'facebook_{localpart}={server}'
     # Displayname template for Facebook users.
     # {displayname} is replaced with the display name of the Facebook user
     #               as defined below in displayname_preference.

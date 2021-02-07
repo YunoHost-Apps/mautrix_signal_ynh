@@ -86,11 +86,11 @@
 					"en": "Choose Matrix user(s) authorized to bridge with the Facebook bot",
 					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot Facebook"
 				},
-				"example": "admin or local or @johndoe:server.name or server.name or *",
-				"default": "admin",
+				"example": "local or @johndoe:server.name or server.name or *",
+				"default": "local",
 				"help": {
-					"en": "Either the administrator only (admin), all local synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the matrix server_name, not the full domain/url.",
-					"fr": "On peut autoriser le compte administrateur seul (admin), tous les comptes synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur matrix, pas le domaine/url complet."
+					"en": "All local synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the matrix server_name, not the full domain/url.",
+					"fr": "On peut autoriser tous les comptes synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur matrix, pas le domaine/url complet."
 				}
 			}
 		]
