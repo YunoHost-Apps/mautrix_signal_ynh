@@ -19,7 +19,7 @@ app=$YNH_APP_INSTANCE_NAME
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
-facebookbot=$(ynh_app_setting_get --app=$app --key=facebookbot)
+botname=$(ynh_app_setting_get --app=$app --key=botname)
 port=$(ynh_app_setting_get --app=$app --key=port)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
@@ -28,10 +28,10 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 #=================================================
 
 synapse_db_name="matrix_$synapse_instance"
-facebookbot_synapse_db_user="@$facebookbot:$server_name"
-mautrix_facebook_user=$app
-mautrix_facebook_db_name=$app
-mautrix_facebook_db_user=$app
+botname_synapse_db_user="@$botname:$server_name"
+mautrix_bridge_user=$app
+mautrix_bridge_db_name=$app
+mautrix_bridge_db_user=$app
 
 #=================================================
 # STANDARD REMOVE
@@ -60,10 +60,10 @@ ynh_remove_systemd_config
 ynh_script_progression --message="Removing the PostgreSQL database..." --weight=4
 
 # Remove a database if it exists, along with the associated user
-ynh_psql_remove_db --db_user=$mautrix_facebook_db_name --db_name=$mautrix_facebook_db_user
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$facebookbot"";"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$facebookbot"";"
-#yunohost app action run $synapse_instance drop_user -a username=$facebookbot
+ynh_psql_remove_db --db_user=$mautrix_bridge_db_name --db_name=$mautrix_bridge_db_user
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
+#yunohost app action run $synapse_instance drop_user -a username=$botname
 
 #=================================================
 # REMOVE DEPENDENCIES
@@ -112,7 +112,7 @@ ynh_secure_remove --file="/var/log/$app"
 ynh_script_progression --message="Removing the dedicated system user..." --weight=5
 
 # Delete a system user
-ynh_system_user_delete --username=$mautrix_facebook_user
+ynh_system_user_delete --username=$mautrix_bridge_user
 
 #=================================================
 # END OF SCRIPT
