@@ -6,7 +6,7 @@
 		"en": "A Signal puppeting bridge for Matrix/Synapse.",
 		"fr": "Passerelle Signal pour Matrix/Synapse."
 	},
-	"version": "0.2.0~ynh1",
+	"version": "0.1.0~ynh1",
 	"url": "https://github.com/tulir/mautrix-signal",
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
@@ -63,7 +63,6 @@
 					"fr": "N'activer que si vous connaissez les prérequis et constraintes liées à e2b."
 				},
 				"default": false
-
 			},			
 			{
 				"name": "botadmin",

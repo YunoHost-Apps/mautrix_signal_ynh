@@ -46,7 +46,7 @@ appservice:
     # Must be created manually.
     #
     # Example: "+signal:example.com". Set to false to disable.
-    community_id: false
+    community_id: +sg:__SERVER_NAME__
 
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
@@ -80,12 +80,12 @@ signal:
 bridge:
     # Localpart template of MXIDs for Signal users.
     # {userid} is replaced with an identifier for the Signal user.
-    username_template: "signal_{userid}"
+    username_template: "sg_{userid}"
     # Displayname template for Signal users.
     # {displayname} is replaced with the displayname of the Signal user, which is the first
     # available variable in displayname_preference. The variables in displayname_preference
     # can also be used here directly.
-    displayname_template: "{displayname} (Signal)"
+    displayname_template: "{displayname} (SG)"
     # Whether or not contact list displaynames should be used.
     # Possible values: disallow, allow, prefer
     #
@@ -112,7 +112,7 @@ bridge:
     double_puppet_allow_discovery: false
     # Servers to allow double puppeting from, even if double_puppet_allow_discovery is false.
     double_puppet_server_map:
-        example.com: https://__SERVER_NAME__
+        example.com: https://example.com
     # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
     #
     # If set, custom puppets will be enabled automatically for local users
@@ -164,7 +164,7 @@ bridge:
     # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
     provisioning:
         # Whether or not the provisioning API should be enabled.
-        enabled: true
+        enabled: false
         # The prefix to use in the provisioning API endpoints.
         prefix: /_matrix/provision/v1
         # The shared secret to authorize users of the API.
@@ -172,7 +172,7 @@ bridge:
         shared_secret: generate
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!signal"
+    command_prefix: "!sg"
 
     # Permissions for using the bridge.
     # Permitted values:
