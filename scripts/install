@@ -109,6 +109,8 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_install_app_dependencies $pkg_dependencies
 
+ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="signald"
+
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
