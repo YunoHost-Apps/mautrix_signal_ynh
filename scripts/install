@@ -109,7 +109,7 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="signald" --key="https://updates.signald.org/apt-signing-key.asc"
+ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="libunixsocket-java signaldctl signald" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -213,8 +213,7 @@ mkdir -p /var/log/$app
 # Configure Mautrix-Bridge
 python3 -m venv $final_path
 $final_path/bin/pip3 install --upgrade setuptools wheel
-$final_path/bin/pip3 install -r $final_path/optional-requirements.txt
-$final_path/bin/pip3 install $final_path/src/mautrix-signal.tar.gz[all] 
+$final_path/bin/pip3 install $final_path/src/mautrix-signal.tar.gz[all] -r $final_path/optional-requirements.txt
 $final_path/bin/python3 -m mautrix_signal -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
