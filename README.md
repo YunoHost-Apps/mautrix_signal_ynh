@@ -9,7 +9,7 @@
 If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
 
 ## Overview
-A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Messages, notifications (and sometimes media) are bridged between a Signal user and a Matrix user. Currently the Matrix user can NOT invite other Matrix user in a bridged Signal room, so only someone with a Signal account can participate to Signal group conversations. The ["Mautrix-Signal"](https://github.com/tulir/mautrix-signal/wiki) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
+A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Messages, notifications (and sometimes media) are bridged between a Signal user and a Matrix user. Currently the Matrix user can NOT invite other Matrix user in a bridged Signal room, so only someone with a Signal account can participate to Signal group conversations. The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 **Shipped version:** 0.1.0
 
@@ -21,6 +21,35 @@ A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Mes
 
 * Ask on one of the following rooms: #mautrix_yunohost:matrix.fdn.fr or #signal:maunium.net
 
+## Bridging usage
+** Note that several Signal and Matrix users can be bridged, each Signal account has its own bot administration room. If they are in a same Signal group, only one matrix room will be created. **
+
+### Bridge a Signal user and a Matrix user
+* First your Matrix user or Synapse Server has to be authorized in the Configuration of the bridge (see below)
+* Then, invite the bot (default @signalbot:yoursynapse.domain) in this new Mautrix-Signal bot administration room.
+  * If the Bot does bot accept, see the [troubleshooting page](https://docs.mau.fi/bridges/general/troubleshooting.html)
+* Send ``!sg help`` to the bot in the created room to know how to control the bot.
+See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/python/signal/authentication.html)
+
+#### Linking the Bridge as a secondary device
+* Type ``!sg link``
+* Open Signal App of your primary device
+* Open Settings => Linked Devices => Capture the QR code with the camera
+* By defaults, only conversations with very recent messages will be bridged
+* Accept invitations to the bridged chat rooms
+#### Registering the Bridge as a primary device
+* Type ``!sg register <phone>``, where ``<phone>`` is your phone number in the internation format with no space, e.g. ``!sg register +33612345678``
+* Answer in the bot room with the verification code that you reveived in SMS.
+* Set a profile name with ``!sg set-profile-name <name>``
+
+### Double puppeting
+* Log in with ``login-matrix <access token>``
+* After logging in, the default Matrix puppet of your Signal account should leave rooms and your account should join all rooms the puppet was in automatically.
+
+
+### Relaybot: Bridge a group for several Matrix and several Signal users to chat together
+Not yet available
+
 ## Configuration of the bridge
 
 The bridge is [roughly configured at installation](https://github.com/YunoHost-Apps/mautrix_signal_ynh/blob/master/conf/config.yaml), e.g. allowed admin and user of the bot. Finer configuration can be done by modifying the
@@ -30,7 +59,7 @@ and then restarting the mautrix_signal service.
 
 ## Documentation
 
- * Official "Mautrix-Signal" documentation: https://github.com/tulir/mautrix-signal/wiki
+ * Official "Mautrix-Signal" documentation: https://docs.mau.fi/bridges/python/signal/index.html
  * Matrix room (Matrix Bridges in Yunohost): #mautrix_yunohost:matrix.fdn.fr
  * Matrix room (upstream app): #signal:maunium.net
 In case you need to upload your logs somewhere, be aware that they contain your contacts' and your phone numbers. Strip them out with 
@@ -68,12 +97,13 @@ In case you need to upload your logs somewhere, be aware that they contain your 
 * Other info you would like to add about this app.
 
 **More info on the documentation page:**  
-https://github.com/tulir/mautrix-signal/wiki/
+https://docs.mau.fi/bridges/python/signal/index.html
 
 ## Links
 
  * Report a bug: https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues
  * App website: https://github.com/YunoHost-Apps/mautrix-whatsapp_ynh
+ * Upstream app documentation: https://docs.mau.fi/bridges/python/signal/index.html
  * Upstream app repository: https://github.com/tulir/mautrix-signal
  * Up-Upstream repository: https://gitlab.com/signald/signald
  * YunoHost website: https://yunohost.org/
