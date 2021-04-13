@@ -24,14 +24,19 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info --message="Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..." --time --weight=1
 
 app=$YNH_APP_INSTANCE_NAME
 
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-phpversion=$(ynh_app_setting_get --app=$app --key=phpversion)
+app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
+mautrix_config_path="$final_path/config.yaml"
+
+#=================================================
+# SET CONSTANTS
+#=================================================
+
+mautrix_bridge_db_name=$app
 
 #=================================================
 # DECLARE DATA AND CONF FILES TO BACKUP
@@ -49,24 +54,6 @@ ynh_print_info --message="Declaring files to be backed up..."
 
 ynh_backup --src_path="$final_path"
 
-#=================================================
-# BACKUP THE NGINX CONFIGURATION
-#=================================================
-
-ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-
-#=================================================
-# BACKUP THE PHP-FPM CONFIGURATION
-#=================================================
-
-ynh_backup --src_path="/etc/php/$phpversion/fpm/pool.d/$app.conf"
-
-#=================================================
-# BACKUP FAIL2BAN CONFIGURATION
-#=================================================
-
-ynh_backup --src_path="/etc/fail2ban/jail.d/$app.conf"
-ynh_backup --src_path="/etc/fail2ban/filter.d/$app.conf"
 
 #=================================================
 # SPECIFIC BACKUP
@@ -74,7 +61,7 @@ ynh_backup --src_path="/etc/fail2ban/filter.d/$app.conf"
 # BACKUP LOGROTATE
 #=================================================
 
-ynh_backup --src_path="/etc/logrotate.d/$app"
+ynh_backup --src_path="/var/log/$app/$app"
 
 #=================================================
 # BACKUP SYSTEMD
@@ -86,19 +73,14 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 # BACKUP VARIOUS FILES
 #=================================================
 
-ynh_backup --src_path="/etc/cron.d/$app"
-
-ynh_backup --src_path="/etc/$app/"
+# ynh_backup --src_path="/etc/cron.d/$app"
 
 #=================================================
-# BACKUP THE MYSQL DATABASE
+# BACKUP THE POSTGRESQL DATABASE
 #=================================================
-ynh_print_info --message="Backing up the MySQL database..."
+ynh_script_progression --message="Backing up the PostgreSQL database..." --weight=1
 
-### (However, things like MySQL dumps *do* take some time to run, though the
-### copy of the generated dump to the archive still happens later)
-
-ynh_mysql_dump_db --database="$db_name" > db.sql
+ynh_psql_dump_db --database="$mautrix_bridge_db_name" > ${YNH_CWD}/dump.sql
 
 #=================================================
 # END OF SCRIPT
