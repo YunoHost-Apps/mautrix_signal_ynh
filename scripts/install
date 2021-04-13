@@ -109,7 +109,7 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="signald" --key="https://updates.signald.org/apt-signing-key.asc" --no-install-recommends
+ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="signald" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -224,10 +224,6 @@ $final_path/bin/python3 -m mautrix_signal -g -c $mautrix_config_path -r $app_ser
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
-
-### `ynh_store_file_checksum` is used to store the checksum of a file.
-### That way, during the upgrade script, by using `ynh_backup_if_checksum_is_different`,
-### you can make a backup of this file before modifying it again if the admin had modified it.
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
