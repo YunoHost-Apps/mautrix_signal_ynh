@@ -61,7 +61,7 @@ ynh_backup --src_path="$final_path"
 # BACKUP LOGROTATE
 #=================================================
 
-ynh_backup --src_path="/var/log/$app/$app"
+ynh_backup --src_path="/var/log/$app"
 
 #=================================================
 # BACKUP SYSTEMD
