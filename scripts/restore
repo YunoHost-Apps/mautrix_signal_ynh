@@ -118,6 +118,18 @@ ynh_psql_execute_as_root \
 ynh_psql_execute_file_as_root --file="${YNH_CWD}/dump.sql" --database="$mautrix_bridge_db_name"
 
 #=================================================
+# RESTORE MAUTRIX-BRIDGE PYTHON MODULE
+#=================================================
+
+ynh_restore_file --origin_path="/var/log/$app"
+#mkdir -p /var/log/$app
+# Configure Mautrix-Bridge
+python3 -m venv $final_path
+#$final_path/bin/pip3 install --upgrade setuptools wheel
+#$final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[met$
+# -r optional-requirements.txt
+
+#=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 $final_path/bin/python3 -m mautrix_signal -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
@@ -133,6 +145,13 @@ ynh_script_progression --message="Restoring the systemd configuration..." --time
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
 systemctl enable $app.service --quiet
+
+#=================================================
+# RESTORE THE LOGROTATE CONFIGURATION
+#=================================================
+
+ynh_use_logrotate --logfile "/var/log/$app/$app.log"
+chown $mautrix_bridge_user:root -R /var/log/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -163,13 +182,6 @@ ynh_systemd_action --service_name=$app --action="start"
 #=================================================
 
 # ynh_restore_file --origin_path="/etc/$app/"
-
-#=================================================
-# RESTORE THE LOGROTATE CONFIGURATION
-#=================================================
-
-ynh_restore_file --origin_path="/var/log/$app"
-chown $mautrix_bridge_user:root -R /var/log/$app
 
 #=================================================
 # END OF SCRIPT
