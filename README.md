@@ -34,11 +34,11 @@ See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/python/
 #### Linking the Bridge as a secondary device
 * Type ``!sg link``
 * Open Signal App of your primary device
-* Open Settings => Linked Devices => Capture the QR code with the camera
+* Open Settings => Linked Devices => + => Capture the QR code with the camera
 * By defaults, only conversations with very recent messages will be bridged
 * Accept invitations to the bridged chat rooms
 #### Registering the Bridge as a primary device
-* Type ``!sg register <phone>``, where ``<phone>`` is your phone number in the internation format with no space, e.g. ``!sg register +33612345678``
+* Type ``!sg register <phone>``, where ``<phone>`` is your phone number in the international format with no space, e.g. ``!sg register +33612345678``
 * Answer in the bot room with the verification code that you reveived in SMS.
 * Set a profile name with ``!sg set-profile-name <name>``
 
