@@ -160,30 +160,16 @@ mautrix_config_path="$final_path/config.yaml"
 ynh_backup_if_checksum_is_different --file="$app_service_registration_path/$app.yaml"
 ynh_backup_if_checksum_is_different --file="$mautrix_config_path"
 
-#Copy example-config.yaml to config.yaml
-cp ../conf/config.yaml "$mautrix_config_path"
+mautrix_config_path="$final_path/config.yaml"
 
-ynh_replace_string --match_string=__DOMAIN__ --replace_string="https://$domain" --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__SERVER_NAME__ --replace_string=$server_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__VERIFY_SERVER_SSL_CERTIFICATES__ --replace_string=true --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__MATRIX_SERVER_SUPPORTS_ASMUX__ --replace_string=false --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__PORT__ --replace_string=$port --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__MAUTRIX_BRIDGE_USER__ --replace_string=$mautrix_bridge_user --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__MAUTRIX_BRIDGE_DB_PWD__ --replace_string=$mautrix_bridge_db_pwd --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__MAUTRIX_BRIDGE_DB_NAME__ --replace_string=$mautrix_bridge_db_name --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__BOTNAME__ --replace_string=$botname --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__ENCRYPTION__ --replace_string=$encryption --target_file="$mautrix_config_path"
-if [ "$botusers" = "local" ]
-then
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$server_name --target_file="$mautrix_config_path"
-else
-ynh_replace_string --match_string=__BOTUSERS__ --replace_string=$botusers --target_file="$mautrix_config_path"
-fi
-ynh_replace_string --match_string=__BOTADMIN__ --replace_string=$botadmin --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__APP__ --replace_string=$app --target_file="$mautrix_config_path"
-ynh_replace_string --match_string=__LOG_FILENAME__ --replace_string="/var/log/$app/$app.log" --target_file="$mautrix_config_path"
+$domain="https://$domain"
+verify_server_ssl_certificates="true"
+matrix_server_supports_asmux="false"
+log_filename="/var/log/$app/$app.log"
     # Options: debug, info, warn, error, fatal
-ynh_replace_string --match_string=__LOG_LEVEL__ --replace_string="error" --target_file="$mautrix_config_path"
+log_level="error"
+
+ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
 
 # Recalculate and store the checksum of the file for the next upgrade.
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
