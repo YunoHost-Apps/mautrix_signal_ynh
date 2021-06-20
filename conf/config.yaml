@@ -1,7 +1,7 @@
 # Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: __DOMAIN__
+    address: https://__DOMAIN__
     # The domain of the homeserver (for MXIDs, etc).
     domain: __SERVER_NAME__
     # Whether or not to verify the SSL certificate of the homeserver.
