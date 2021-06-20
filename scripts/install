@@ -184,7 +184,6 @@ ynh_script_progression --message="Configuring Mautrix-Bridge..." --weight=2
 
 mautrix_config_path="$final_path/config.yaml"
 
-$domain="https://$domain"
 verify_server_ssl_certificates="true"
 matrix_server_supports_asmux="false"
 log_filename="/var/log/$app/$app.log"
