@@ -25,8 +25,8 @@
 		# mautrix_whatsapp manifest parameters
 		port="8449"	(PORT)
 		synapsenumber="1"
-		signalbot="signalbot"
-		bot_is_synapse_admin="yes"
+		botname="signalbot"
+		encryption=0
 		botadmin="@johndoe:synapsedomain.tld"	(USER)
 		botusers="@johndoe:synapsedomain.tld"
 	; Checks
