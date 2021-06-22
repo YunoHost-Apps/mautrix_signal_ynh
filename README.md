@@ -11,7 +11,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 ## Overview
 A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Messages, notifications (and sometimes media) are bridged between a Signal user and a Matrix user. Currently the Matrix user can NOT invite other Matrix user in a bridged Signal room, so only someone with a Signal account can participate to Signal group conversations. The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
-**Shipped version:** 0.1.0
+**Shipped version:** 0.1.1
 
 ## Screenshots
 
@@ -34,11 +34,11 @@ See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/python/
 #### Linking the Bridge as a secondary device
 * Type ``!sg link``
 * Open Signal App of your primary device
-* Open Settings => Linked Devices => Capture the QR code with the camera
+* Open Settings => Linked Devices => + => Capture the QR code with the camera
 * By defaults, only conversations with very recent messages will be bridged
 * Accept invitations to the bridged chat rooms
 #### Registering the Bridge as a primary device
-* Type ``!sg register <phone>``, where ``<phone>`` is your phone number in the internation format with no space, e.g. ``!sg register +33612345678``
+* Type ``!sg register <phone>``, where ``<phone>`` is your phone number in the international format with no space, e.g. ``!sg register +33612345678``
 * Answer in the bot room with the verification code that you reveived in SMS.
 * Set a profile name with ``!sg set-profile-name <name>``
 
