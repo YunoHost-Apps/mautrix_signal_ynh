@@ -40,6 +40,7 @@ ynh_print_ON
 # SET CONSTANTS
 #=================================================
 
+log_filename="/var/log/$app/$app.log"
 synapse_db_name="matrix_$synapse_instance"
 # botname_synapse_db_user="@$botname:$server_name"
 mautrix_bridge_user=$app
@@ -103,7 +104,7 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --time --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action="stop" --log_path="$log_filename"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -160,15 +161,12 @@ mautrix_config_path="$final_path/config.yaml"
 ynh_backup_if_checksum_is_different --file="$app_service_registration_path/$app.yaml"
 ynh_backup_if_checksum_is_different --file="$mautrix_config_path"
 
-mautrix_config_path="$final_path/config.yaml"
-
 verify_server_ssl_certificates="true"
 matrix_server_supports_asmux="false"
-log_filename="/var/log/$app/$app.log"
     # Options: debug, info, warn, error, fatal
 log_level="error"
 
-ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
+ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
 
 # Recalculate and store the checksum of the file for the next upgrade.
 ynh_store_file_checksum --file="$app_service_registration_path/$app.yaml"
@@ -210,7 +208,7 @@ chown $mautrix_bridge_user:root -R $final_path
 ynh_script_progression --message="Upgrading logrotate configuration..." --time --weight=1
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log"
+ynh_use_logrotate --logfile "$log_filename"
 chown $mautrix_bridge_user:root -R /var/log/$app
 # Use logrotate to manage app-specific logfile(s)
 # ynh_use_logrotate --non-append
@@ -220,7 +218,7 @@ chown $mautrix_bridge_user:root -R /var/log/$app
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --time --weight=1
 
-yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages" --log="$log_filename"
 
 #=================================================
 # START SYSTEMD SERVICE
