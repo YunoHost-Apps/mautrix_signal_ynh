@@ -50,10 +50,12 @@ botadmin=$YNH_APP_ARG_BOTADMIN
 if [ "$YNH_APP_ARG_BOTUSERS" = "local" ]
 then
 botusers=$server_name
+elif [ "$YNH_APP_ARG_BOTUSERS" = "admin" ]
+then
+botusers=$botadmin
 else
 botusers=$YNH_APP_ARG_BOTUSERS
 fi
-
 #=================================================
 # SET CONSTANTS
 #=================================================
@@ -139,12 +141,6 @@ ynh_psql_execute_as_root \
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=3
 
-### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
-### downloaded from an upstream source, like a git repository.
-### `ynh_setup_source` use the file conf/app.src
-
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-
 # WARNING : theses command are used in INSTALL, UPGRADE (2 times)
 # For any update do it in all files
 #if [ -n "$(uname -m | grep 64)" ]
@@ -190,7 +186,7 @@ log_filename="/var/log/$app/$app.log"
     # Options: debug, info, warn, error, fatal
 log_level="error"
 
-ynh_add_config --template="../conf/config.yaml" --destination="mautrix_config_path"
+ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
 
 #=================================================
 # INSTALL MAUTRIX-BRIDGE PYTHON MODULE
@@ -239,7 +235,7 @@ chown $mautrix_bridge_user:root -R $final_path
 ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log"
+ynh_use_logrotate --logfile "$log_filename"
 chown $mautrix_bridge_user:root -R /var/log/$app
 
 #=================================================
@@ -247,7 +243,7 @@ chown $mautrix_bridge_user:root -R /var/log/$app
 #=================================================
 #yunohost service add $app --log "/var/log/$app/log.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
-yunohost service add $app --description "$app daemon for bridging Signal and Matrix messages" --log "/var/log/$app/$app.log"
+yunohost service add $app --description "$app daemon for bridging Signal and Matrix messages" --log "$log_filename"
 
 #=================================================
 # START SYSTEMD SERVICE
