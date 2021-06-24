@@ -31,6 +31,8 @@ app=$YNH_APP_INSTANCE_NAME
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 app_service_registration_path=$(ynh_app_setting_get --app=$app --key=app_service_registration_path)
 mautrix_config_path="$final_path/config.yaml"
+signal_path="/var/lib/signald"
+#signal_path="/usr/bin/signald"
 
 #=================================================
 # SET CONSTANTS
@@ -54,7 +56,6 @@ ynh_print_info --message="Declaring files to be backed up..."
 
 ynh_backup --src_path="$final_path"
 
-
 #=================================================
 # SPECIFIC BACKUP
 #=================================================
@@ -68,12 +69,13 @@ ynh_backup --src_path="/var/log/$app"
 #=================================================
 
 ynh_backup --src_path="/etc/systemd/system/$app.service"
+ynh_backup --src_path="/etc/systemd/system/signald.service"
 
 #=================================================
 # BACKUP VARIOUS FILES
 #=================================================
 
-# ynh_backup --src_path="/etc/cron.d/$app"
+ynh_backup --src_path="$signal_path"
 
 #=================================================
 # BACKUP THE POSTGRESQL DATABASE
