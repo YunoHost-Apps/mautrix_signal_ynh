@@ -81,8 +81,6 @@ ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$mau
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$mautrix_bridge_user"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
-ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
 #yunohost app action run $synapse_instance drop_user -a username=$botname
 
 #=================================================

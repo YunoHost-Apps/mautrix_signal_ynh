@@ -39,4 +39,3 @@
 	; commit=c755a9e7e0d46402a231e00a675f41099dea3daa
 		name=0.1.0 first working version.
 		#manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
-
