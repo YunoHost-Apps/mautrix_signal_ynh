@@ -37,7 +37,6 @@ synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
-mautrix_config_path="$final_path/config.yaml"
 mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
@@ -122,7 +121,7 @@ python3 -m venv $final_path
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
-$final_path/bin/python3 -m mautrix_signal -g -c $mautrix_config_path -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+$final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
