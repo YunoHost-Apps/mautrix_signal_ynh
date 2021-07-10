@@ -158,7 +158,7 @@ python3 -m venv $final_path
 #$final_path/bin/pip3 install --upgrade setuptools wheel
 $final_path/bin/pip3 install $final_path/src/mautrix-signal.tar.gz[metrics,formattednumbers,qrlink]
 # -r optional-requirements.txt
-$final_path/bin/python3 -m mautrix_signal -g -c $mautrix_config_path -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+$final_path/bin/python3 -m mautrix_signal -g -c /var/log/$app/$app.log -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
