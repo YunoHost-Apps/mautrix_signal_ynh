@@ -1,23 +1,24 @@
-# Une passerelle entre Matrix et Signal pour YunoHost
-[![Integration level](https://dash.yunohost.org/integration/mautrix-signal.svg)](https://dash.yunohost.org/appci/app/mautrix-signal)  
-[![Install Mautrix-Signal with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=mautrix-signal)
+# Matrix-Signal bridge pour YunoHost
 
-*[Read this readme in english.](./README.md)* 
+[![Niveau d'intégration](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)  
+[![Installer Matrix-Signal bridge avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
 
-> *Ce package vous permet d'installer Mautrix-Signal rapidement et simplement sur un serveur Yunohost.  
+*[Read this readme in english.](./README.md)*
+*[Lire ce readme en français.](./README_fr.md)*
+
+> *Ce package vous permet d'installer Matrix-Signal bridge rapidement et simplement sur un serveur YunoHost.
 Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
 
 ## Vue d'ensemble
-Une passerelle entre Matrix et Signal empaquetée comme un service YunoHost. Les messages, médias et notifications sont relayées entre un compte Signal et un compte Matrix. 
-La passerelle ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) consiste en un Service d'Application Matrix-Synapse et repose sur une base-de-données postgresql. C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) doit être préalablemnet installé.
 
-** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix-synapse et mautrix_signal en même temps!**
+Passerelle Signal pour Matrix/Synapse
 
-**Version incluse:** 0.1.1
+**Version incluse :** 0.1.1~ynh1
 
-## Captures d'écran
 
-![](Lien vers une capture d'écran pour cette application)
+
+## Avertissements / informations importantes
+
 
 ## Liste de passerelles publiques
 
@@ -39,6 +40,7 @@ Voir aussi [upstream wiki Authentication page](https://docs.mau.fi/bridges/pytho
 * Ouvrez Paramètres => Appareils reliés => + => filmer le QR
 * Par défaut, seules les conversations avec des messages très récents seront mises-en-miroir
 * Acceptez les invitations aux salons
+
 #### Enregistrer la passerelle comme appareil principal
 * Tapez ``!sg register <phone>``, où ``<phone>`` est votre numéro de téléphone au format international sans espace, p.ex. ``!sg register +33612345678``
 * Répondez dans le salon d'administration avec le code de vérification reçu par SMS.
@@ -78,39 +80,17 @@ Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils c
 * L'installation multi-instance devrait fonctionner. Plusieurs instances de passerelles pourraient être installées pour une instance de Matrix-Synapse. Cela permet à un compte matrix de se relier à plusieurs comptes Signal. 
 * Plusieurs instances de passerelles pourraient être installées pour que chaque instance de Matrix-Synapse puisse en bénéficier. Mais une passerelle peut être utilisée par les comptes de plusieurs instances Matrix-Synapse.
 
-#### Architectures supportées
-
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/mautrix_signal%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/mautrix_signal%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/mautrix_signal/)
-
 ## Limitations
 
 * Les appels Audio/Video ne sont pas relayés. Seule une notification apparait. 
 
-## Informations additionnelles
+## Documentations et ressources
 
-* 
+* Documentation YunoHost pour cette app : https://yunohost.org/app_mautrix_signal
+* Signaler un bug : https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues
 
-**Plus d'informations sur la page de documentation:** 
+## Informations pour les développeurs
 
-* https://docs.mau.fi/bridges/python/signal/index.html 
-* https://yunohost.org/packaging_apps
-
-## Liens
-
- * Signaler un bug:  https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues
- * Site de l'application: https://github.com/YunoHost-Apps/mautrix_signal_ynh
- * Documentation de l'application principale: https://docs.mau.fi/bridges/python/signal/index.html
- * Dépôt de l'application principale: https://github.com/tulir/mautrix-signal
- * Up-Upstream repository: https://gitlab.com/signald/signald
- * Site web YunoHost: https://yunohost.org/
-
----
-
-Informations pour les développeurs
-----------------
-
-**Seulement si vous voulez utiliser une branche de test pour le codage, au lieu de fusionner directement dans la banche principale.**
 Merci de faire vos pull request sur la [branche testing](https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing).
 
 Pour essayer la branche testing, procédez comme suit.
@@ -120,8 +100,4 @@ ou
 sudo yunohost app upgrade mautrix_signal -u https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing --debug
 ```
 
-Pour tester la communication entre le Service d'Application et Matrix-Synapse sur une Machine Virtuelle (ex. avec un nom de domaine: synapse.vm), vous devez installer un certificat:
-```
-echo | openssl s_client -showcerts -servername synapse.vm -connect synapse.vm:443 2>/dev/null | awk '/-----BEGIN CERTIFICATE-----/, /-----END CERTIFICATE-----/' >> /usr/local/share/ca-certificates/synapse.vm.crt
-update-ca-certificates
-```
+**Plus d'infos sur le packaging d'applications :** https://yunohost.org/packaging_apps
