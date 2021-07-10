@@ -3,8 +3,8 @@
 	"id": "mautrix_signal",
 	"packaging_format": 1,
 	"description": {
-		"en": "A Signal puppeting bridge for Matrix/Synapse.",
-		"fr": "Passerelle Signal pour Matrix/Synapse."
+		"en": "A Signal puppeting bridge for Matrix/Synapse",
+		"fr": "Passerelle Signal pour Matrix/Synapse"
 	},
 	"version": "0.1.1~ynh1",
 	"url": "https://github.com/tulir/mautrix-signal",
@@ -15,7 +15,7 @@
 		"url": "https://github.com/YunoHost-Apps/mautrix_signal_ynh"
 	},
 	"requirements": {
-		"yunohost": ">= 4.0"
+		"yunohost": ">= 4.2.0"
 	},
 	"multi_instance": true,
 	"services": [

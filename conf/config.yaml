@@ -6,8 +6,8 @@ homeserver:
     domain: __SERVER_NAME__
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
-    verify_ssl: __VERIFY_SERVER_SSL_CERTIFICATES__
-    asmux: __MATRIX_SERVER_SUPPORTS_ASMUX__
+    verify_ssl: true
+    asmux: false
 
 # Application service host/registration related details
 # Changing these values requires regeneration of the registration.
@@ -26,7 +26,7 @@ appservice:
     max_body_size: 1
 
     # The full URI to the database. Only Postgres is currently supported.
-    database: postgres://__MAUTRIX_BRIDGE_USER__:__MAUTRIX_BRIDGE_DB_PWD__@localhost:5432/__MAUTRIX_BRIDGE_DB_NAME__
+    database: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__
     # Additional arguments for asyncpg.create_pool()
     # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
     database_opts:
