@@ -69,7 +69,7 @@ ynh_backup --src_path="/var/log/$app"
 #=================================================
 
 ynh_backup --src_path="/etc/systemd/system/$app.service"
-ynh_backup --src_path="/etc/systemd/system/signald.service"
+#ynh_backup --src_path="/etc/systemd/system/signald.service"
 
 #=================================================
 # BACKUP VARIOUS FILES
