@@ -58,6 +58,8 @@ mautrix_bridge_user=$app
 mautrix_bridge_db_name=$app
 mautrix_bridge_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
+signald_data="/var/lib/signald"
+#signald_exe="/usr/bin/signald"
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -181,7 +183,7 @@ ynh_systemd_action --service_name=$app --action="start"
 # RESTORE VARIOUS FILES
 #=================================================
 
-# ynh_restore_file --origin_path="/etc/$app/"
+ynh_restore_file --origin_path="$signald_data"
 
 #=================================================
 # END OF SCRIPT
