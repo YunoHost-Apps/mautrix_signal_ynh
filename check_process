@@ -1,25 +1,10 @@
 # See here for more information
 # https://github.com/YunoHost/package_check#syntax-of-check_process
 
-# Move this file from check_process.default to check_process when you have filled it.
-
 ;; Test complet
 #	auto_remove=1
 	; pre-install
-		# synapse parameters
-        	sy_domain="domain.tld"
-        	sy_path="/_matrix/static/"
-        	sy_is_public=1
-	  	sy_server_name="domain2.tld"
-		sy_jitsi_server="jitsi.riot.im"
-		#admin="john"	(USER)
-		#language="en"
-		#password="pass"
-		#port="666"	(PORT)
-		
-		sudo yunohost tools update --apps
-		sudo yunohost domain add $domain
-		sudo yunohost domain add $server_name
+		sudo yunohost tools update apps
 		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_public=$is_public&jitsi_server=$jitsi_server" --force
 	; Manifest
 		# mautrix_whatsapp manifest parameters
@@ -37,7 +22,8 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
-		#upgrade=1	from_commit=CommitHash
+		upgrade=1	from_commit=898c8ffc11882f1411431bfd79d083a0c9471ea7
+		#upgrade=1	from_commit=c755a9e7e0d46402a231e00a675f41099dea3daa
 		backup_restore=1
 		multi_instance=1
 		port_already_use=1
@@ -47,8 +33,8 @@
 #;;; Levels
 #	# If the level 5 (Package linter) is forced to 1. Please add justifications here.
 #	Level 5=auto
-#;;; Upgrade options
-#	; commit=CommitHash
-		#name=Name and date of the commit.
-		#manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
-
+;;; Upgrade options
+	; commit=898c8ffc11882f1411431bfd79d083a0c9471ea7
+		name=0.1.1 before better signald handling.
+#	; commit=c755a9e7e0d46402a231e00a675f41099dea3daa
+#		name=0.1.0 first working version.
