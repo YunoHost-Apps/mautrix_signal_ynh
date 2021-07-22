@@ -48,6 +48,7 @@ mautrix_bridge_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
 signald_data="/var/lib/signald"
 signald_exe="/usr/bin/signald"
+signald_user="signald"
 
 #=================================================
 # STANDARD REMOVE
@@ -81,6 +82,8 @@ ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$mau
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$mautrix_bridge_user"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$signald_user"";"
+ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$signald_user"";"
 #yunohost app action run $synapse_instance drop_user -a username=$botname
 
 #=================================================
@@ -132,6 +135,7 @@ ynh_script_progression --message="Removing the dedicated system user..." --weigh
 
 # Delete a system user
 ynh_system_user_delete --username=$mautrix_bridge_user
+ynh_system_user_delete --username="signald_user"
 
 #=================================================
 # END OF SCRIPT
