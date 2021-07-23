@@ -125,7 +125,7 @@ ynh_script_progression --message="Upgrading dependencies..." --time --weight=1
 
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="signald" --key="https://updates.signald.org/apt-signing-key.asc"
+ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -180,7 +180,7 @@ mkdir -p /var/log/$app
 # Configure Mautrix-Bridge
 python3 -m venv $final_path
 #$final_path/bin/pip3 install --upgrade setuptools wheel
-$final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[metrics,formattednumbers,qrlink]
+$final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[metrics,formattednumbers,qrlink,stickers]
 # -r optional-requirements.txt
 
 #=================================================
