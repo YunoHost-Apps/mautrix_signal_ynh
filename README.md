@@ -13,6 +13,8 @@ A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Mes
 
 **Shipped version:** 0.1.1
 
+**This bridge is not ready for production servers**
+
 ## Screenshots
 
 ![](Link to a screenshot of this app.)
