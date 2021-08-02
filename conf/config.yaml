@@ -211,9 +211,9 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: __LOG_LEVEL
         aiohttp:
             level: INFO
     root:
-        level: DEBUG
+        level: __LOG_LEVEL__
         handlers: [file, console]
