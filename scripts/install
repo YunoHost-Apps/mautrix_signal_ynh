@@ -27,6 +27,7 @@ ynh_abort_if_errors
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
+signald_path=/opt/yunohost/signald
 
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_bridge bridge
 if [ $synapsenumber -eq "1" ]
@@ -65,6 +66,7 @@ mautrix_bridge_user=$app
 mautrix_bridge_db_name=$app
 mautrix_bridge_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
+signald_user="signald"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -150,6 +152,7 @@ ynh_script_progression --message="Setting up source files..." --weight=3
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path/src"
+ynh_setup_source --dest_dir="$signald_path/src"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -158,6 +161,7 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
 ynh_system_user_create --username=$mautrix_bridge_user
+ynh_system_user_create --username=$signald_user
 
 #=================================================
 # SETUP SYSTEMD
@@ -167,6 +171,7 @@ ynh_script_progression --message="Configuring a systemd service..." --weight=20
 # Create systemd config for Mautrix-Bridge
 #cp ../conf/default_mautrix-facebook /etc/default/$app
 ynh_add_systemd_config --service=$app
+ynh_add_systemd_config --service=signald
 
 #=================================================
 
@@ -187,6 +192,13 @@ log_filename="/var/log/$app/$app.log"
 log_level="error"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
+
+#=================================================
+# INSTALL SIGNALD
+#=================================================
+cd $signald_path
+make installDist
+make setup
 
 #=================================================
 # INSTALL MAUTRIX-BRIDGE PYTHON MODULE
