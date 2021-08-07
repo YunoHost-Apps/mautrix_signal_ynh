@@ -6,7 +6,7 @@
 
 # dependencies used by the app
 pkg_dependencies="postgresql python3"
-extra_dependencies="libunixsocket-java signaldctl signald"
+extra_dependencies="libunixsocket-java signaldctl"
 #=================================================
 # PERSONAL HELPERS
 #=================================================
