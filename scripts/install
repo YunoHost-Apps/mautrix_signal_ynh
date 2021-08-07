@@ -27,7 +27,8 @@ ynh_abort_if_errors
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
-signald_path=/opt/yunohost/signald
+signald_name="signald"
+signald_path=/opt/yunohost/signald_name
 
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_bridge bridge
 if [ $synapsenumber -eq "1" ]
@@ -66,7 +67,7 @@ mautrix_bridge_user=$app
 mautrix_bridge_db_name=$app
 mautrix_bridge_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
-signald_user="signald"
+signald_user=$mautrix_bridge_user
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -152,7 +153,7 @@ ynh_script_progression --message="Setting up source files..." --weight=3
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path/src"
-ynh_setup_source --dest_dir="$signald_path/src"
+ynh_setup_source --dest_dir=$signald_path --source_id=$signald_name
 
 #=================================================
 # CREATE DEDICATED USER
@@ -171,7 +172,7 @@ ynh_script_progression --message="Configuring a systemd service..." --weight=20
 # Create systemd config for Mautrix-Bridge
 #cp ../conf/default_mautrix-facebook /etc/default/$app
 ynh_add_systemd_config --service=$app
-ynh_add_systemd_config --service=signald
+ynh_add_systemd_config --service=$signald_name
 
 #=================================================
 
@@ -236,10 +237,12 @@ ynh_store_file_checksum --file="$mautrix_config_path"
 
 # Set permissions to app files
 chown -R root: $final_path
+chown -R root: $signald_path
 
 # WARNING : theses command are used in INSTALL, UPGRADE, RESTORE
 # For any update do it in all files
 chown $mautrix_bridge_user:root -R $final_path
+chown $signald_user:root -R $signald_path
 
 #=================================================
 # SETUP LOGROTATE
@@ -256,6 +259,7 @@ chown $mautrix_bridge_user:root -R /var/log/$app
 #yunohost service add $app --log "/var/log/$app/log.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
 yunohost service add $app --description "$app daemon for bridging Signal and Matrix messages" --log "$log_filename"
+yunohost service add $signald_name --description "$signald_name daemon for Signal messages" --log "$log_filename"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -263,6 +267,8 @@ yunohost service add $app --description "$app daemon for bridging Signal and Mat
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
+ynh_systemd_action --service_name=$signald_name --action="start"
+sleep 5
 ynh_systemd_action --service_name=$app --action="start"
 # Wait until the synapse user is created
 sleep 30
