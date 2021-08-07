@@ -172,7 +172,7 @@ ynh_script_progression --message="Configuring a systemd service..." --weight=20
 # Create systemd config for Mautrix-Bridge
 #cp ../conf/default_mautrix-facebook /etc/default/$app
 ynh_add_systemd_config --service=$app
-ynh_add_systemd_config --service=$signald_name
+ynh_add_systemd_config --service="$signald_name" --template="signald.service"
 
 #=================================================
 
