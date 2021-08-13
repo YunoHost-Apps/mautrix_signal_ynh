@@ -135,7 +135,7 @@ ynh_script_progression --message="Removing the dedicated system user..." --weigh
 
 # Delete a system user
 ynh_system_user_delete --username=$mautrix_bridge_user
-ynh_system_user_delete --username="signald_user"
+ynh_system_user_delete --username=$signald_user
 
 #=================================================
 # END OF SCRIPT
