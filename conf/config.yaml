@@ -211,7 +211,7 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: __LOG_LEVEL
+            level: __LOG_LEVEL__
         aiohttp:
             level: INFO
     root:
