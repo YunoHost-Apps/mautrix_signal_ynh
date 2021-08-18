@@ -67,7 +67,7 @@ mautrix_bridge_user=$app
 mautrix_bridge_db_name=$app
 mautrix_bridge_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
-#signald_user=$mautrix_bridge_user
+signald_user=signald # This is actually chosen by the signald dependency
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -161,8 +161,16 @@ ynh_setup_source --dest_dir="$final_path/src"
 ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
-ynh_system_user_create --username=$mautrix_bridge_user
+# Add the user to the signald group. The signald group was created when the signald
+# package was installed from the extra repository
+ynh_system_user_create --username=$mautrix_bridge_user --groups="$signald_user"
 #ynh_system_user_create --username=$signald_user
+
+# Create folders and set permissions, otherwise signald creates them without rw for group
+# Unfortunately subfolders are dynamically created for stickers, so those won't work for now.
+mkdir -p /var/lib/signald/{avatars,attachments,stickers}
+chown $signald_user:$mautrix_bridge_user /var/lib/signald/{avatars,attachments,stickers}
+chmod g+rwX /var/lib/signald/{avatars,attachments,stickers}
 
 #=================================================
 # SETUP SYSTEMD
