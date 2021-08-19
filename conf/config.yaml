@@ -8,6 +8,12 @@ homeserver:
     # Only applies if address starts with https://
     verify_ssl: __VERIFY_SERVER_SSL_CERTIFICATES__
     asmux: __MATRIX_SERVER_SUPPORTS_ASMUX__
+    # Number of retries for all HTTP requests if the homeserver isn't reachable.
+    http_retry_count: 4
+    # The URL to push real-time bridge status to.
+    # If set, the bridge will make POST requests to this URL whenever a user's Signal connection state changes.
+    # The bridge will use the appservice as_token to authorize requests.
+    status_endpoint: null
 
 # Application service host/registration related details
 # Changing these values requires regeneration of the registration.
@@ -159,6 +165,8 @@ bridge:
     # This field will automatically be changed back to false after it,
     # except if the config file is not writable.
     resend_bridge_info: false
+    # Interval at which to resync contacts.
+    periodic_sync: 0
 
     # Provisioning API part of the web server for automated portal creation and fetching information.
     # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
@@ -176,6 +184,7 @@ bridge:
 
     # Permissions for using the bridge.
     # Permitted values:
+    #      relay - Allowed to be relayed through the bridge, no access to commands.
     #       user - Use the bridge with puppeting.
     #      admin - Use and administrate the bridge.
     # Permitted keys:
@@ -183,9 +192,30 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
+        "*": "relay"
         "__BOTUSERS__": "user"
         "__BOTADMIN__": "admin"
 
+    relay:
+        # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
+        # authenticated user into a relaybot for that chat.
+        enabled: false
+        # The formats to use when sending messages to Signal via a relay user.
+        #
+        # Available variables:
+        #   $sender_displayname - The display name of the sender (e.g. Example User)
+        #   $sender_username    - The username (Matrix ID localpart) of the sender (e.g. exampleuser)
+        #   $sender_mxid        - The Matrix ID of the sender (e.g. @exampleuser:example.com)
+        #   $message            - The message content
+        message_formats:
+            m.text: '$sender_displayname: $message'
+            m.notice: '$sender_displayname: $message'
+            m.emote: '* $sender_displayname $message'
+            m.file: '$sender_displayname sent a file'
+            m.image: '$sender_displayname  sent an image'
+            m.audio: '$sender_displayname  sent an audio file'
+            m.video: '$sender_displayname  sent a video'
+            m.location: '$sender_displayname  sent a location'
 
 # Python logging configuration.
 #
@@ -211,9 +241,9 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: DEBUG
+            level: __LOG_LEVEL__
         aiohttp:
             level: INFO
     root:
-        level: DEBUG
+        level: __LOG_LEVEL__
         handlers: [file, console]

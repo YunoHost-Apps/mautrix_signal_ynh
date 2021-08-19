@@ -27,6 +27,8 @@ ynh_abort_if_errors
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
+#signald_name="signald"
+#signald_path=/opt/yunohost/signald_name
 
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_bridge bridge
 if [ $synapsenumber -eq "1" ]
@@ -65,6 +67,7 @@ mautrix_bridge_user=$app
 mautrix_bridge_db_name=$app
 mautrix_bridge_db_user=$app
 upstream_version=$(ynh_app_upstream_version)
+signald_user=signald # This is actually chosen by the signald dependency
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -116,7 +119,7 @@ ynh_script_progression --message="Installing dependencies..." --weight=97
 
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="signald" --key="https://updates.signald.org/apt-signing-key.asc"
+ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -150,6 +153,7 @@ ynh_script_progression --message="Setting up source files..." --weight=3
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path/src"
+#ynh_setup_source --dest_dir=$signald_path --source_id=$signald_name
 
 #=================================================
 # CREATE DEDICATED USER
@@ -157,7 +161,16 @@ ynh_setup_source --dest_dir="$final_path/src"
 ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
-ynh_system_user_create --username=$mautrix_bridge_user
+# Add the user to the signald group. The signald group was created when the signald
+# package was installed from the extra repository
+ynh_system_user_create --username=$mautrix_bridge_user --groups="$signald_user"
+#ynh_system_user_create --username=$signald_user
+
+# Create folders and set permissions, otherwise signald creates them without rw for group
+# Unfortunately subfolders are dynamically created for stickers, so those won't work for now.
+mkdir -p /var/lib/signald/{avatars,attachments,stickers}
+chown $signald_user:$mautrix_bridge_user /var/lib/signald/{avatars,attachments,stickers}
+chmod g+rwX /var/lib/signald/{avatars,attachments,stickers}
 
 #=================================================
 # SETUP SYSTEMD
@@ -167,6 +180,7 @@ ynh_script_progression --message="Configuring a systemd service..." --weight=20
 # Create systemd config for Mautrix-Bridge
 #cp ../conf/default_mautrix-facebook /etc/default/$app
 ynh_add_systemd_config --service=$app
+#ynh_add_systemd_config --service="$signald_name" --template="signald.service"
 
 #=================================================
 
@@ -183,10 +197,17 @@ mautrix_config_path="$final_path/config.yaml"
 verify_server_ssl_certificates="true"
 matrix_server_supports_asmux="false"
 log_filename="/var/log/$app/$app.log"
-    # Options: debug, info, warn, error, fatal
-log_level="error"
+# https://docs.python.org/3.6/library/logging.html#logging-levels
+log_level="DEBUG"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
+
+#=================================================
+# INSTALL SIGNALD
+#=================================================
+#cd $signald_path
+#make installDist
+#make setup
 
 #=================================================
 # INSTALL MAUTRIX-BRIDGE PYTHON MODULE
@@ -195,8 +216,8 @@ ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_p
 mkdir -p /var/log/$app
 # Configure Mautrix-Bridge
 python3 -m venv $final_path
-#$final_path/bin/pip3 install --upgrade setuptools wheel
-$final_path/bin/pip3 install $final_path/src/mautrix-signal.tar.gz[metrics,formattednumbers,qrlink]
+$final_path/bin/pip3 install --upgrade pip setuptools wheel
+$final_path/bin/pip3 install $final_path/src/mautrix-signal.tar.gz[metrics,formattednumbers,qrlink,stickers]
 # -r optional-requirements.txt
 $final_path/bin/python3 -m mautrix_signal -g -c $mautrix_config_path -r $app_service_registration_path/$app.yaml
 
@@ -224,10 +245,12 @@ ynh_store_file_checksum --file="$mautrix_config_path"
 
 # Set permissions to app files
 chown -R root: $final_path
+#chown -R root: $signald_path
 
 # WARNING : theses command are used in INSTALL, UPGRADE, RESTORE
 # For any update do it in all files
 chown $mautrix_bridge_user:root -R $final_path
+#chown $signald_user:root -R $signald_path
 
 #=================================================
 # SETUP LOGROTATE
@@ -244,6 +267,7 @@ chown $mautrix_bridge_user:root -R /var/log/$app
 #yunohost service add $app --log "/var/log/$app/log.log"
 # if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
 yunohost service add $app --description "$app daemon for bridging Signal and Matrix messages" --log "$log_filename"
+#yunohost service add $signald_name --description "$signald_name daemon for Signal messages" --log "$log_filename"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -251,6 +275,8 @@ yunohost service add $app --description "$app daemon for bridging Signal and Mat
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
+#ynh_systemd_action --service_name=$signald_name --action="start"
+#sleep 5
 ynh_systemd_action --service_name=$app --action="start"
 # Wait until the synapse user is created
 sleep 30
