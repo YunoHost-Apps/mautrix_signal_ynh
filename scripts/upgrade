@@ -202,6 +202,9 @@ $final_path/bin/python3 -m mautrix_signal -g -c $mautrix_config_path -r $app_ser
 chown -R root: $final_path
 chown $mautrix_bridge_user:root -R $final_path
 
+# Fix possible permission issues with a previous signald version, esp. with stickers
+chmod -R g+rwX /var/lib/signald/{avatars,attachments,stickers}
+
 #=================================================
 # SETUP LOGROTATE
 #=================================================
