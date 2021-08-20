@@ -198,7 +198,7 @@ verify_server_ssl_certificates="true"
 matrix_server_supports_asmux="false"
 log_filename="/var/log/$app/$app.log"
 # https://docs.python.org/3.6/library/logging.html#logging-levels
-log_level="DEBUG"
+log_level="INFO"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
 
