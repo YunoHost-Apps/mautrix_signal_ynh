@@ -163,8 +163,8 @@ ynh_backup_if_checksum_is_different --file="$mautrix_config_path"
 
 verify_server_ssl_certificates="true"
 matrix_server_supports_asmux="false"
-    # Options: debug, info, warn, error, fatal
-log_level="error"
+# https://docs.python.org/3.6/library/logging.html#logging-levels
+log_level="INFO"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$mautrix_config_path"
 
