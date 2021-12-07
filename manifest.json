@@ -105,6 +105,20 @@
 					"en": "On starting the bridge the default setup is to create rooms for contacts who sent you a message. If set to true, the bridge will create a conversation per contact in Signal",
 					"fr": "Au démarrage du bridge, le réglage par défaut c'est de ne créer des discussions que pour les contacts qui vous envoie un message. Si on définit ce réglage sur true alors pour chaque contact Signal une conversation sera créée."
 				}
+			},
+			{
+				"name": "relay_enabled",
+				"type": "boolean",
+				"ask": {
+					"en": "Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any authenticated user into a relaybot for that chat.",
+					"fr": "Définir si le mode relais est autorisé ou non. Si activé, `!signal set-relay` permettra de définir l'utilisateur authentifié comme relais (relaybot) pour cette conversation. "
+				},
+				"example": "true or false",
+				"default": "false",
+				"help": {
+					"en": "If true, in Signal relayed messages will be on the 'sender_displayname: message' format.",
+					"fr": "Si activé, dans Signal les messages relayés seront sous la forme  'nom_matrix: message'"
+				}
 			}
 		]
 	}
