@@ -91,6 +91,20 @@
 					"en": "All local synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the matrix server_name, not the full domain/url.",
 					"fr": "On peut autoriser tous les comptes synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur matrix, pas le domaine/url complet."
 				}
+			},
+			{
+				"name": "autocreate_contact_portal",
+				"type": "boolean",
+				"ask": {
+					"en": "Whether or not to create portals for all contacts on login/connect.",
+					"fr": "Définir si une conversation doit être crée ou non pour chaque contact lors de la connexion."
+				},
+				"example": "true or false",
+				"default": "false",
+				"help": {
+					"en": "On starting the bridge the default setup is to create rooms for contacts who sent you a message. If set to true, the bridge will create a conversation per contact in Signal",
+					"fr": "Au démarrage du bridge, le réglage par défaut c'est de ne créer des discussions que pour les contacts qui vous envoie un message. Si on définit ce réglage sur true alors pour chaque contact Signal une conversation sera créée."
+				}
 			}
 		]
 	}
