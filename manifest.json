@@ -102,8 +102,8 @@
 				"example": "true or false",
 				"default": "false",
 				"help": {
-					"en": "On starting the bridge the default setup is to create rooms for contacts who sent you a message. If set to true, the bridge will create a conversation per contact in Signal",
-					"fr": "Au démarrage du bridge, le réglage par défaut c'est de ne créer des discussions que pour les contacts qui vous envoie un message. Si on définit ce réglage sur true alors pour chaque contact Signal une conversation sera créée."
+					"en": "On starting the bridge the default setup is to create rooms for contacts who sent you a message. If set to true, a conversation per Signal contact will be created as soon as a user logs in with the bridge bot",
+					"fr": "Au démarrage du bridge, le réglage par défaut c'est de ne créer des discussions que pour les contacts qui vous envoie un message. Si on définit ce réglage sur true alors pour chaque contact  dans Signal une conversation sera créée dès qu'un utilisateur se connectera via le bridge."
 				}
 			},
 			{
@@ -116,8 +116,8 @@
 				"example": "true or false",
 				"default": "false",
 				"help": {
-					"en": "If true, in Signal relayed messages will be on the 'sender_displayname: message' format.",
-					"fr": "Si activé, dans Signal les messages relayés seront sous la forme  'nom_matrix: message'"
+					"en": "If true, Signal users will be able to see messages from Matrix users that have not logged in with the bot. In Signal, messages will appear as coming from the user that used the !sg set-relay command, starting with name of the Matrix user that sent the message.",
+					"fr": "Si activé, les utilisateurs de Signal pourront voir les messages des utilisateurs Matrix qui ne sont pas connectés au bridge. Les messages apparaitront comment étant envoyés par l'utilisateur qui aura utilisé la commande !sg set-relay. Le texte du message sera précédé du nom d'utilisateur Matrix de son auteur."
 				}
 			}
 		]

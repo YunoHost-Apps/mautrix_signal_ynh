@@ -197,7 +197,7 @@ bridge:
         "__BOTADMIN__": "admin"
 
     relay:
-        # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
+        # Whether or not relay mode should be allowed. If allowed, `!sg set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
         enabled: __relay_enabled__
         # The formats to use when sending messages to Signal via a relay user.
