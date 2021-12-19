@@ -94,6 +94,8 @@ ynh_script_progression --message="Removing dependencies..." --weight=8
 # Remove metapackage and its dependencies
 ynh_remove_app_dependencies
 
+remove_mautrix_signal_deps # from _common.sh
+
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
