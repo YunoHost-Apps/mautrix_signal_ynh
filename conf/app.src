@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/mautrix/signal/archive/v0.2.0.tar.gz
-SOURCE_SUM=54d1bc214051769d5ecb165affba99037be5aa39dcdda863efb34b70ab6ea1ed
+SOURCE_URL=https://github.com/mautrix/signal/archive/refs/tags/v0.2.1.tar.gz
+SOURCE_SUM=68ea168db3d7a99b52f84a9d1d6f96bf914e31a5787b6d4d97923974156a09c4
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true

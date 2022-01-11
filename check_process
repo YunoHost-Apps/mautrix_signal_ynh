@@ -22,8 +22,7 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
-		upgrade=1	from_commit=898c8ffc11882f1411431bfd79d083a0c9471ea7
-		#upgrade=1	from_commit=c755a9e7e0d46402a231e00a675f41099dea3daa
+		#upgrade=1	from_commit=898c8ffc11882f1411431bfd79d083a0c9471ea7
 		backup_restore=1
 		multi_instance=1
 		port_already_use=1
@@ -34,7 +33,5 @@
 #	# If the level 5 (Package linter) is forced to 1. Please add justifications here.
 #	Level 5=auto
 ;;; Upgrade options
-	; commit=898c8ffc11882f1411431bfd79d083a0c9471ea7
-		name=0.1.1 before better signald handling.
-#	; commit=c755a9e7e0d46402a231e00a675f41099dea3daa
-#		name=0.1.0 first working version.
+#	; commit=898c8ffc11882f1411431bfd79d083a0c9471ea7
+#		name=0.1.1 before better signald handling.
