@@ -30,6 +30,7 @@ app=$YNH_APP_INSTANCE_NAME
 
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+signald_data="/var/lib/signald"
 #signald_exe="/usr/bin/signald"
 
 #=================================================
@@ -62,7 +63,7 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 # BACKUP VARIOUS FILES
 #=================================================
 
-ynh_backup --src_path="/var/lib/signald"
+ynh_backup --src_path="$signald_data"
 
 #=================================================
 # BACKUP THE POSTGRESQL DATABASE

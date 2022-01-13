@@ -199,7 +199,7 @@ bridge:
     relay:
         # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: false
+        enabled: __ENABLE_RELAYBOT__
         # The formats to use when sending messages to Signal via a relay user.
         #
         # Available variables:

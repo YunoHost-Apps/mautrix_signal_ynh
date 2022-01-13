@@ -24,12 +24,16 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
+botname=$YNH_APP_ARG_BOTNAME
+bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
+encryption=$YNH_APP_ARG_ENCRYPTION
+botadmin=$YNH_APP_ARG_BOTADMIN
+botusers=$YNH_APP_ARG_BOTUSERS
+if [ "$botusers" = "admin" ]
+then
+	botusers=$botadmin
+fi
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
-
-app=$YNH_APP_INSTANCE_NAME
-#signald_name="signald"
-#signald_path=/opt/yunohost/signald_name
-
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_bridge bridge
 if [ $synapsenumber -eq "1" ]
 then
@@ -39,30 +43,9 @@ synapse_instance="synapse__$synapsenumber"
 fi
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
-synapse_config_path="/etc/matrix-$synapse_instance"
-synapse_name="matrix-$synapse_instance"
-synapse_user="matrix-$synapse_instance"
-synapse_db_name="matrix_$synapse_instance"
-synapse_db_user="matrix_$synapse_instance"
 
-botname=$YNH_APP_ARG_BOTNAME
-encryption=$YNH_APP_ARG_ENCRYPTION
-botadmin=$YNH_APP_ARG_BOTADMIN
-if [ "$YNH_APP_ARG_BOTUSERS" = "local" ]
-then
-botusers=$server_name
-elif [ "$YNH_APP_ARG_BOTUSERS" = "admin" ]
-then
-botusers=$botadmin
-else
-botusers=$YNH_APP_ARG_BOTUSERS
-fi
-#=================================================
-# SET CONSTANTS
-#=================================================
-
-upstream_version=$(ynh_app_upstream_version)
-signald_user=signald # This is actually chosen by the signald dependency
+mautrix_version=$(ynh_app_upstream_version)
+app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -71,6 +54,31 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 
 final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+
+#=================================================
+# SET CONSTANTS
+#=================================================
+
+bot_synapse_db_user="@$botname:$server_name"
+synapse_db_name="matrix_$synapse_instance"
+
+signald_user="signald" # This is actually chosen by the signald dependency
+
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+ynh_script_progression --message="Storing installation settings..." --weight=7
+
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=server_name --value=$server_name
+ynh_app_setting_set --app=$app --key=botname --value=$botname
+ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
+ynh_app_setting_set --app=$app --key=bot_synapse_adm --value=$bot_synapse_adm
+ynh_app_setting_set --app=$app --key=encryption --value=$encryption
+ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
+ynh_app_setting_set --app=$app --key=botusers --value=$botusers
+ynh_app_setting_set --app=$app --key=mautrix_version --value=$mautrix_version
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -84,21 +92,6 @@ port=$(ynh_find_port --port=8449)
 ynh_app_setting_set --app=$app --key=port --value=$port
 
 #=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-ynh_script_progression --message="Storing installation settings..." --weight=7
-
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=server_name --value=$server_name
-ynh_app_setting_set --app=$app --key=botname --value=$botname
-ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
-ynh_app_setting_set --app=$app --key=encryption --value=$encryption
-ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
-ynh_app_setting_set --app=$app --key=botusers --value=$botusers
-ynh_app_setting_set --app=$app --key=mautrix_version --value=$upstream_version
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-
-#=================================================
 # INSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Installing dependencies..." --weight=97
@@ -110,17 +103,6 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
-# CREATE A POSTGRESQL DATABASE
-#=================================================
-ynh_script_progression --message="Creating a PostgreSQL database..." --weight=3
-
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_psql_test_if_first_run
-ynh_psql_setup_db --db_user=$db_name --db_name=$db_name
-
-#=================================================
 # CREATE DEDICATED USER
 #=================================================
 ynh_script_progression --message="Configuring system user..." --weight=1
@@ -129,7 +111,18 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Add the user to the signald group. The signald group was created when the signald
 # package was installed from the extra repository
 ynh_system_user_create --username=$app --groups="$signald_user"
-#ynh_system_user_create --username=$signald_user
+
+#=================================================
+# CREATE A POSTGRESQL DATABASE
+#=================================================
+ynh_script_progression --message="Creating a PostgreSQL database..." --weight=3
+
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+db_pwd=$(ynh_string_random --length=30)
+ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+ynh_psql_test_if_first_run
+ynh_psql_setup_db --db_user=$db_name --db_name=$db_name --db_pwd=$db_pwd
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -138,7 +131,8 @@ ynh_script_progression --message="Setting up source files..." --weight=3
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path/src"
-#ynh_setup_source --dest_dir=$signald_path --source_id=$signald_name
+chmod 750 "$final_path"
+chown $app:$app "$final_path"
 
 # Create folders and set permissions, otherwise signald creates them without rw for group
 # Unfortunately subfolders are dynamically created for stickers, so those won't work for now.
@@ -147,35 +141,24 @@ chown $signald_user:$app /var/lib/signald/{avatars,attachments,stickers}
 chmod g+rwX /var/lib/signald/{avatars,attachments,stickers}
 
 #=================================================
-# SETUP SYSTEMD
+# ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --weight=20
-
-# Create systemd config for Mautrix-Bridge
-ynh_add_systemd_config # --service=$app
-#ynh_add_systemd_config --service="$signald_name" --template="signald.service"
-
-#=================================================
-
-#=================================================
-# SET MAUTRIX-BRIDGE CONFIG
-#=================================================
-ynh_script_progression --message="Configuring Mautrix-Bridge..." --weight=2
-
-# WARNING : theses command are used in INSTALL, UPGRADE, CONFIG, CHANGE-URL (4 times)
-# For any update do it in all files
+ynh_script_progression --message="Configuring Mautrix Bridge..." --weight=2
 
 # https://docs.python.org/3.6/library/logging.html#logging-levels
 log_level="INFO"
 
 ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
+chmod -R 750 "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
-# INSTALL SIGNALD
+# SETUP SYSTEMD
 #=================================================
-#cd $signald_path
-#make installDist
-#make setup
+ynh_script_progression --message="Configuring a systemd service..." --weight=20
+
+# Create a dedicated systemd config
+ynh_add_systemd_config
 
 #=================================================
 # INSTALL MAUTRIX-BRIDGE PYTHON MODULE
@@ -194,7 +177,12 @@ $final_path/bin/pip3 install --upgrade python-olm --extra-index-url https://gitl
 # Build with libolm3 end-to-bridge encryption
 $final_path/bin/pip3 install $final_path/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
 
+#=================================================
+# REGISTER SYNAPSE APP-SERVICE
+#=================================================
+
 $final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+chown -R $app:$app "$final_path"
 
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh \
     || ynh_die "Synapse can't restart with the appservice configuration"
@@ -205,18 +193,10 @@ $final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /etc/
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+ynh_store_file_checksum --file="$final_path/config.yaml"
 
 #=================================================
 # GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Set permissions to app files
-chown -R root: $final_path
-chown $app:root -R $final_path
-#chown $signald_user:root -R $signald_path
-
 #=================================================
 # SETUP LOGROTATE
 #=================================================
@@ -224,33 +204,32 @@ ynh_script_progression --message="Configuring log rotation..." --weight=3
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
-chown $app:root -R /var/log/$app
+chmod -R 600 "/var/log/$app"
+chmod 700 "/var/log/$app"
+chown -R $app:$app /var/log/$app
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --description="Bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
-#yunohost service add $signald_name --description "$signald_name daemon for Signal messages" --log "$log_filename"
+yunohost service add $app --description="$app daemon for bridging Whatsapp and Matrix messages" --log "/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression --message="Starting a systemd service..." --weight=15
 
 # Start a systemd service
-#ynh_systemd_action --service_name=$signald_name --action="start"
-#sleep 5
-ynh_systemd_action --service_name=$app --action="start"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
 # Wait until the synapse user is created
 sleep 30
-#    # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-#    if [ "$bot_is_synapse_admin" = true ]
-#    then
+   # (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
+   if [ "$bot_is_synapse_admin" = true ]
+   then
     ynh_psql_execute_as_root --database=$synapse_db_name --sql="UPDATE users SET admin = 1 WHERE name = ""$botname"";"
 #    #yunohost app action run $synapse_instance set_admin_user -a username=$botname
-#    fi
+   fi
 ynh_systemd_action --service_name=$app --action="restart"
 
 #=================================================
