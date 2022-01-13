@@ -31,7 +31,6 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
 
 mautrix_version=$(ynh_app_upstream_version)
-app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # SET CONSTANTS
