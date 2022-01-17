@@ -36,7 +36,7 @@ mautrix_version=$(ynh_app_upstream_version)
 # SET CONSTANTS
 #=================================================
 
-enable_relaybot="true"
+enable_relaybot=true
 # https://docs.python.org/3.6/library/logging.html#logging-levels
 log_level="INFO"
 #log_format="$app.log"
