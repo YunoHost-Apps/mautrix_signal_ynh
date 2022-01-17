@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Signal puppeting bridge for Matrix/Synapse
 
-**Shipped version:** 0.2.1~ynh1
+**Shipped version:** 0.2.2~ynh1
 
 
 
