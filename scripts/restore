@@ -96,7 +96,7 @@ ynh_script_progression --message="Reinstalling dependencies..." --weight=1
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 # libolm-dev avoided by pre-compiled python-olm
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm3" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
 ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
@@ -119,7 +119,7 @@ ynh_restore_file --origin_path="/var/log/$app"
 #mkdir -p /var/log/$app
 # Configure Mautrix-Bridge
 python3 -m venv $final_path
-#$final_path/bin/pip3 install --upgrade pip setuptools wheel
+$final_path/bin/pip3 install --upgrade pip setuptools wheel
 
 # Pre-compiled python-olm to avoid libolm-dev, python3-dev
 #$final_path/bin/pip3 install --upgrade python-olm --extra-index-url https://gitlab.matrix.org/api/v4/projects/27/packages/pypi/simple
