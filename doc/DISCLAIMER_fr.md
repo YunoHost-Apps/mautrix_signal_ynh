@@ -1,24 +1,3 @@
-# Matrix-Signal bridge pour YunoHost
-
-[![Niveau d'intégration](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)  
-[![Installer Matrix-Signal bridge avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
-
-*[Read this readme in english.](./README.md)*
-*[Lire ce readme en français.](./README_fr.md)*
-
-> *Ce package vous permet d'installer Matrix-Signal bridge rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
-
-## Vue d'ensemble
-
-Passerelle Signal pour Matrix/Synapse
-
-**Version incluse :** 0.2.2~ynh1
-
-
-
-## Avertissements / informations importantes
-
 
 ## Liste de passerelles publiques
 
@@ -83,21 +62,3 @@ Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils c
 ## Limitations
 
 * Les appels Audio/Video ne sont pas relayés. Seule une notification apparait. 
-
-## Documentations et ressources
-
-* Documentation YunoHost pour cette app : https://yunohost.org/app_mautrix_signal
-* Signaler un bug : https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues
-
-## Informations pour les développeurs
-
-Merci de faire vos pull request sur la [branche testing](https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing).
-
-Pour essayer la branche testing, procédez comme suit.
-```
-sudo yunohost app install https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing --debug
-ou
-sudo yunohost app upgrade mautrix_signal -u https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing --debug
-```
-
-**Plus d'infos sur le packaging d'applications :** https://yunohost.org/packaging_apps

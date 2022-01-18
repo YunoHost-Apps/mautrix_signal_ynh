@@ -6,8 +6,8 @@ homeserver:
     domain: __SERVER_NAME__
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
-    verify_ssl: __VERIFY_SERVER_SSL_CERTIFICATES__
-    asmux: __MATRIX_SERVER_SUPPORTS_ASMUX__
+    verify_ssl: true
+    asmux: false
     # Number of retries for all HTTP requests if the homeserver isn't reachable.
     http_retry_count: 4
     # The URL to push real-time bridge status to.
@@ -32,7 +32,7 @@ appservice:
     max_body_size: 1
 
     # The full URI to the database. Only Postgres is currently supported.
-    database: postgres://__MAUTRIX_BRIDGE_USER__:__MAUTRIX_BRIDGE_DB_PWD__@localhost:5432/__MAUTRIX_BRIDGE_DB_NAME__
+    database: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__
     # Additional arguments for asyncpg.create_pool()
     # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
     database_opts:
@@ -199,7 +199,7 @@ bridge:
     relay:
         # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: false
+        enabled: __ENABLE_RELAYBOT__
         # The formats to use when sending messages to Signal via a relay user.
         #
         # Available variables:
@@ -233,7 +233,7 @@ logging:
         file:
             class: logging.handlers.RotatingFileHandler
             formatter: normal
-            filename: __LOG_FILENAME__
+            filename: /var/log/__APP__/__APP__.log
             maxBytes: 10485760
             backupCount: 10
         console:
