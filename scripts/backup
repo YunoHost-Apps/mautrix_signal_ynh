@@ -24,7 +24,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info --message="Loading installation settings..." --weight=1
+ynh_print_info --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -68,6 +68,7 @@ ynh_backup --src_path="$signald_data"
 #=================================================
 # BACKUP THE POSTGRESQL DATABASE
 #=================================================
+ynh_print_info --message="Backing up the PostgreSQL database..."
 
 ynh_psql_dump_db --database="$db_name" > db.sql
 
