@@ -53,6 +53,7 @@ synapse_db_name="matrix_$synapse_instance"
 bot_synapse_db_user="@$botname:$server_name"
 signald_data="/var/lib/signald"
 #signald_exe="/usr/bin/signald"
+signald_user="signald" # This is actually chosen by the signald dependency
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
