@@ -101,7 +101,7 @@ ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable 
 ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app
+ynh_system_user_create --username=$app --groups="$signald_user"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
