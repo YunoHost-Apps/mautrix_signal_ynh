@@ -91,7 +91,7 @@ In case you need to upload your logs somewhere, be aware that they contain your 
 
 ## Limitations
 
-* Audio/video calls are not supported, only a notification is displayed
+* It looks like media are not bridged. 
 * Signal chats are not grouped in a Matrix community (as opposed to the Mautrix-WhatsApp or Mautrix-Facebook bridges)
 ## Documentation and resources
 
