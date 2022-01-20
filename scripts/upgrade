@@ -28,7 +28,13 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 previous_mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+# Upgrade from <=0.2.0
+db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_bridge_db_pwd)
+if [$db_pwd == ""]
+then
+# Upgrade from >=0.2.2
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+fi
 
 mautrix_version=$(ynh_app_upstream_version)
 
