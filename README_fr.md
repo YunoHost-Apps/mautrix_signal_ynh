@@ -83,6 +83,7 @@ Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils c
 ## Limitations
 
 * Les appels Audio/Video ne sont pas relayés. Seule une notification apparait. 
+* Les espaces Matrix ne sont pas encore supportés pour grouper vos conversations
 
 ## Documentations et ressources
 

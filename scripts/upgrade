@@ -37,6 +37,7 @@ db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
 fi
 
 mautrix_version=$(ynh_app_upstream_version)
+signald_user="signald" # This is actually chosen by the signald dependency
 
 #=================================================
 # SET CONSTANTS
