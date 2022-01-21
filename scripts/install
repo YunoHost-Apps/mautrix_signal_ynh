@@ -25,7 +25,7 @@ ynh_abort_if_errors
 #=================================================
 
 botname=$YNH_APP_ARG_BOTNAME
-bot_synapse_adm=$YNH_APP_ARG_BOT_SYNAPSE_ADM
+bot_synapse_adm=true
 encryption=$YNH_APP_ARG_ENCRYPTION
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
@@ -95,12 +95,13 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=97
+ynh_script_progression --message="Installing dependencies..." --weight=10
 
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
-# libolm-dev avoided by pre-compiled python-olm
 ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
+
+ynh_script_progression --message="Installing dependencies..." --weight=10
 ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
@@ -135,12 +136,6 @@ ynh_setup_source --dest_dir="$final_path/src"
 chmod 750 "$final_path"
 chown $app:$app "$final_path"
 
-# Create folders and set permissions, otherwise signald creates them without rw for group
-# Unfortunately subfolders are dynamically created for stickers, so those won't work for now.
-mkdir -p /var/lib/signald/{avatars,attachments,stickers}
-chown $signald_user:$app /var/lib/signald/{avatars,attachments,stickers}
-chmod g+rwX /var/lib/signald/{avatars,attachments,stickers}
-
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
@@ -156,7 +151,7 @@ chown -R $app:$app "$final_path"
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --weight=20
+ynh_script_progression --message="Configuring a systemd service..." --weight=3
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
@@ -171,7 +166,7 @@ mkdir -p /var/log/$app
 python3 -m venv $final_path
 $final_path/bin/pip3 install --upgrade pip setuptools wheel
 
-ynh_script_progression --message="Installing with pip" --weight=6
+ynh_script_progression --message="Installing Bridge with pip" --weight=6
 
 # Pre-compiled python-olm to avoid libolm-dev, python3-dev -> does not work for arm
 #$final_path/bin/pip3 install --upgrade python-olm --extra-index-url https://gitlab.matrix.org/api/v4/projects/27/packages/pypi/simple
@@ -218,7 +213,7 @@ yunohost service add $app --description="Bridging Signal and Matrix messages" --
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=15
+ynh_script_progression --message="Starting a systemd service..." --weight=2
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
