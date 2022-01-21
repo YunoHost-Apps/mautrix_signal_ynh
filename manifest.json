@@ -52,19 +52,6 @@
 				"default": "signalbot"
 			},
 			{
-				"name": "bot_synapse_adm",
-				"type": "boolean",
-				"ask": {
-					"en": "Give the Signal bot administrator rights to the Synapse instance?",
-					"fr": "Donner au robot Signal des droits administrateur à l'instance Synapse ?"
-				},
-				"help": {
-					"en": "If true, the bot can group Signal chats in a Matrix space. Not required if you set up Synapse so that non-admins are authorized to create spaces.",
-					"fr": "Si true, le robot groupera les conversations Signal dans un espace Matrix. Pas nécessaire si vous avez réglé Synapse pour qu'il autorise les non-admin à créer des espaces."
-				},
-				"default": true
-			},			
-			{
 				"name": "encryption",
 				"type": "boolean",
 				"ask": {
