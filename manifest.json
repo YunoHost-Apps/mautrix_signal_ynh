@@ -1,10 +1,10 @@
 {
-	"name": "Matrix-Signal bridge",
+	"name": "Matrix Signal bridge",
 	"id": "mautrix_signal",
 	"packaging_format": 1,
 	"description": {
-		"en": "Signal puppeting bridge for Matrix/Synapse",
-		"fr": "Passerelle Signal pour Matrix/Synapse"
+		"en": "Matrix puppeting bridge for Signal (Synapse)",
+		"fr": "Passerelle Matrix pour Signal (Synapse)"
 	},
 	"version": "0.2.2~ynh1",
 	"url": "https://github.com/mautrix/signal",
