@@ -65,6 +65,20 @@ test ! -d $final_path || ynh_die --message="There is already a directory: $final
 #=================================================
 # STANDARD RESTORATION STEPS
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+# We need to install dependencies before recreating the dedicated user,
+# as the dependencies create the `signald` user and group.
+# Another option would be to `usermod -aG "$signald_user" $app` later.
+ynh_script_progression --message="Reinstalling dependencies..." --weight=1
+
+ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+
+# libolm-dev avoided by pre-compiled python-olm
+ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
+ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
+
+#=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
 ynh_script_progression --message="Recreating the dedicated system user..." --weight=1
@@ -88,17 +102,6 @@ chmod 750 "$final_path"
 chown $app:$app "$final_path"
 chmod -R 750 "$final_path"
 chown -R $app:$app "$final_path"
-
-#=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Reinstalling dependencies..." --weight=1
-
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
-
-# libolm-dev avoided by pre-compiled python-olm
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
-ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
 
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE
