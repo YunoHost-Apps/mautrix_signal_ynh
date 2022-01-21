@@ -55,7 +55,11 @@ See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/python/
 
 
 ### Relaybot: Bridge a group for several Matrix and several Signal users to chat together
-Not yet available
+* Create a room on the signal side
+* Your bridged users will be invited on the Matrix side once they are invited on the Signal side
+* You can invite more people over on the Matrix side
+* Have one of the bridged users (who has the right permission) type `!sg set-relay` on the Matrix side. Their signal account will relay messages from other Matrix users
+It is not yet possible to bridge to an existing signal room, or create a new signal room from the Matrix side.
 
 ## Configuration of the bridge
 
@@ -91,7 +95,7 @@ In case you need to upload your logs somewhere, be aware that they contain your 
 
 ## Limitations
 
-* Audio/video calls are not supported, only a notification is displayed
+* It looks like media are not bridged. 
 * Signal chats are not grouped in a Matrix community (as opposed to the Mautrix-WhatsApp or Mautrix-Facebook bridges)
 ## Documentation and resources
 
