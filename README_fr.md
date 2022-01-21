@@ -11,7 +11,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 ## Vue d'ensemble
 
-Passerelle Matrix pour Signal (Synapse)
+Passerelle Matrix / Synapse pour Signal
 
 **Version incluse :** 0.2.2~ynh1
 
