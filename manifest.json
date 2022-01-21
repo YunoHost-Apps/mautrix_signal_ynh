@@ -3,8 +3,8 @@
 	"id": "mautrix_signal",
 	"packaging_format": 1,
 	"description": {
-		"en": "Matrix puppeting bridge for Signal (Synapse)",
-		"fr": "Passerelle Matrix pour Signal (Synapse)"
+		"en": "Matrix / Synapse puppeting bridge for Signal",
+		"fr": "Passerelle Matrix / Synapse pour Signal"
 	},
 	"version": "0.2.2~ynh1",
 	"url": "https://github.com/mautrix/signal",
