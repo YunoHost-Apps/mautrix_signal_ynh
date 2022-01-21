@@ -119,6 +119,8 @@ then
 fi
 
 # Fix possible permission issues with a previous signald version, esp. with stickers
+mkdir -p /var/lib/signald/{avatars,attachments,stickers}
+chown $signald_user:$signald_user /var/lib/signald/{avatars,attachments,stickers}
 chmod -R g+rwX /var/lib/signald/{avatars,attachments,stickers}
 
 #=================================================
