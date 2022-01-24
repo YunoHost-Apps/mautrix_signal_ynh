@@ -89,12 +89,20 @@ ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable 
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-# Upgrade from <=0.2.0
-db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_bridge_db_pwd)
-if [$db_pwd == ""]
-then
-# Upgrade from >=0.2.2
+# Upgrade from >0.2.0
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+
+# Upgrade from <=0.2.0
+if [ -z "$db_name" ]
+then
+    db_name=$(ynh_app_setting_get --app=$app --key=$app)
+    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+fi
+if [ -z "$db_pwd" ]
+then
+    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_bridge_db_pwd)
+    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 fi
 
 # Fix possible permission issues with a previous signald version, esp. with stickers
