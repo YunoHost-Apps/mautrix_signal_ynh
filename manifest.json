@@ -52,19 +52,6 @@
 				"default": "signalbot"
 			},
 			{
-				"name": "encryption",
-				"type": "boolean",
-				"ask": {
-					"en": "Enable end-to-bridge encryption?",
-					"fr": "Activer le chiffrement entre synapse et le bridge ?"
-				},
-				"help": {
-					"en": "Only activate if you know the prerequisites and constraints related to e2b.",
-					"fr": "N'activer que si vous connaissez les prérequis et constraintes liées à e2b."
-				},
-				"default": false
-			},			
-			{
 				"name": "botadmin",
 				"type": "string",
 				"ask": {
