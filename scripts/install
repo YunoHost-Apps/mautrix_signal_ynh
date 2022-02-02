@@ -30,7 +30,7 @@ bot_synapse_adm=true
 encryption=false
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
-if [ "$botusers" = "admin" ]
+if [ "$botusers" == "admin" ]
 then
 	botusers=$botadmin
 fi
