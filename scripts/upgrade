@@ -116,7 +116,7 @@ chmod -R g+rwX /var/lib/signald/{avatars,attachments,stickers}
 ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --groups="$signald_user"
+ynh_system_user_create --username=$app
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
