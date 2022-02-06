@@ -1,13 +1,13 @@
 {
-	"name": "Matrix-Signal bridge",
+	"name": "Matrix Signal bridge",
 	"id": "mautrix_signal",
 	"packaging_format": 1,
 	"description": {
-		"en": "A Signal puppeting bridge for Matrix/Synapse.",
-		"fr": "Passerelle Signal pour Matrix/Synapse."
+		"en": "Matrix / Synapse puppeting bridge for Signal",
+		"fr": "Passerelle Matrix / Synapse pour Signal"
 	},
-	"version": "0.2.1~ynh1",
-	"url": "https://github.com/mautrix/mautrix-signal",
+	"version": "0.2.2~ynh1",
+	"url": "https://github.com/mautrix/signal",
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
 		"name": "Gredin67",
@@ -15,7 +15,7 @@
 		"url": "https://github.com/YunoHost-Apps/mautrix_signal_ynh"
 	},
 	"requirements": {
-		"yunohost": ">= 4.0"
+		"yunohost": ">= 4.3.0"
 	},
 	"multi_instance": true,
 	"services": [
@@ -52,19 +52,6 @@
 				"default": "signalbot"
 			},
 			{
-				"name": "encryption",
-				"type": "boolean",
-				"ask": {
-					"en": "Enable end-to-bridge encryption ?",
-					"fr": "Activer le chiffrement entre synapse et le bridge ?"
-				},
-				"help": {
-					"en": "Only activate if you know the prerequisites and constraints related to e2b.",
-					"fr": "N'activer que si vous connaissez les prérequis et constraintes liées à e2b."
-				},
-				"default": false
-			},			
-			{
 				"name": "botadmin",
 				"type": "string",
 				"ask": {
@@ -83,13 +70,13 @@
 				"type": "string",
 				"ask": {
 					"en": "Choose Matrix user(s) authorized to bridge with the Signal bot",
-					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser le robot Signal"
+					"fr": "Choisissez le/les compte(s) Matrix autorisés à utiliser la passerelle Signal"
 				},
-				"example": "local or @johndoe:server.name or server.name or *",
-				"default": "local",
+				"example": "admin or domain or @johndoe:server.name or server.name or *",
+				"default": "domain",
 				"help": {
-					"en": "All local synapse users (local), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the matrix server_name, not the full domain/url.",
-					"fr": "On peut autoriser tous les comptes synapse locaux (local), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur matrix, pas le domaine/url complet."
+					"en": "Either the administrator only (admin), all local Synapse users (domain), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL.",
+					"fr": "L'administrateur seulement (admin), tous les comptes Synapse locaux (domain), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
 				}
 			},
 			{
