@@ -30,7 +30,7 @@ bot_synapse_adm=true
 encryption=false
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
-if [ "$botusers" = "admin" ]
+if [ "$botusers" == "admin" ]
 then
 	botusers=$botadmin
 fi
@@ -104,6 +104,7 @@ ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-
 
 ynh_script_progression --message="Installing dependencies..." --weight=10
 ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
+sleep 3
 
 #=================================================
 # CREATE DEDICATED USER
@@ -113,6 +114,7 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Create a system user
 # Add the user to the signald group. The signald group was created when the signald
 # package was installed from the extra repository
+# resolved by https://gitlab.com/signald/signald/-/commit/278240f3f1cc40a3b444c958b68ca3d6908e98a8
 ynh_system_user_create --username=$app --groups="$signald_user"
 
 #=================================================
@@ -165,6 +167,7 @@ ynh_script_progression --message="Configuring python3 virtual environment" --wei
 mkdir -p /var/log/$app
 # Configure Mautrix-Bridge
 python3 -m venv $final_path
+export HOME=$final_path
 $final_path/bin/pip3 install --upgrade pip setuptools wheel
 
 ynh_script_progression --message="Installing Bridge with pip" --weight=6
