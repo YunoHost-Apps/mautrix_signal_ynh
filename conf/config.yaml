@@ -6,15 +6,19 @@ homeserver:
     domain: __SERVER_NAME__
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
-    verify_ssl: __VERIFY_SERVER_SSL_CERTIFICATES__
-    asmux: __MATRIX_SERVER_SUPPORTS_ASMUX__
+    verify_ssl: true
+    asmux: false
     # Number of retries for all HTTP requests if the homeserver isn't reachable.
     http_retry_count: 4
     # The URL to push real-time bridge status to.
     # If set, the bridge will make POST requests to this URL whenever a user's Signal connection state changes.
     # The bridge will use the appservice as_token to authorize requests.
     status_endpoint: null
-
+    # Endpoint for reporting per-message status.
+    message_send_checkpoint_endpoint: null
+    # Maximum number of simultaneous HTTP connections to the homeserver.
+    connection_limit: 100
+    
 # Application service host/registration related details
 # Changing these values requires regeneration of the registration.
 appservice:
@@ -31,10 +35,16 @@ appservice:
     # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
     max_body_size: 1
 
-    # The full URI to the database. Only Postgres is currently supported.
-    database: postgres://__MAUTRIX_BRIDGE_USER__:__MAUTRIX_BRIDGE_DB_PWD__@localhost:5432/__MAUTRIX_BRIDGE_DB_NAME__
-    # Additional arguments for asyncpg.create_pool()
+    # The full URI to the database. SQLite and Postgres are supported.
+    # However, SQLite support is extremely experimental and should not be used.
+    # Format examples:
+    #   SQLite:   sqlite:///filename.db
+    #   Postgres: postgres://username:password@hostname/dbname
+    database: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__
+    # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
     # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
+    # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
+    # For sqlite, min_size is used as the connection thread pool size and max_size is ignored.
     database_opts:
         min_size: 5
         max_size: 10
@@ -47,12 +57,6 @@ appservice:
     # to leave display name/avatar as-is.
     bot_displayname: Signal bridge bot
     bot_avatar: mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp
-
-    # Community ID for bridged users (changes registration file) and rooms.
-    # Must be created manually.
-    #
-    # Example: "+signal:example.com". Set to false to disable.
-    community_id: +sg:__SERVER_NAME__
 
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
@@ -68,6 +72,17 @@ metrics:
     enabled: false
     listen_port: 8000
 
+# Manhole config.
+manhole:
+    # Whether or not opening the manhole is allowed.
+    enabled: false
+    # The path for the unix socket.
+    path: /var/tmp/mautrix-signal.manhole
+    # The list of UIDs who can be added to the whitelist.
+    # If empty, any UIDs can be specified in the open-manhole command.
+    whitelist:
+    - 0
+
 signal:
     # Path to signald unix socket
     socket_path: /var/run/signald/signald.sock
@@ -79,9 +94,18 @@ signal:
     avatar_dir: ~/.config/signald/avatars
     # Directory where signald stores auth data. Used to delete data when logging out.
     data_dir: ~/.config/signald/data
+    # Whether or not unknown signald accounts should be deleted when the bridge is started.
+    # When this is enabled, any UserInUse errors should be resolved by restarting the bridge.
+    delete_unknown_accounts_on_start: false
     # Whether or not message attachments should be removed from disk after they're bridged.
     remove_file_after_handling: true
-
+    # Whether or not users can register a primary device
+    registration_enabled: true
+    # Whether or not to enable disappearing messages in groups. If enabled, then the expiration
+    # time of the messages will be determined by the first users to read the message, rather
+    # than individually. If the bridge has a single user, this can be turned on safely.
+    enable_disappearing_messages_in_groups: false
+    
 # Bridge config
 bridge:
     # Localpart template of MXIDs for Signal users.
@@ -132,7 +156,7 @@ bridge:
     # If false, created portal rooms will never be federated.
     federate_rooms: true
     # End-to-bridge encryption support options. You must install the e2be optional dependency for
-    # this to work. See https://github.com/tulir/mautrix-telegram/wiki/End‐to‐bridge-encryption
+    # this to work. See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
         allow: __ENCRYPTION__
@@ -165,7 +189,7 @@ bridge:
     # This field will automatically be changed back to false after it,
     # except if the config file is not writable.
     resend_bridge_info: false
-    # Interval at which to resync contacts.
+    # Interval at which to resync contacts (in seconds).
     periodic_sync: 0
 
     # Provisioning API part of the web server for automated portal creation and fetching information.
@@ -182,6 +206,21 @@ bridge:
     # The prefix for commands. Only required in non-management rooms.
     command_prefix: "!sg"
 
+    # Messages sent upon joining a management room.
+    # Markdown is supported. The defaults are listed below.
+    management_room_text:
+        # Sent when joining a room.
+        welcome: "Hello, I'm a Signal bridge bot."
+        # Sent when joining a management room and the user is already logged in.
+        welcome_connected: "Use `help` for help."
+        # Sent when joining a management room and the user is not logged in.
+        welcome_unconnected: "Use `help` for help or `register` to log in."
+        # Optional extra text sent when joining a management room.
+        additional_help: ""
+
+    # Send each message separately (for readability in some clients)
+    management_room_multiple_messages: false
+
     # Permissions for using the bridge.
     # Permitted values:
     #      relay - Allowed to be relayed through the bridge, no access to commands.
@@ -197,9 +236,9 @@ bridge:
         "__BOTADMIN__": "admin"
 
     relay:
-        # Whether or not relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
+        # Whether relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: false
+        enabled: __ENABLE_RELAYBOT__
         # The formats to use when sending messages to Signal via a relay user.
         #
         # Available variables:
@@ -212,10 +251,10 @@ bridge:
             m.notice: '$sender_displayname: $message'
             m.emote: '* $sender_displayname $message'
             m.file: '$sender_displayname sent a file'
-            m.image: '$sender_displayname  sent an image'
-            m.audio: '$sender_displayname  sent an audio file'
-            m.video: '$sender_displayname  sent a video'
-            m.location: '$sender_displayname  sent a location'
+            m.image: '$sender_displayname sent an image'
+            m.audio: '$sender_displayname sent an audio file'
+            m.video: '$sender_displayname sent a video'
+            m.location: '$sender_displayname sent a location'
 
 # Python logging configuration.
 #
@@ -233,7 +272,7 @@ logging:
         file:
             class: logging.handlers.RotatingFileHandler
             formatter: normal
-            filename: __LOG_FILENAME__
+            filename: /var/log/__APP__/__APP__.log
             maxBytes: 10485760
             backupCount: 10
         console:
