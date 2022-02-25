@@ -1,5 +1,5 @@
-SOURCE_URL=https://gitlab.com/signald/signald/-/archive/0.14.1/signald-0.14.1.tar.gz
-SOURCE_SUM=50343a3e4ac56da35f393d54e2a222fead5ae8448ff5a62e449805ee6b0348f8
+SOURCE_URL=https://gitlab.com/signald/signald/-/archive/0.17.0/signald-0.17.0.tar.gz
+SOURCE_SUM=225e36637daccf5f01138b7e29e3b2195bced7b13a290d163e34fe1f5d4a5d2a
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
