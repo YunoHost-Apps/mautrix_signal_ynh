@@ -100,8 +100,6 @@ ynh_script_progression --message="Installing dependencies..." --weight=10
 
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
-ynh_install_extra_app_dependencies --repo="http://http.debian.net/debian buster-backports main" --package="libolm-dev" --key="https://keyserver.ubuntu.com/pks/lookup?search=0x0E98404D386FA1D9&op=get"
-
 ynh_script_progression --message="Installing dependencies..." --weight=10
 ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
 sleep 3
@@ -115,7 +113,7 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Add the user to the signald group. The signald group was created when the signald
 # package was installed from the extra repository
 # resolved by https://gitlab.com/signald/signald/-/commit/278240f3f1cc40a3b444c958b68ca3d6908e98a8
-ynh_system_user_create --username=$app --groups="$signald_user"
+ynh_system_user_create --username=$app
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
