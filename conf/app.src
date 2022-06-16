@@ -1,5 +1,5 @@
-SOURCE_URL=https://mau.dev/mautrix/signal/-/archive/v0.2.3/signal-v0.2.3.tar.gz
-SOURCE_SUM=a03aada5162e7524cdb21a750fd041a1128551065cb6302b1a0275bb75d380be
+SOURCE_URL=https://mau.dev/mautrix/signal/-/archive/v0.3.0/signal-v0.3.0.tar.gz
+SOURCE_SUM=3d66cd1c27a82f964a1523acfd1a4f1ef1793815ec7730a89b26afd7e450dfd6
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
