@@ -113,7 +113,7 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Add the user to the signald group. The signald group was created when the signald
 # package was installed from the extra repository
 # resolved by https://gitlab.com/signald/signald/-/commit/278240f3f1cc40a3b444c958b68ca3d6908e98a8
-ynh_system_user_create --username=$app
+ynh_system_user_create --username=$app --groups="$signald_user"
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
