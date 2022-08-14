@@ -6,7 +6,7 @@
 		"en": "Matrix / Synapse puppeting bridge for Signal",
 		"fr": "Passerelle Matrix / Synapse pour Signal"
 	},
-	"version": "0.2.3~ynh1",
+	"version": "0.3.0~ynh1",
 	"url": "https://github.com/mautrix/signal",
 	"license": "AGPL-3.0-or-later",
 	"maintainer": {
@@ -15,7 +15,7 @@
 		"url": "https://github.com/YunoHost-Apps/mautrix_signal_ynh"
 	},
 	"requirements": {
-		"yunohost": ">= 4.3.0"
+		"yunohost": ">= 11.0.0"
 	},
 	"multi_instance": true,
 	"services": [
