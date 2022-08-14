@@ -15,7 +15,7 @@
 		"url": "https://github.com/YunoHost-Apps/mautrix_signal_ynh"
 	},
 	"requirements": {
-		"yunohost": ">= 4.3.0"
+		"yunohost": ">= 11.0.0"
 	},
 	"multi_instance": true,
 	"services": [
