@@ -19,6 +19,7 @@ Matrix / Synapse puppeting bridge for Signal
 
 **Shipped version:** 0.3.0~ynh1
 
+
 ## Disclaimers / important information
 
 ## List of known public services

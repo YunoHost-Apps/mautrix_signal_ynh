@@ -19,6 +19,7 @@ Passerelle Matrix / Synapse pour Signal
 
 **Version incluse :** 0.3.0~ynh1
 
+
 ## Avertissements / informations importantes
 
 
