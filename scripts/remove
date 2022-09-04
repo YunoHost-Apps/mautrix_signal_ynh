@@ -17,11 +17,8 @@ ynh_script_progression --message="Loading installation settings..." --weight=1
 app=$YNH_APP_INSTANCE_NAME
 
 botname=$(ynh_app_setting_get --app=$app --key=botname)
-botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
-port=$(ynh_app_setting_get --app=$app --key=port)
 synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
-domain=$(ynh_app_setting_get --app=$app --key=domain)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -96,7 +93,7 @@ ynh_secure_remove --file="$signald_exe"
 
 # Remove a directory securely
 ynh_secure_remove --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"

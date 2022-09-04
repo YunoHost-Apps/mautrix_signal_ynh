@@ -10,7 +10,7 @@
     "url": "https://github.com/mautrix/signal",
     "upstream": {
         "license": "AGPL-3.0-or-later",
-        "userdoc": "https://docs.mau.fi/bridges/python/signal/index.html ",
+        "userdoc": "https://docs.mau.fi/bridges/python/signal/index.html",
         "code": "https://github.com/mautrix/signal"
     },
     "license": "AGPL-3.0-or-later",

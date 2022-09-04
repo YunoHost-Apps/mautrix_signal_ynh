@@ -1,4 +1,4 @@
-Une passerelle entre Matrix et Signal empaquetée comme un service YunoHost. Les messages, médias et notifications sont relayées entre un compte Signal et un compte Matrix. 
-La passerelle ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) consiste en un Service d'Application Matrix-Synapse et repose sur une base-de-données postgresql. C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) doit être préalablemnet installé.
+Une passerelle entre Matrix et Signal empaquetÃ©e comme un service YunoHost. Les messages, mÃ©dias et notifications sont relayÃ©es entre un compte Signal et un compte Matrix. 
+La passerelle ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) consiste en un Service d'Application Matrix-Synapse et repose sur une base-de-donnÃ©es postgresql. C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) doit Ãªtre prÃ©alablemnet installÃ©.
 
-** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix-synapse et mautrix_signal en même temps!**
+** Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix-synapse et mautrix_signal en mÃªme temps!**

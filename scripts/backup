@@ -49,7 +49,7 @@ ynh_backup --src_path="$final_path"
 # BACKUP LOGROTATE
 #=================================================
 
-ynh_backup --src_path="/var/log/$app"
+ynh_backup --src_path="/etc/logrotate.d/$app"
 
 #=================================================
 # BACKUP SYSTEMD
