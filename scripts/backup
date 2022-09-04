@@ -15,7 +15,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
 	true
 }
 # Exit if an error occurs during the execution of the script
@@ -57,7 +56,6 @@ ynh_backup --src_path="/var/log/$app"
 #=================================================
 
 ynh_backup --src_path="/etc/systemd/system/$app.service"
-#ynh_backup --src_path="/etc/systemd/system/signald.service"
 
 #=================================================
 # BACKUP VARIOUS FILES

@@ -1,4 +1,3 @@
-
 ## Liste de passerelles publiques
 
 * Demandez sur un des salons suivants: #mautrix_yunohost:matrix.fdn.fr or #signal:maunium.net

@@ -1,13 +1,9 @@
-# See here for more information
-# https://github.com/YunoHost/package_check#syntax-of-check_process
-
 ;; Test complet
 #	auto_remove=1
 	; pre-install
 		sudo yunohost tools update apps
 		sudo yunohost app install https://github.com/YunoHost-Apps/synapse_ynh/ -a "domain=$domain&server_name=$server_name&is_free_registration=$is_free_registration&jitsi_server=$jitsi_server" --force
 	; Manifest
-		# mautrix_signal manifest parameters
 		port="8449"	(PORT)
 		synapsenumber="1"
 		botname="signalbot"
@@ -23,15 +19,12 @@
 		setup_public=0
 		upgrade=1
 #		upgrade=1	from_commit=fc1ba62e6529bb529a413d5895398baa5f2029d7
+		# 0.2.3~ynh1
+		upgrade=1	from_commit=40c16d3c8898196c6e1a43e8f0af70c052dd41f6
 		backup_restore=1
 		multi_instance=1
 		port_already_use=1
 		change_url=0
 		actions=0
 		config_panel=0
-#;;; Levels
-#	# If the level 5 (Package linter) is forced to 1. Please add justifications here.
-#	Level 5=auto
 ;;; Upgrade options
-#	; commit=fc1ba62e6529bb529a413d5895398baa5f2029d7
-#		name=0.2.0
