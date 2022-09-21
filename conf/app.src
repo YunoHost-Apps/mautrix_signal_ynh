@@ -1,7 +1,7 @@
-SOURCE_URL=https://mau.dev/mautrix/signal/-/archive/v0.2.3/signal-v0.2.3.tar.gz
-SOURCE_SUM=a03aada5162e7524cdb21a750fd041a1128551065cb6302b1a0275bb75d380be
+SOURCE_URL=https://github.com/mautrix/signal/archive/refs/tags/v0.3.0.tar.gz
+SOURCE_SUM=ea1ed7848dbb8cbb947d441a01f6f0c8fad0791601d6e36d90c3e50cbade30d3
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=mautrix-signal.tar.gz
 SOURCE_EXTRACT=false
-#SOURCE_FILENAME=mautrix-signal.tar.gz
