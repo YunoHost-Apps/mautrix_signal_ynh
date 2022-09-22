@@ -1,7 +1,7 @@
-SOURCE_URL=https://github.com/mautrix/signal/archive/refs/tags/v0.3.0.tar.gz
-SOURCE_SUM=ea1ed7848dbb8cbb947d441a01f6f0c8fad0791601d6e36d90c3e50cbade30d3
+SOURCE_URL=https://github.com/mautrix/signal/archive/refs/tags/v0.4.0.tar.gz
+SOURCE_SUM=ada8b06b359d48175e200b69d243759343b781f2533e582fad7127864165afbe
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=mautrix-signal.tar.gz
+SOURCE_FILENAME=mautrix-facebook.tar.gz
 SOURCE_EXTRACT=false
