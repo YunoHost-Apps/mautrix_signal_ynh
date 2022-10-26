@@ -173,7 +173,7 @@ ynh_add_systemd_config
 ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate
+ynh_use_logrotate --nonappend
 chmod -R 600 "/var/log/$app"
 chmod 700 "/var/log/$app"
 chown -R $app:$app /var/log/$app
