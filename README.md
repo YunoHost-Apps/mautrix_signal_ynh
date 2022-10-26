@@ -19,7 +19,6 @@ A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Mes
 
 
 **Shipped version:** 0.3.0~ynh1
-
 ## Disclaimers / important information
 
 ## List of known public services
