@@ -52,7 +52,8 @@ enable_relaybot=true
 #bot_dendrite_db_user="@$botname:$server_name"
 #dendrite_db_name="matrix_$synapse_instance"
 signald_user="signald" # This is actually chosen by the signald dependency
-target_app_service_config="/opt/yunohost/$dendrite_instance/app-service/$app.yaml"
+app_service_dir="/opt/yunohost/$dendrite_instance/app-services"
+target_app_service_config="$app_service_dir/$app.yaml"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -163,6 +164,9 @@ $final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[met
 ynh_script_progression --message="Registering Dendrite app-service" --weight=1
 
 $final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /tmp/generated_app_config.yaml
+
+mkdir -p $app_service_dir
+
 mv /tmp/generated_app_config.yaml $target_app_service_config
 
 #TODO add support for reloading appservices to dendrite_ynh

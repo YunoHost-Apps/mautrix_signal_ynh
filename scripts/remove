@@ -103,7 +103,7 @@ ynh_secure_remove --file="$signald_data"
 ynh_secure_remove --file="$signald_exe"
 
 # Remove a directory securely
-ynh_secure_remove --file="/opt/yunohost/$dendrite_instance/app-service/$app.yaml"
+ynh_secure_remove --file="/opt/yunohost/$dendrite_instance/app-services/$app.yaml"
 
 #TODO add support for reloading appservices to dendrite_ynh
 #/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
