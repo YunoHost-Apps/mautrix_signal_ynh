@@ -1,6 +1,6 @@
 [Unit]
 Description=Matrix Signal Bridge
-After=matrix-synapse.service
+After=dendrite.service
 
 [Service]
 Type=simple

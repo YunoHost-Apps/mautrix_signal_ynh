@@ -27,10 +27,11 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
 port=$(ynh_app_setting_get --app=$app --key=port)
-synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
+dendrite_instance=$(ynh_app_setting_get --app=$app --key=dendrite_instance)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 mautrix_version=$(ynh_app_upstream_version)
-synapse_db_name="matrix_$synapse_instance"
+# TODO add admin support
+#synapse_db_name="matrix_$synapse_instance"
 signald_user="signald" # This is actually chosen by the signald dependency
 enable_relaybot=true
 
@@ -145,16 +146,18 @@ $final_path/bin/pip3 install --upgrade pip setuptools wheel
 $final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
 
 #=================================================
-# REGISTER SYNAPSE APP-SERVICE
+# REGISTER DENDRITE APP-SERVICE
 #=================================================
-ynh_script_progression --message="Registering Synapse app-service" --weight=1
+ynh_script_progression --message="Registering Dendrite app-service" --weight=1
 
-$final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /opt/yunohost/$dendrite_instance/app-service/$app.yaml
+
+#TODO add support for reloading appservices to dendrite_ynh
+# /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Set permissions on app files
 chown -R $app:$app "$final_path"
-ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+ynh_store_file_checksum --file="/opt/yunohost/$dendrite_instance/app-service/$app.yaml"
 ynh_store_file_checksum --file="$final_path/config.yaml"
 
 #=================================================
@@ -183,7 +186,7 @@ chown -R $app:$app /var/log/$app
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages (dendrite)" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
