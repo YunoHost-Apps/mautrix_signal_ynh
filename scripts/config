@@ -22,7 +22,7 @@ encryption_allowed=$(ynh_app_setting_get --app=$app --key=encryption_allowed)
 #=================================================
 
 get__encryption_allowed() {
-    # Maintenance mode status
+    # encryption allowed status
     if [ $encryption_allowed -eq "1" ]
     then
         echo "1"
@@ -41,16 +41,12 @@ get__encryption_allowed() {
 
 set__encryption_allowed() {
     if [ "$encryption_allowed" -eq "1" ]; then
-        # If encryption_allowed was set to 1, enable maintenance mode
-        (cd "$final_path" && ynh_exec_as "$app" \
-            echo "Site under maintenance." > .maintenance)
-        ynh_print_info "Maintenance mode disabled"
+        ynh_app_setting_set --app=$app --key=encryption_allowed --value="true"
+        ynh_print_info "Encryption set to allowed"
     elif [ "$encryption_allowed" -eq "0" ]; then
-        # If encryption_allowed was set to 0, disable maintenance mode
-        ynh_secure_remove --file=$final_path/.maintenance
-        ynh_print_info "Maintenance mode enabled"
+        ynh_app_setting_set --app=$app --key=encryption_allowed --value="false"
+        ynh_print_info "Encryption set to not allowed"
     fi
-    ynh_app_setting_set --app=$app --key=encryption_allowed --value="$encryption_allowed"
 }
 
 #=================================================
@@ -59,6 +55,8 @@ set__encryption_allowed() {
 
 ynh_app_config_apply() {
     _ynh_app_config_apply
+    # TODO: regen the config at --destination="$final_path/config.yaml"
+
 
 }
 
