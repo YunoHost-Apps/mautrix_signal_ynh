@@ -21,33 +21,12 @@ encryption_allowed=$(ynh_app_setting_get --app=$app --key=encryption_allowed)
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
 
-get__encryption_allowed() {
-    # encryption allowed status
-    if [ $encryption_allowed -eq "1" ]
-    then
-        echo "1"
-    else
-        echo "0"
-    fi
-}
-
-#=================================================
 # SPECIFIC VALIDATORS FOR TOML SHORT KEYS
 #=================================================
 
 #=================================================
 # SPECIFIC SETTERS FOR TOML SHORT KEYS
 #=================================================
-
-set__encryption_allowed() {
-    if [ "$encryption_allowed" -eq "1" ]; then
-        ynh_app_setting_set --app=$app --key=encryption_allowed --value="true"
-        ynh_print_info "Encryption set to allowed"
-    elif [ "$encryption_allowed" -eq "0" ]; then
-        ynh_app_setting_set --app=$app --key=encryption_allowed --value="false"
-        ynh_print_info "Encryption set to not allowed"
-    fi
-}
 
 #=================================================
 # GENERIC FINALIZATION
@@ -56,8 +35,6 @@ set__encryption_allowed() {
 ynh_app_config_apply() {
     _ynh_app_config_apply
     # TODO: regen the config at --destination="$final_path/config.yaml"
-
-
 }
 
-ynh_app_config_ run $1
+ynh_app_config_run $1
