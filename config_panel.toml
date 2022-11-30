@@ -6,9 +6,9 @@ name = "Mautrix Signal configuration"
     [bind.encryption]
     name = "Manage encryption"
 
-        [bind.encryption.allowed]
+        [bind.encryption.encryption]
         ask = "Do you want to allow the use of encrypted room with Mautrix Signal Bridge? "
-        type = "string"
+        type = "boolean"
         help = "Allow encryption, work in group chat rooms with e2ee enabled. Values possible are 'true' or 'false'."
         bind = ":__FINALPATH__//config.yaml"
 
