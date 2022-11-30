@@ -1,16 +1,16 @@
 version = "1.0"
 
-[main]
+[bind]
 name = "Mautrix Signal configuration"
 
-    [main.encryption]
+    [bind.encryption]
     name = "Manage encryption"
 
-        [main.encryption.allowed]
+        [bind.encryption.allowed]
         ask = "Do you want to allow the use of encrypted room with Mautrix Signal Bridge? "
-        type = "bololean"
-        optional = false
-        default = "0"
-        help = "Allow encryption, work in group chat rooms with e2ee enabled"
+        type = "string"
+        help = "Allow encryption, work in group chat rooms with e2ee enabled. Values possible are 'true' or 'false'."
+        bind = ":__FINALPATH__//config.yaml"
+
 
 # TODO: Add toggle for enabling and enforcing encyption
