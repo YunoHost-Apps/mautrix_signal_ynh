@@ -6,7 +6,7 @@
         "en": "Matrix / Synapse puppeting bridge for Signal",
         "fr": "Passerelle Matrix / Synapse pour Signal"
     },
-    "version": "0.4.1~ynh1",
+    "version": "0.4.2~ynh1",
     "url": "https://github.com/mautrix/signal",
     "upstream": {
         "license": "AGPL-3.0-or-later",
