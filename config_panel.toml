@@ -1,16 +1,15 @@
 version = "1.0"
 
-[bind]
-name = "Mautrix Signal configuration"
+[encryption]
+name = "Encryption"
+services = ["__APP__"]
+    [encryption.config]
+    name = "Encryption settings"
 
-    [bind.encryption]
-    name = "Manage encryption"
-
-        [bind.encryption.encryption]
-        ask = "Do you want to allow the use of encrypted room with Mautrix Signal Bridge? "
+        [encryption.config.encryption]
+        ask = "Enable encryption"
         type = "boolean"
-        help = "Allow encryption, work in group chat rooms with e2ee enabled. Values possible are 'true' or 'false'."
-        bind = ":__FINALPATH__//config.yaml"
-
-
-# TODO: Add toggle for enabling and enforcing encyption
+        yes = "true"
+		no = "false"
+        help = "Enables end to bridge encryption"
+        bind = "encryption>allow:__FINALPATH__/config.yaml"

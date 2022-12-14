@@ -15,8 +15,10 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS
 #=================================================
 
-encryption_allowed=$(ynh_app_setting_get --app=$app --key=encryption_allowed)
-
+function get__encryption {
+    encryption=$(ynh_app_setting_get --app $app --key encryption)
+    echo "'${encryption}'"
+}
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
@@ -31,10 +33,5 @@ encryption_allowed=$(ynh_app_setting_get --app=$app --key=encryption_allowed)
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-
-ynh_app_config_apply() {
-    _ynh_app_config_apply
-    # TODO: regen the config at --destination="$final_path/config.yaml"
-}
 
 ynh_app_config_run $1
