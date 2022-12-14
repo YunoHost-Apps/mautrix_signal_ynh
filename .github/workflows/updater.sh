@@ -81,7 +81,7 @@ SOURCE_SUM=$checksum
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=$extension
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=mautrix-facebook.tar.gz
+SOURCE_FILENAME=mautrix-signal.tar.gz
 SOURCE_EXTRACT=false
 EOT
 echo "... conf/$src.src updated"
