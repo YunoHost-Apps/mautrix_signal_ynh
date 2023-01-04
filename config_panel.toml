@@ -13,3 +13,11 @@ services = ["__APP__"]
 		no = "false"
         help = "Enables end to bridge encryption"
         bind = "encryption>allow:__FINALPATH__/config.yaml"
+        
+        [encryption.config.default]
+        ask = "Default to encryption"
+        type = "boolean"
+        yes = "true"
+		no = "false"
+        help = "Default to encryption, force-enable encryption in all portals the bridge creates"
+        bind = "encryption>default:__FINALPATH__/config.yaml"
