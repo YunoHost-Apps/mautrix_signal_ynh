@@ -1,33 +1,18 @@
 version = "1.0"
 
 [appservice]
-name = "Application service configuration"
+name = "Homeserver Application Service"
 services = ["__APP__"]
 
     [appservice.config]
-    name = "General configuration"
+    name = "Appservice Settings"
 
         [appservice.config.ephemeral_events]
-        ask = "Whether or not to receive ephemeral events via appservice transactions"
+        ask = "Receive Ephemeral Events via Appservice transactions?"
         type = "boolean"
         yes = "true"
         no = "false"
         help = "Requires MSC2409 support (i.e. Synapse 1.22+). You should disable bridge -> sync_with_custom_puppets when this is enabled"
-        bind = ":__FINALPATH__/config.yaml"
-
-        [appservice.config.registration_enabled]
-        ask = "Whether or not users can register a primary device"
-        type = "boolean"
-        yes = "true"
-        no = "false"
-        bind = ":__FINALPATH__/config.yaml"
-
-        [appservice.config.enable_disappearing_messages_in_groups]
-        ask = "Whether or not to enable disappearing messages in groups"
-        type = "boolean"
-        yes = "true"
-        no = "false"
-        help = "If the bridge has a single user, this can be turned on safely. If enabled, then the expiration time of the messages will be determined by the first users to read the message, rather than individually."
         bind = ":__FINALPATH__/config.yaml"
 
         [appservice.config.print_level]
@@ -38,36 +23,68 @@ services = ["__APP__"]
         bind = ":__FINALPATH__/config.yaml"
 
     [appservice.bot]
-    name = "Appservice bot configuration"
+    name = "Robot Settings"
 
         [appservice.bot.appserviceid]
-        ask = "The unique ID of this appservice."
+        ask = "Unique ID of Appservice"
         type = "string"
         bind = ":__FINALPATH__/config.yaml"
 
         [appservice.bot.botname]
-        ask = "Username of the appservice bot"
+        ask = "Username of the Appservice Bot"
         type = "string"
         help = "Sets bot username. Please keep in mind that the bot admin room for previous bot username will stop working so you may need to create a new one using the new username"
         bind = ":__FINALPATH__/config.yaml"
 
         [appservice.bot.displayname]
-        ask = "Display name for bot"
+        ask = "Display Name for Bot"
         type = "string"
         help = "Set to 'remove' to remove display name, leave empty to leave display name as-is"
         bind = ":__FINALPATH__/config.yaml"
 
         [appservice.bot.avatar]
-        ask = "Avatar for bot"
+        ask = "Avatar for Bot"
         type = "string"
         help = "Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
+        bind = ":__FINALPATH__/config.yaml"
+
+[signald]
+name = "Signal Daemon Service"
+services = ["__APP__"]
+
+    [signald.config]
+    name = "Signald Settings"
+
+        [signald.config.registration_enabled]
+        ask = "Can Bridge Users register as a primary device?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "If yes, you still need a phone number to register signald as you primary device. If not, you need a phone with Signal App."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [signald.config.enable_disappearing_messages_in_groups]
+        ask = "Enable disappearing messages in groups?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "If the bridge has a single user, this can be turned on safely. If enabled, then the expiration time of the messages will be determined by the first users to read the message, rather than individually."
         bind = ":__FINALPATH__/config.yaml"
 
 [bridge]
 name = "Bridge"
 services = ["__APP__"]
+
     [bridge.config]
-    name = "Bridge settings"
+    name = "Puppet Settings"
+
+        [bridge.config.enable_relaybot]
+        ask = "Should Relay mode be allowed?"
+        type = "boolean"
+        yes = "true"
+		no = "false"
+        help = "If allowed, `!sg set-relay` can be used to turn any authenticated user into a RelayBot for that chat."
+        bind = ":__FINALPATH__/config.yaml"
 
         [bridge.config.username_template]
         ask = "Localpart template of MXIDs for Signal users."
@@ -76,50 +93,45 @@ services = ["__APP__"]
         bind = ":__FINALPATH__/config.yaml"
 
         [bridge.config.contact_list_names]
-        ask = "Whether or not contact list displaynames should be used."
+        ask = "Should contact list displaynames be used?"
         type = select
         choices = ["disallow", "allow", "prefer"]
         help = "Multi-user instances are recommended to disallow contact list names, as otherwise there can be conflicts between names from different users' contact lists."
         bind = ":__FINALPATH__/config.yaml"
 
-        [bridge.config.federate_rooms]
-        ask = "Whether or not created rooms should have federation enabled."
+    [bridge.portal_rooms]
+    name = "Portal Rooms & Encryption Settings"
+
+        [bridge.portal_rooms.federate_rooms]
+        ask = "Should Portal Rooms have federation enabled?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "If false, created portal rooms will never be federated."
+        help = "If false, Portal Rooms created by the Bridge will never be federated."
         bind = ":__FINALPATH__/config.yaml"
 
-        [bridge.config.encryption]
-        ask = "Allow end to bridge encryption?"
+        [bridge.portal_rooms.encryption]
+        ask = "Allow End-to-Bridge (e2b) Encryption?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "For the bridge to work in group chat rooms with e2ee enabled."
+        help = "For the Bridge to work in group chat Rooms with End-to-End Encryption (e2ee) enabled."
         bind = ":__FINALPATH__/config.yaml"
         
-        [bridge.config.encryption_default]
-        ask = "Force-enable encryption in all portals the bridge creates?"
+        [bridge.portal_rooms.encryption_default]
+        ask = "Force-enable Encryption in all Portal Rooms the Bridge creates?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "This will cause the bridge bot to be in private chats for the encryption to work properly."
-        bind = ":__FINALPATH__/config.yaml"
-
-        [bridge.config.enable_relaybot]
-        ask = "Whether relay mode should be allowed."
-        type = "boolean"
-        yes = "true"
-		no = "false"
-        help = "If allowed, `!sg set-relay` can be used to turn any authenticated user into a relaybot for that chat."
+        help = "This will cause the Bridge Bot to be in private chats for the Encryption to work properly."
         bind = ":__FINALPATH__/config.yaml"
 
 [usermanagement]
-name = "User management"
+name = "Bridge Permissions"
 services = ["__APP__"]
 
     [usermanagement.config]
-    name = "User management"
+    name = "User, Admin, Relay Management"
 
         [usermanagement.config.helptext]
         ask = '''
