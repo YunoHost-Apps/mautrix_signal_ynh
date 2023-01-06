@@ -102,7 +102,7 @@ services = ["__APP__"]
 
         [bridge.config.contact_list_names]
         ask = "Should contact list displaynames be used?"
-        type = select
+        type = "select"
         choices = ["disallow", "allow", "prefer"]
         help = "Multi-user instances are recommended to disallow contact list names, as otherwise there can be conflicts between names from different users' contact lists."
         bind = ":__FINALPATH__/config.yaml"

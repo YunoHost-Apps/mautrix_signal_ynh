@@ -113,7 +113,7 @@ signal:
 bridge:
     # Localpart template of MXIDs for Signal users.
     # {userid} is replaced with an identifier for the Signal user.
-    username_template: __USERNAME_TEMPLATE__
+    username_template: "__USERNAME_TEMPLATE__"
     # Displayname template for Signal users.
     # {displayname} is replaced with the displayname of the Signal user, which is the first
     # available variable in displayname_preference. The variables in displayname_preference

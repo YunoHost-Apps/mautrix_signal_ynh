@@ -32,11 +32,6 @@ botusers=$YNH_APP_ARG_BOTUSERS
 
 app=$YNH_APP_INSTANCE_NAME
 
-if [ "$botusers" == "admin" ]
-then
-	botusers=$botadmin
-fi
-
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_bridge bridge
 if [ $synapsenumber -eq "1" ]
 then
@@ -52,6 +47,11 @@ bot_synapse_db_user="@$botname:$server_name"
 synapse_db_name="matrix_$synapse_instance"
 signald_user="signald" # This is actually chosen by the signald dependency
 
+if [ "$botusers" == "local" ]
+then
+	botusers=$server_name
+fi
+
 #=================================================
 # SET STANDARD SETTINGS FROM DEFAULT CONFIG
 #=================================================
@@ -65,10 +65,10 @@ metrics_listen_port=8000
 registration_enabled=true
 enable_disappearing_messages_in_groups=false
 username_template="sg_{userid}"
-contact_list_names=disallow
+contact_list_names="disallow"
 federate_rooms=true
 encryption_default=false
-print_level=INFO
+print_level="INFO"
 
 ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 ynh_app_setting_set --app=$app --key=displayname --value=$displayname

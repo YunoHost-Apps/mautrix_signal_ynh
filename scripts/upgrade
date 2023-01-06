@@ -138,7 +138,7 @@ fi
 
 if [ -z "$contact_list_names" ]
 then
-    contact_list_names=disallow
+    contact_list_names="disallow"
     ynh_app_setting_set --app=$app --key=contact_list_names --value=$contact_list_names
 fi
 
@@ -156,7 +156,7 @@ fi
 
 if [ -z "$print_level" ]
 then
-    print_level=INFO
+    print_level="INFO"
     ynh_app_setting_set --app=$app --key=print_level --value=$print_level
 fi
 
