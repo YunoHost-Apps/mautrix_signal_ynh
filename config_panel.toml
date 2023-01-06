@@ -48,6 +48,22 @@ services = ["__APP__"]
         help = "Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
         bind = ":__FINALPATH__/config.yaml"
 
+    [appservice.metrics]
+    name = "Prometheus Metrics"
+
+        [appservice.metrics.enable_metrics]
+        ask = "Enable Prometheus Metrics?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = ":__FINALPATH__/config.yaml"
+
+        [appservice.metrics.metrics_listen_port]
+        ask = "Port for the Metrics listener?"
+        type = "string"
+        help = "Default 8000."
+        bind = ":__FINALPATH__/config.yaml"
+
 [signald]
 name = "Signal Daemon Service"
 services = ["__APP__"]
@@ -78,14 +94,6 @@ services = ["__APP__"]
     [bridge.config]
     name = "Puppet Settings"
 
-        [bridge.config.enable_relaybot]
-        ask = "Should Relay mode be allowed?"
-        type = "boolean"
-        yes = "true"
-		no = "false"
-        help = "If allowed, `!sg set-relay` can be used to turn any authenticated user into a RelayBot for that chat."
-        bind = ":__FINALPATH__/config.yaml"
-
         [bridge.config.username_template]
         ask = "Localpart template of MXIDs for Signal users."
         type = "string"
@@ -97,6 +105,14 @@ services = ["__APP__"]
         type = select
         choices = ["disallow", "allow", "prefer"]
         help = "Multi-user instances are recommended to disallow contact list names, as otherwise there can be conflicts between names from different users' contact lists."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [bridge.config.enable_relaybot]
+        ask = "Should Relay mode be allowed?"
+        type = "boolean"
+        yes = "true"
+		no = "false"
+        help = "If allowed, `!sg set-relay` can be used to turn any authenticated user into a RelayBot for that chat."
         bind = ":__FINALPATH__/config.yaml"
 
     [bridge.portal_rooms]
