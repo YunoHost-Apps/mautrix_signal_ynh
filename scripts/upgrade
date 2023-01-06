@@ -92,7 +92,7 @@ ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 if [ -z "$appserviceid" ]
 then
     appserviceid=$botname
-	ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
+    ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 fi
 if [ -z "$displayname" ]
 then
@@ -121,7 +121,7 @@ fi
 if [ -z "$registration_enabled" ]
 then
     registration_enabled=true
-	ynh_app_setting_set --app=$app --key=registration_enabled --value=$registration_enabled
+    ynh_app_setting_set --app=$app --key=registration_enabled --value=$registration_enabled
 fi
 
 if [ -z "$enable_disappearing_messages_in_groups" ]
