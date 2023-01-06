@@ -33,7 +33,7 @@ services = ["__APP__"]
         [appservice.config.print_level]
         ask = "Root logging print level"
         type = "select"
-        choices = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL" or "NOTSET"]
+        choices = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NOTSET"]
         help = "NOTSET means that all messages will be logged: https://docs.python.org/3.6/library/logging.config.html#configuration-file-format"
         bind = ":__FINALPATH__/config.yaml"
 
@@ -122,7 +122,12 @@ services = ["__APP__"]
     name = "User management"
 
         [usermanagement.config.helptext]
-        ask = "Allowed values:\n&emsp;&emsp;* - All Matrix users\n&emsp;&emsp;domain.tld - All users on homeserver\n&emsp;&emsp;mxid (@user:matrix.org) - Specific Matrix user"
+        ask = '''
+        Allowed values:
+        - * : All Matrix users
+        - domain.tld : All users on a given homeserver
+        - mxid (@user:matrix.org) : Specific Matrix user
+        '''
         type = "markdown"
 
         [usermanagement.config.listuser]
