@@ -1,23 +1,146 @@
 version = "1.0"
 
-[encryption]
-name = "Encryption"
+[appservice]
+name = "Application service configuration"
 services = ["__APP__"]
-    [encryption.config]
-    name = "Encryption settings"
 
-        [encryption.config.encryption]
-        ask = "Enable encryption"
+    [appservice.config]
+    name = "General configuration"
+
+        [appservice.config.ephemeral_events]
+        ask = "Whether or not to receive ephemeral events via appservice transactions"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Requires MSC2409 support (i.e. Synapse 1.22+). You should disable bridge -> sync_with_custom_puppets when this is enabled"
+        bind = ":__FINALPATH__/config.yaml"
+
+        [appservice.config.registration_enabled]
+        ask = "Whether or not users can register a primary device"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = ":__FINALPATH__/config.yaml"
+
+        [appservice.config.enable_disappearing_messages_in_groups]
+        ask = "Whether or not to enable disappearing messages in groups"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "If the bridge has a single user, this can be turned on safely. If enabled, then the expiration time of the messages will be determined by the first users to read the message, rather than individually."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [appservice.config.print_level]
+        ask = "Root logging print level"
+        type = "select"
+        choices = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL" or "NOTSET"]
+        help = "NOTSET means that all messages will be logged: https://docs.python.org/3.6/library/logging.config.html#configuration-file-format"
+        bind = ":__FINALPATH__/config.yaml"
+
+    [appservice.bot]
+    name = "Appservice bot configuration"
+
+        [appservice.bot.appserviceid]
+        ask = "The unique ID of this appservice."
+        type = "string"
+        bind = ":__FINALPATH__/config.yaml"
+
+        [appservice.bot.botname]
+        ask = "Username of the appservice bot"
+        type = "string"
+        help = "Sets bot username. Please keep in mind that the bot admin room for previous bot username will stop working so you may need to create a new one using the new username"
+        bind = ":__FINALPATH__/config.yaml"
+
+        [appservice.bot.displayname]
+        ask = "Display name for bot"
+        type = "string"
+        help = "Set to 'remove' to remove display name, leave empty to leave display name as-is"
+        bind = ":__FINALPATH__/config.yaml"
+
+        [appservice.bot.avatar]
+        ask = "Avatar for bot"
+        type = "string"
+        help = "Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
+        bind = ":__FINALPATH__/config.yaml"
+
+[bridge]
+name = "Bridge"
+services = ["__APP__"]
+    [bridge.config]
+    name = "Bridge settings"
+
+        [bridge.config.username_template]
+        ask = "Localpart template of MXIDs for Signal users."
+        type = "string"
+        help = "{userid} is replaced with an identifier for the Signal user."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [bridge.config.contact_list_names]
+        ask = "Whether or not contact list displaynames should be used."
+        type = select
+        choices = ["disallow", "allow", "prefer"]
+        help = "Multi-user instances are recommended to disallow contact list names, as otherwise there can be conflicts between names from different users' contact lists."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [bridge.config.federate_rooms]
+        ask = "Whether or not created rooms should have federation enabled."
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "Enables end to bridge encryption"
-        bind = "encryption>allow:__FINALPATH__/config.yaml"
+        help = "If false, created portal rooms will never be federated."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [bridge.config.encryption]
+        ask = "Allow end to bridge encryption?"
+        type = "boolean"
+        yes = "true"
+		no = "false"
+        help = "For the bridge to work in group chat rooms with e2ee enabled."
+        bind = ":__FINALPATH__/config.yaml"
         
-        [encryption.config.default]
-        ask = "Default to encryption"
+        [bridge.config.encryption_default]
+        ask = "Force-enable encryption in all portals the bridge creates?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "Default to encryption, force-enable encryption in all portals the bridge creates"
-        bind = "encryption>default:__FINALPATH__/config.yaml"
+        help = "This will cause the bridge bot to be in private chats for the encryption to work properly."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [bridge.config.enable_relaybot]
+        ask = "Whether relay mode should be allowed."
+        type = "boolean"
+        yes = "true"
+		no = "false"
+        help = "If allowed, `!sg set-relay` can be used to turn any authenticated user into a relaybot for that chat."
+        bind = ":__FINALPATH__/config.yaml"
+
+[usermanagement]
+name = "User management"
+services = ["__APP__"]
+
+    [usermanagement.config]
+    name = "User management"
+
+        [usermanagement.config.helptext]
+        ask = "Allowed values:\n&emsp;&emsp;* - All Matrix users\n&emsp;&emsp;domain.tld - All users on homeserver\n&emsp;&emsp;mxid (@user:matrix.org) - Specific Matrix user"
+        type = "markdown"
+
+        [usermanagement.config.listuser]
+        ask = "Users"
+        type = "tags"
+        visible = "role == 'user'"
+
+        [usermanagement.config.listadmin]
+        ask = "Admins"
+        type = "tags"
+        visible = "role == 'admin'"
+
+        [usermanagement.config.listrelay]
+        ask = "Relay users"
+        type = "tags"
+        visible = "role == 'relay'"
+
+        [usermanagement.config.role]
+        ask = "Role"
+        type = "select"
+        choices = ["user", "admin", "relay"]

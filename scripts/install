@@ -53,6 +53,38 @@ synapse_db_name="matrix_$synapse_instance"
 signald_user="signald" # This is actually chosen by the signald dependency
 
 #=================================================
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
+#=================================================
+
+appserviceid=$botname
+displayname="Signal bridge bot"
+avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
+ephemeral_events=false
+enable_metrics=false
+metrics_listen_port=8000
+registration_enabled=true
+enable_disappearing_messages_in_groups=false
+username_template="sg_{userid}"
+contact_list_names=disallow
+federate_rooms=true
+encryption_default=false
+print_level=INFO
+
+ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
+ynh_app_setting_set --app=$app --key=displayname --value=$displayname
+ynh_app_setting_set --app=$app --key=avatar --value=$avatar
+ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
+ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
+ynh_app_setting_set --app=$app --key=metrics_listen_port --value=$metrics_listen_port
+ynh_app_setting_set --app=$app --key=registration_enabled --value=$registration_enabled
+ynh_app_setting_set --app=$app --key=enable_disappearing_messages_in_groups --value=$enable_disappearing_messages_in_groups
+ynh_app_setting_set --app=$app --key=username_template --value=$username_template
+ynh_app_setting_set --app=$app --key=contact_list_names --value=$contact_list_names
+ynh_app_setting_set --app=$app --key=federate_rooms --value=$federate_rooms
+ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
+ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+
+#=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=1

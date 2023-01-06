@@ -35,6 +35,24 @@ signald_user="signald" # This is actually chosen by the signald dependency
 enable_relaybot=true
 
 #=================================================
+# GET CONFIG PANEL SETTINGS
+#=================================================
+appserviceid=$(ynh_app_setting_get --app=$app --key=appserviceid)
+displayname=$(ynh_app_setting_get --app=$app --key=displayname)
+avatar=$(ynh_app_setting_get --app=$avatar --key=avatar)
+ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
+enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
+metrics_listen_port=$(ynh_app_setting_get --app=$app --key=metrics_listen_port)
+registration_enabled=$(ynh_app_setting_get --app=$app --key=registration_enabled)
+enable_disappearing_messages_in_groups=$(ynh_app_setting_get --app=$app --key=enable_disappearing_messages_in_groups)
+username_template=$(ynh_app_setting_get --app=$app --key=username_template)
+contact_list_names=$(ynh_app_setting_get --app=$app --key=contact_list_names)
+federate_rooms=$(ynh_app_setting_get --app=$app --key=federate_rooms)
+encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
+print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+
+
+#=================================================
 # CHECK VERSION
 #=================================================
 ynh_script_progression --message="Checking version..." --weight=1
@@ -69,20 +87,77 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-# Upgrade from >0.2.0
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
 
-# Upgrade from <=0.2.0
-if [ -z "$db_name" ]
+if [ -z "$appserviceid" ]
 then
-    db_name=$(ynh_app_setting_get --app=$app --key=$app)
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+    appserviceid=$botname
+	ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 fi
-if [ -z "$db_pwd" ]
+if [ -z "$displayname" ]
 then
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_bridge_db_pwd)
-    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
+    displayname="Signal bridge bot"
+    ynh_app_setting_set --app=$app --key=displayname --value=$displayname
+fi
+
+if [ -z "$avatar" ]
+then
+    avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
+    ynh_app_setting_set --app=$app --key=avatar --value=$avatar
+fi
+
+if [ -z "$enable_metrics" ]
+then
+    enable_metrics=false
+    ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
+fi
+
+if [ -z "$metrics_listen_port" ]
+then
+    metrics_listen_port=8000
+    ynh_app_setting_set --app=$app --key=metrics_listen_port --value=$metrics_listen_port
+fi
+
+if [ -z "$registration_enabled" ]
+then
+    registration_enabled=true
+	ynh_app_setting_set --app=$app --key=registration_enabled --value=$registration_enabled
+fi
+
+if [ -z "$enable_disappearing_messages_in_groups" ]
+then
+    enable_disappearing_messages_in_groups=false
+    ynh_app_setting_set --app=$app --key=enable_disappearing_messages_in_groups --value=$enable_disappearing_messages_in_groups
+fi
+
+if [ -z "$username_template" ]
+then
+    username_template="sg_{userid}"
+    ynh_app_setting_set --app=$app --key=username_template --value=$username_template
+fi
+
+if [ -z "$contact_list_names" ]
+then
+    contact_list_names=disallow
+    ynh_app_setting_set --app=$app --key=contact_list_names --value=$contact_list_names
+fi
+
+if [ -z "$federate_rooms" ]
+then
+    federate_rooms=true
+    ynh_app_setting_set --app=$app --key=federate_rooms --value=$federate_rooms
+fi
+
+if [ -z "$encryption_default" ]
+then
+    encryption_default=false
+    ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
+fi
+
+if [ -z "$print_level" ]
+then
+    print_level=INFO
+    ynh_app_setting_set --app=$app --key=print_level --value=$print_level
 fi
 
 # Fix possible permission issues with a previous signald version, esp. with stickers
