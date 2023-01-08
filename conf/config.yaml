@@ -234,7 +234,7 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        "*": "relay"
+        "__RELAYUSERS__": "relay"
         "__BOTUSERS__": "user"
         "__BOTADMIN__": "admin"
 

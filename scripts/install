@@ -69,6 +69,7 @@ contact_list_names="disallow"
 federate_rooms=true
 encryption_default=false
 print_level="INFO"
+relayusers="*"
 
 ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 ynh_app_setting_set --app=$app --key=displayname --value=$displayname
@@ -83,6 +84,7 @@ ynh_app_setting_set --app=$app --key=contact_list_names --value=$contact_list_na
 ynh_app_setting_set --app=$app --key=federate_rooms --value=$federate_rooms
 ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
 ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+ynh_app_setting_set --app=$app --key=relayusers --value=$relayusers
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS

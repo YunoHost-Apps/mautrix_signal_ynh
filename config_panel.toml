@@ -162,16 +162,19 @@ services = ["__APP__"]
         ask = "Users"
         type = "tags"
         visible = "role == 'user'"
+        bind = "permissions>__BOTUSERS__:__FINALPATH__/config.yaml"
 
         [usermanagement.config.listadmin]
         ask = "Admins"
         type = "tags"
         visible = "role == 'admin'"
+        bind = "permissions>__BOTADMIN__:__FINALPATH__/config.yaml"
 
         [usermanagement.config.listrelay]
         ask = "Relay users"
         type = "tags"
         visible = "role == 'relay'"
+        bind = "permissions>__RELAYUSERS:__FINALPATH__/config.yaml"
 
         [usermanagement.config.role]
         ask = "Role"

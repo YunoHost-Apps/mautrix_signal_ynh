@@ -50,6 +50,7 @@ contact_list_names=$(ynh_app_setting_get --app=$app --key=contact_list_names)
 federate_rooms=$(ynh_app_setting_get --app=$app --key=federate_rooms)
 encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
 print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+relayusers=$(ynh_app_setting_get --app=$app --key=relayusers)
 
 
 #=================================================
@@ -158,6 +159,12 @@ if [ -z "$print_level" ]
 then
     print_level="INFO"
     ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+fi
+
+if [ -z "$relayusers" ]
+then
+    relayusers="*"
+    ynh_app_setting_set --app=$app --key=relayusers --value=$relayusers
 fi
 
 # Fix possible permission issues with a previous signald version, esp. with stickers
