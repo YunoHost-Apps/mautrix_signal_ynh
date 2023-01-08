@@ -73,7 +73,7 @@ appservice:
 # Prometheus telemetry config. Requires prometheus-client to be installed.
 metrics:
     enabled: __ENABLE_METRICS__
-    listen_port: __METRICS_LISTEN_PORT__
+    listen_port: __LISTEN_PORT__
 
 # Manhole config.
 manhole:
