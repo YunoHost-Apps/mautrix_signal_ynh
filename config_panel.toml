@@ -20,7 +20,7 @@ services = ["__APP__"]
         type = "select"
         choices = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NOTSET"]
         help = "NOTSET means that all messages will be logged: https://docs.python.org/3.6/library/logging.config.html#configuration-file-format"
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "root>level:__FINALPATH__/config.yaml"
 
     [appservice.bot]
     name = "Robot Settings"
@@ -28,25 +28,25 @@ services = ["__APP__"]
         [appservice.bot.appserviceid]
         ask = "Unique ID of Appservice"
         type = "string"
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "appservice>id:__FINALPATH__/config.yaml"
 
         [appservice.bot.botname]
         ask = "Username of the Appservice Bot"
         type = "string"
         help = "Sets bot username. Please keep in mind that the bot admin room for previous bot username will stop working so you may need to create a new one using the new username"
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "appservice>bot_username:__FINALPATH__/config.yaml"
 
         [appservice.bot.displayname]
         ask = "Display Name for Bot"
         type = "string"
         help = "Set to 'remove' to remove display name, leave empty to leave display name as-is"
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "appservice>bot_displayname:__FINALPATH__/config.yaml"
 
         [appservice.bot.avatar]
         ask = "Avatar for Bot"
         type = "string"
         help = "Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "appservice>bot_avatar:__FINALPATH__/config.yaml"
 
     [appservice.metrics]
     name = "Prometheus Metrics"
@@ -56,9 +56,9 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
         no = "false"
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "metrics>enabled:__FINALPATH__/config.yaml"
 
-        [appservice.metrics.metrics_listen_port]
+        [appservice.metrics.listen_port]
         ask = "Port for the Metrics listener?"
         type = "string"
         help = "Default 8000."
@@ -132,7 +132,7 @@ services = ["__APP__"]
         yes = "true"
 		no = "false"
         help = "For the Bridge to work in group chat Rooms with End-to-End Encryption (e2ee) enabled."
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "encryption>allow:__FINALPATH__/config.yaml"
         
         [bridge.portal_rooms.encryption_default]
         ask = "Force-enable Encryption in all Portal Rooms the Bridge creates?"
@@ -140,7 +140,7 @@ services = ["__APP__"]
         yes = "true"
 		no = "false"
         help = "This will cause the Bridge Bot to be in private chats for the Encryption to work properly."
-        bind = ":__FINALPATH__/config.yaml"
+        bind = "encryption>default:__FINALPATH__/config.yaml"
 
 [usermanagement]
 name = "Bridge Permissions"

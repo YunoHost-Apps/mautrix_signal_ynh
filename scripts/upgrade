@@ -42,7 +42,7 @@ displayname=$(ynh_app_setting_get --app=$app --key=displayname)
 avatar=$(ynh_app_setting_get --app=$avatar --key=avatar)
 ephemeral_events=$(ynh_app_setting_get --app=$app --key=ephemeral_events)
 enable_metrics=$(ynh_app_setting_get --app=$app --key=enable_metrics)
-metrics_listen_port=$(ynh_app_setting_get --app=$app --key=metrics_listen_port)
+listen_port=$(ynh_app_setting_get --app=$app --key=listen_port)
 registration_enabled=$(ynh_app_setting_get --app=$app --key=registration_enabled)
 enable_disappearing_messages_in_groups=$(ynh_app_setting_get --app=$app --key=enable_disappearing_messages_in_groups)
 username_template=$(ynh_app_setting_get --app=$app --key=username_template)
@@ -112,10 +112,10 @@ then
     ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
 fi
 
-if [ -z "$metrics_listen_port" ]
+if [ -z "$listen_port" ]
 then
-    metrics_listen_port=8000
-    ynh_app_setting_set --app=$app --key=metrics_listen_port --value=$metrics_listen_port
+    listen_port=8000
+    ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
 fi
 
 if [ -z "$registration_enabled" ]

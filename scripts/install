@@ -61,7 +61,7 @@ displayname="Signal bridge bot"
 avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
 ephemeral_events=false
 enable_metrics=false
-metrics_listen_port=8000
+listen_port=8000
 registration_enabled=true
 enable_disappearing_messages_in_groups=false
 username_template="sg_{userid}"
@@ -75,7 +75,7 @@ ynh_app_setting_set --app=$app --key=displayname --value=$displayname
 ynh_app_setting_set --app=$app --key=avatar --value=$avatar
 ynh_app_setting_set --app=$app --key=ephemeral_events --value=$ephemeral_events
 ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
-ynh_app_setting_set --app=$app --key=metrics_listen_port --value=$metrics_listen_port
+ynh_app_setting_set --app=$app --key=listen_port --value=$listen_port
 ynh_app_setting_set --app=$app --key=registration_enabled --value=$registration_enabled
 ynh_app_setting_set --app=$app --key=enable_disappearing_messages_in_groups --value=$enable_disappearing_messages_in_groups
 ynh_app_setting_set --app=$app --key=username_template --value=$username_template
