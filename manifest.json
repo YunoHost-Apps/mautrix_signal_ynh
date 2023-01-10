@@ -37,7 +37,7 @@
                 },
                 "example": "2 (for instance synapse__2)",
                 "help": {
-                    "en": "If you installed synapse only once time, then leave default value 1.",
+                    "en": "If you installed synapse only once, then leave default value 1.",
                     "fr": "Si vous n'avez installé qu'une fois synapse, gardez la valeur par défaut 1."
                 },
                 "default": "1"
@@ -55,6 +55,19 @@
                     "fr": "Un utilisateur système sera créé. Inviter @signalbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle. Donner le nom du serveur matrix, pas le domaine/url complet."
                 },
                 "default": "signalbot"
+            },
+            {
+                "name": "encryption",
+                "type": "boolean",
+                "ask": {
+                    "en": "Enable end-to-bridge (e2b) encryption?",
+                    "fr": "Activer le chiffrement entre client et bridge (e2b) ?"
+                },
+                "help": {
+                    "en": "Only activate if you know the prerequisites and constraints related to e2b.",
+                    "fr": "N'activer que si vous connaissez les prérequis et constraintes liées à e2b."
+                },
+                "default": false
             },
             {
                 "name": "botadmin",

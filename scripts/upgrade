@@ -47,10 +47,10 @@ federate_rooms=$(ynh_app_setting_get --app=$app --key=federate_rooms)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
 print_level=$(ynh_app_setting_get --app=$app --key=print_level)
+enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
 listrelay=$(ynh_app_setting_get --app=$app --key=listrelay)
 listuser=$(ynh_app_setting_get --app=$app --key=listuser)
 listadmin=$(ynh_app_setting_get --app=$app --key=listadmin)
-enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
 
 #=================================================
 # CHECK VERSION
@@ -108,7 +108,7 @@ fi
 
 if [ -z "$enable_metrics" ]
 then
-    enable_metrics=false
+    enable_metrics="false"
     ynh_app_setting_set --app=$app --key=enable_metrics --value=$enable_metrics
 fi
 
@@ -120,13 +120,13 @@ fi
 
 if [ -z "$registration_enabled" ]
 then
-    registration_enabled=true
+    registration_enabled="true"
     ynh_app_setting_set --app=$app --key=registration_enabled --value=$registration_enabled
 fi
 
 if [ -z "$enable_disappearing_messages_in_groups" ]
 then
-    enable_disappearing_messages_in_groups=false
+    enable_disappearing_messages_in_groups="false"
     ynh_app_setting_set --app=$app --key=enable_disappearing_messages_in_groups --value=$enable_disappearing_messages_in_groups
 fi
 
@@ -144,13 +144,13 @@ fi
 
 if [ -z "$federate_rooms" ]
 then
-    federate_rooms=true
+    federate_rooms="true"
     ynh_app_setting_set --app=$app --key=federate_rooms --value=$federate_rooms
 fi
 
 if [ -z "$encryption_default" ]
 then
-    encryption_default=false
+    encryption_default="false"
     ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
 fi
 
@@ -166,22 +166,24 @@ then
     ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
 fi
 
+if [ -z "$enable_relaybot" ]
+then
+    enable_relaybot="true"
+    ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
+fi
+
 if [ -z "$listuser" ]
 then
     listuser=$(ynh_app_setting_get --app=$app --key=botusers)
     ynh_app_setting_set --app=$app --key=listuser --value=$listuser
+    ynh_app_setting_delete --app=$app --key=botusers
 fi
 
 if [ -z "$listadmin" ]
 then
     listadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
     ynh_app_setting_set --app=$app --key=listadmin --value=$listadmin
-fi
-
-if [ -z "$enable_relaybot" ]
-then
-    enable_relaybot=true
-    ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
+    ynh_app_setting_delete --app=$app --key=botadmin
 fi
 
 # Fix possible permission issues with a previous signald version, esp. with stickers

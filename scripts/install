@@ -26,7 +26,7 @@ ynh_abort_if_errors
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 botname=$YNH_APP_ARG_BOTNAME
 bot_synapse_adm=true
-encryption=false
+encryption="'${YNH_APP_ARG_ENCRYPTION}'"
 listadmin=$YNH_APP_ARG_BOTADMIN
 listuser=$YNH_APP_ARG_BOTUSERS
 
@@ -42,7 +42,6 @@ fi
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 mautrix_version=$(ynh_app_upstream_version)
-enable_relaybot=true
 bot_synapse_db_user="@$botname:$server_name"
 synapse_db_name="matrix_$synapse_instance"
 signald_user="signald" # This is actually chosen by the signald dependency
@@ -59,16 +58,17 @@ fi
 appserviceid=$botname
 displayname="Signal bridge bot"
 avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
-ephemeral_events=false
-enable_metrics=false
+ephemeral_events="false"
+enable_metrics="false"
 listen_port=8000
-registration_enabled=true
-enable_disappearing_messages_in_groups=false
+registration_enabled="true"
+enable_disappearing_messages_in_groups="false"
 username_template="sg_{userid}"
 contact_list_names="disallow"
-federate_rooms=true
-encryption_default=false
+federate_rooms="true"
+encryption_default="false"
 print_level="INFO"
+enable_relaybot="true"
 listrelay="*"
 
 ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
@@ -84,6 +84,7 @@ ynh_app_setting_set --app=$app --key=contact_list_names --value=$contact_list_na
 ynh_app_setting_set --app=$app --key=federate_rooms --value=$federate_rooms
 ynh_app_setting_set --app=$app --key=encryption_default --value=$encryption_default
 ynh_app_setting_set --app=$app --key=print_level --value=$print_level
+ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
 ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
 
 #=================================================
