@@ -47,8 +47,7 @@ federate_rooms=$(ynh_app_setting_get --app=$app --key=federate_rooms)
 encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 encryption_default=$(ynh_app_setting_get --app=$app --key=encryption_default)
 print_level=$(ynh_app_setting_get --app=$app --key=print_level)
-enable_relaybot="true"
-#enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
+enable_relaybot=$(ynh_app_setting_get --app=$app --key=enable_relaybot)
 listrelay=$(ynh_app_setting_get --app=$app --key=listrelay)
 listuser=$(ynh_app_setting_get --app=$app --key=listuser)
 listadmin=$(ynh_app_setting_get --app=$app --key=listadmin)
@@ -165,6 +164,12 @@ if [ -z "$listrelay" ]
 then
     listrelay="*"
     ynh_app_setting_set --app=$app --key=listrelay --value=$listrelay
+fi
+
+if [ -z "$enable_relaybot" ]
+then
+    enable_relaybot="true"
+    ynh_app_setting_set --app=$app --key=enable_relaybot --value=$enable_relaybot
 fi
 
 if [ -z "$listuser" ]

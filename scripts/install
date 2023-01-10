@@ -26,7 +26,7 @@ ynh_abort_if_errors
 synapsenumber=$YNH_APP_ARG_SYNAPSENUMBER
 botname=$YNH_APP_ARG_BOTNAME
 bot_synapse_adm=true
-encryption="'${YNH_APP_ARG_ENCRYPTION}'"
+encryption=${YNH_APP_ARG_ENCRYPTION}
 listadmin=$YNH_APP_ARG_BOTADMIN
 listuser=$YNH_APP_ARG_BOTUSERS
 
