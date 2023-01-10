@@ -144,7 +144,7 @@ fi
 
 if [ -z "$federate_rooms" ]
 then
-    federate_rooms="true"
+    federate_rooms="false"
     ynh_app_setting_set --app=$app --key=federate_rooms --value=$federate_rooms
 fi
 
