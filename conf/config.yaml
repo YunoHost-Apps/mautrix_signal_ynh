@@ -234,9 +234,9 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        "__LISTRELAY__": "relay"
-        "__LISTUSER__": "user"
-        "__LISTADMIN__": "admin"
+        "__LISTRELAY__": relay
+        "__LISTUSER__": user
+        "__LISTADMIN__": admin
 
     relay:
         # Whether relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
