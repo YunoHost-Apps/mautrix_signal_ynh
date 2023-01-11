@@ -15,46 +15,33 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS
 #=================================================
 
-function get__encryption {
-    encryption=$(ynh_app_setting_get --app $app --key encryption)
-    echo "'${encryption}'"
-}
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+
 #=================================================
 # SPECIFIC GETTERS FOR TOML SHORT KEY
 #=================================================
 
-# SPECIFIC VALIDATORS FOR TOML SHORT KEYS
-#=================================================
-
-#=================================================
-# SPECIFIC SETTERS FOR TOML SHORT KEYS
-#=================================================
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-
 function get__listuser {
-  botusers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+  existingUsers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
-value: '$botusers'
+value: '$existingUsers'
 EOF
 }
 
 function get__listrelay {
-  relayusers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+  existingRelayUsers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
-value: '$relayusers'
+value: '$existingRelayUsers'
 EOF
 }
 
 function get__listadmin {
-  botadmin=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
+  existingAdmins=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
   cat <<EOF
-value: '$botadmin'
+value: '$existingAdmins'
 EOF
 }
 
@@ -64,6 +51,10 @@ choices: ["admin", "user", "relay"]
 default: "user"
 EOF
 }
+
+#=================================================
+# SPECIFIC SETTERS FOR TOML SHORT KEYS
+#=================================================
 
 function set__role {
     set -o noglob # Disable globbing to avoid expansions when passing * as value.
@@ -92,5 +83,9 @@ function set__role {
 
     ynh_print_info "Users with role $role added in $final_path/config.yaml"
 }
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
 
 ynh_app_config_run $1
