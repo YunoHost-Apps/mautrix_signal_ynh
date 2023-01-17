@@ -113,7 +113,7 @@ services = ["__APP__"]
         yes = "true"
 		no = "false"
         help = "If allowed, `!sg set-relay` can be used to turn any authenticated user into a RelayBot for that chat."
-        bind = "bridge>relay>enabled:__FINALPATH__/config.yaml"
+        bind = "relay>enabled:__FINALPATH__/config.yaml"
 
     [bridge.portal_rooms]
     name = "Portal Rooms & Encryption Settings"
