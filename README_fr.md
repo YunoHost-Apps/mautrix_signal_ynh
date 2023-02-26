@@ -5,15 +5,16 @@ It shall NOT be edited by hand.
 
 # Matrix Signal bridge pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
+
 [![Installer Matrix Signal bridge avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
 
 *[Read this readme in english.](./README.md)*
 
-> *Ce package vous permet d'installer Matrix Signal bridge rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Matrix Signal bridge rapidement et simplement sur un serveur YunoHost.
+Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l’installer et en profiter.*
 
-## Vue d'ensemble
+## Vue d’ensemble
 
 Une passerelle entre Matrix et Signal empaquetée comme un service YunoHost. Les messages, médias et notifications sont relayées entre un compte Signal et un compte Matrix. 
 La passerelle ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) consiste en un Service d'Application Matrix-Synapse et repose sur une base-de-données postgresql. C'est pourquoi [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) doit être préalablemnet installé.
@@ -91,7 +92,7 @@ Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils c
 ## Documentations et ressources
 
 * Documentation officielle utilisateur : <https://docs.mau.fi/bridges/python/signal/index.html>
-* Dépôt de code officiel de l'app : <https://github.com/mautrix/signal>
+* Dépôt de code officiel de l’app : <https://github.com/mautrix/signal>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_mautrix_signal>
 * Signaler un bug : <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>
 
@@ -107,4 +108,4 @@ ou
 sudo yunohost app upgrade mautrix_signal -u https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>
