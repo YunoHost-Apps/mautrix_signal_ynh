@@ -1,124 +1,92 @@
 version = "1.0"
 
-[appservice]
-name = "Homeserver Application Service"
+[main]
+name = "Main Settings"
 services = ["__APP__"]
 
-    [appservice.config]
-    name = "Appservice Settings"
+    [main.permissions]
+    name = "Permissions for using the bridge"
 
-        [appservice.config.ephemeral_events]
-        ask = "Receive Ephemeral Events via Appservice transactions?"
+        [main.permissions.helptext]
+        ask = '''
+        Roles with Increasing Power: Relay<User<Admin
+        Allowed values for roles:
+        - * : All Matrix users
+        - domain.tld : All users on a given homeserver
+        - mxid (@user:matrix.org) : Specific Matrix user
+        '''
+        type = "markdown"
+
+        [main.permissions.listrelay]
+        ask = "Users bridged thanks to Relay Mode"
+        type = "tags"
+        help = "Relay Role: Talk on Signal through the RelayBot in a room where it has been activated with '!sg set-relay', no access otherwise."
+        visible = "enable_relaybot"
+
+        [main.permissions.listuser]
+        ask = "Bridge Users"
+        type = "tags"
+        help = "User Role: Access to use the bridge to chat with a Signal account."
+
+        [main.permissions.listadmin]
+        ask = "Bridge Administrators"
+        type = "tags"
+        help = "Admin Role: User level and some additional administration tools."
+
+    [main.bridge]
+    name = "Puppetting Bridge Settings"
+
+        [main.bridge.enable_relaybot]
+        ask = "Should Relay Mode be allowed?"
         type = "boolean"
         yes = "true"
-        no = "false"
-        help = "Requires MSC2409 support (i.e. Synapse 1.22+). You should disable bridge -> sync_with_custom_puppets when this is enabled"
+		no = "false"
+        help = "If allowed, `!sg set-relay` can be used to turn any Bridge User into a RelayBot for that chat. This allows people to talk on Signal without an own account."
+        bind = "relay>enabled:__FINALPATH__/config.yaml"
+
+        [main.bridge.admin_only]
+        ask = "Should only Bridge Admins be allowed to set themselves as Relay Users?"
+        type = "boolean"
+        yes = "true"
+		no = "false"
+        help = "See User management -> Admins"
         bind = ":__FINALPATH__/config.yaml"
+        visible = "enable_relaybot"
 
-        [appservice.config.print_level]
-        ask = "Root logging print level"
-        type = "select"
-        choices = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NOTSET"]
-        help = "NOTSET means that all messages will be logged: https://docs.python.org/3.6/library/logging.config.html#configuration-file-format"
-        bind = "root>level:__FINALPATH__/config.yaml"
-
-    [appservice.bot]
+    [main.bot]
     name = "Robot Settings"
 
-        [appservice.bot.appserviceid]
+        [main.bot.appserviceid]
         ask = "Unique ID of Appservice"
         type = "string"
         bind = "appservice>id:__FINALPATH__/config.yaml"
 
-        [appservice.bot.botname]
-        ask = "Username of the Appservice Bot"
+        [main.bot.botname]
+        ask = "Username of the AppService Bot"
         type = "string"
         help = "Sets bot username. Please keep in mind that the bot admin room for previous bot username will stop working so you may need to create a new one using the new username"
         bind = "appservice>bot_username:__FINALPATH__/config.yaml"
 
-        [appservice.bot.displayname]
-        ask = "Display Name for Bot"
+        [main.bot.displayname]
+        ask = "Display name for Bot"
         type = "string"
         help = "Set to 'remove' to remove display name, leave empty to leave display name as-is"
         bind = "appservice>bot_displayname:__FINALPATH__/config.yaml"
 
-        [appservice.bot.avatar]
+        [main.bot.avatar]
         ask = "Avatar for Bot"
         type = "string"
-        help = "Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
+        help = "Should be in format 'mxc://server_name/NeXNQarUbrlYBiPCpprYsRqr', see README for tutorial. Set to 'remove' to remove avatar, leave empty to leave avatar as-is"
         bind = "appservice>bot_avatar:__FINALPATH__/config.yaml"
 
-    [appservice.metrics]
-    name = "Prometheus Metrics"
-
-        [appservice.metrics.enable_metrics]
-        ask = "Enable Prometheus Metrics?"
-        type = "boolean"
-        yes = "true"
-        no = "false"
-        bind = "metrics>enabled:__FINALPATH__/config.yaml"
-
-        [appservice.metrics.listen_port]
-        ask = "Port for the Metrics listener?"
-        type = "string"
-        help = "Default 8000."
-        bind = ":__FINALPATH__/config.yaml"
-
-[signald]
-name = "Signal Daemon Service"
+[privacy]
+name = "Privacy"
 services = ["__APP__"]
 
-    [signald.config]
-    name = "Signald Settings"
-
-        [signald.config.registration_enabled]
-        ask = "Can Bridge Users register as a primary device?"
-        type = "boolean"
-        yes = "true"
-        no = "false"
-        help = "If yes, you still need a phone number to register signald as you primary device. If not, you need a phone with Signal App."
-        bind = ":__FINALPATH__/config.yaml"
-
-        [signald.config.enable_disappearing_messages_in_groups]
-        ask = "Enable disappearing messages in groups?"
-        type = "boolean"
-        yes = "true"
-        no = "false"
-        help = "If the bridge has a single user, this can be turned on safely. If enabled, then the expiration time of the messages will be determined by the first users to read the message, rather than individually."
-        bind = ":__FINALPATH__/config.yaml"
-
-[bridge]
-name = "Bridge"
-services = ["__APP__"]
-
-    [bridge.config]
-    name = "Puppet Settings"
-
-        [bridge.config.username_template]
-        ask = "Localpart template of MXIDs for Signal users."
-        type = "string"
-        help = "{userid} is replaced with an identifier for the Signal user."
-        bind = ":__FINALPATH__/config.yaml"
-
-        [bridge.config.contact_list_names]
-        ask = "Should contact list displaynames be used?"
-        type = "select"
-        choices = ["disallow", "allow", "prefer"]
-        help = "Multi-user instances are recommended to disallow contact list names, as otherwise there can be conflicts between names from different users' contact lists."
-        bind = ":__FINALPATH__/config.yaml"
-
-        [bridge.config.enable_relaybot]
-        ask = "Should Relay mode be allowed?"
-        type = "boolean"
-        yes = "true"
-		no = "false"
-        help = "If allowed, `!sg set-relay` can be used to turn any authenticated user into a RelayBot for that chat."
-        bind = "relay>enabled:__FINALPATH__/config.yaml"
-
-    [bridge.portal_rooms]
+    [privacy.portal_rooms]
     name = "Portal Rooms & Encryption Settings"
 
-        [bridge.portal_rooms.federate_rooms]
+        [privacy.portal_rooms.federate_rooms]
         ask = "Should Portal Rooms have federation enabled?"
         type = "boolean"
         yes = "true"
@@ -126,54 +94,131 @@ services = ["__APP__"]
         help = "If false, Portal Rooms created by the Bridge will never be federated."
         bind = ":__FINALPATH__/config.yaml"
 
-        [bridge.portal_rooms.encryption]
-        ask = "Allow End-to-Bridge (e2b) Encryption?"
+        [privacy.portal_rooms.text]
+        ask = '''
+        !! Inviting the Bridge in an encrypted room          !!
+        !! breaks real End-to-End Encryption (e2ee)          !! 
+        !! Messages will be unencrypted on the Bridge Server !!
+        '''
+        type = "markdown"
+
+        [privacy.portal_rooms.encryption]
+        ask = "Allow Encryption between Matrix Client and Bridge Server?"
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "For the Bridge to work in group chat Rooms with End-to-End Encryption (e2ee) enabled."
+        help = "Enable so-called End-to-Bridge (e2b) Encryption. For the Bridge to work in group chat Rooms with End-to-End Encryption (e2ee) enabled."
         bind = "encryption>allow:__FINALPATH__/config.yaml"
         
-        [bridge.portal_rooms.encryption_default]
+        [privacy.portal_rooms.encryption_default]
         ask = "Force-enable Encryption in all Portal Rooms the Bridge creates?"
         type = "boolean"
         yes = "true"
 		no = "false"
         help = "This will cause the Bridge Bot to be in private chats for the Encryption to work properly."
         bind = "encryption>default:__FINALPATH__/config.yaml"
+        visible = "encryption"
 
-[usermanagement]
-name = "Bridge Permissions"
+        [privacy.portal_rooms.encryption_require]
+        ask = "Require encryption?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Require encryption, drop any unencrypted messages."
+        bind = "encryption>require:__FINALPATH__/config.yaml"
+        visible = "encryption"
+
+    [privacy.config]
+    name = "Privacy Settings"
+
+        [privacy.config.delivery_receipts]
+        ask = "Enable Delivery Receipts?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Should the bridge send a read Receipt from the bridge bot when a message has been sent to WhatsApp?"
+        bind = ":__FINALPATH__/config.yaml"
+
+[advanced]
+name = "Advanced Settings"
 services = ["__APP__"]
 
-    [usermanagement.config]
-    name = "User, Admin, Relay Management"
+    [advanced.help]
+    name = "SETTINGS FOR EXPERTS IN SERVER ADMINISTRATION"
 
-        [usermanagement.config.helptext]
-        ask = '''
-        Allowed values:
-        - * : All Matrix users
-        - domain.tld : All users on a given homeserver
-        - mxid (@user:matrix.org) : Specific Matrix user
-        '''
+        [advanced.help.text]
+        ask = "!! There are **security and privacy risks** if you change these settings without knowing what you do !!"
         type = "markdown"
 
-        [usermanagement.config.listuser]
-        ask = "Users"
-        type = "tags"
-        visible = "role == 'user'"
+    [advanced.signal]
+    name = "Signal API MetaData"
 
-        [usermanagement.config.listadmin]
-        ask = "Admins"
-        type = "tags"
-        visible = "role == 'admin'"
+        [advanced.signal.username_template]
+        ask = "Localpart template of MXIDs for Signal users."
+        type = "string"
+        help = "Default to 'signal_{userid}'. '{userid}' is replaced with an identifier for the Signal user."
+        bind = ":__FINALPATH__/config.yaml"
 
-        [usermanagement.config.listrelay]
-        ask = "Relay users"
-        type = "tags"
-        visible = "role == 'relay'"
-
-        [usermanagement.config.role]
-        ask = "Role"
+        [advanced.signal.contact_list_names]
+        ask = "Should contact list displaynames be used?"
         type = "select"
-        choices = ["user", "admin", "relay"]
+        choices = ["disallow", "allow", "prefer"]
+        help = "Multi-user instances are recommended to disallow contact list names, as otherwise there can be conflicts between names from different users' contact lists."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [advanced.signal.registration_enabled]
+        ask = "Can Bridge Users register as a primary device?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "If yes, you still need a phone number to register signald as you primary device. If not, you need a phone with Signal App."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [advanced.signal.enable_disappearing_messages_in_groups]
+        ask = "Enable disappearing messages in groups?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "If the bridge has a single user, this can be turned on safely. If enabled, then the expiration time of the messages will be determined by the first users to read the message, rather than individually."
+        bind = ":__FINALPATH__/config.yaml"
+    [advanced.appservice]
+    name = "HomeServer Application Service"
+
+        [advanced.appservice.async_media]
+        ask = "Enable asynchronous media uploads?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Enable only if HomeServer supports https://github.com/matrix-org/matrix-spec-proposals/pull/2246?"
+        bind = ":__FINALPATH__/config.yaml"
+
+        [advanced.appservice.ephemeral_events]
+        ask = "Receive Ephemeral Events via AppService transactions?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Enable only if HomeServer supports MSC2409 (i.e. Synapse 1.22+). If enabled, you should disable bridge -> 'sync_with_custom_puppets'."
+        bind = ":__FINALPATH__/config.yaml"
+
+        [advanced.appservice.min_level]
+        ask = "Root logging print level"
+        type = "select"
+        choices = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NOTSET"]
+        help = "NOTSET means that all messages will be logged: https://docs.python.org/3.6/library/logging.config.html#configuration-file-format"
+        bind = "root>level:__FINALPATH__/config.yaml"
+
+    [advanced.metrics]
+    name = "Prometheus Metrics"
+
+        [advanced.metrics.enable_metrics]
+        ask = "Enable Prometheus Metrics?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = "metrics>enabled:__FINALPATH__/config.yaml"
+
+        [advanced.metrics.listen_port]
+        ask = "Port for the Metrics listener?"
+        type = "string"
+        help = "Default 8000."
+        bind = ":__FINALPATH__/config.yaml"
