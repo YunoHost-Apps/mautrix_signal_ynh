@@ -44,15 +44,6 @@ services = ["__APP__"]
         help = "If allowed, `!sg set-relay` can be used to turn any Bridge User into a RelayBot for that chat. This allows people to talk on Signal without an own account."
         bind = "relay>enabled:__FINALPATH__/config.yaml"
 
-        [main.bridge.admin_only]
-        ask = "Should only Bridge Admins be allowed to set themselves as Relay Users?"
-        type = "boolean"
-        yes = "true"
-		no = "false"
-        help = "See User management -> Admins"
-        bind = ":__FINALPATH__/config.yaml"
-        visible = "enable_relaybot"
-
     [main.bot]
     name = "Robot Settings"
 
