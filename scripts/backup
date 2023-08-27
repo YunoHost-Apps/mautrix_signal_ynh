@@ -27,7 +27,7 @@ ynh_print_info --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 signald_data="/var/lib/signald"
 #signald_exe="/usr/bin/signald"
@@ -41,7 +41,7 @@ ynh_print_info --message="Declaring files to be backed up..."
 # BACKUP THE APP MAIN DIR
 #=================================================
 
-ynh_backup --src_path="$final_path"
+ynh_backup --src_path="$install_dir"
 
 #=================================================
 # SPECIFIC BACKUP

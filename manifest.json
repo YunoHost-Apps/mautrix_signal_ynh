@@ -1,10 +1,10 @@
 {
     "name": "Matrix Signal bridge",
-    "id": "mautrix_signal_dendrite",
+    "id": "mautrix_signal",
     "packaging_format": 1,
     "description": {
-        "en": "Matrix / Dendrite puppeting bridge for Signal",
-        "fr": "Passerelle Matrix / Dendrite pour Signal"
+        "en": "Matrix puppeting bridge for Signal",
+        "fr": "Passerelle Matrix pour Signal"
     },
     "version": "0.4.1~ynh1",
     "url": "https://github.com/mautrix/signal",
@@ -29,18 +29,33 @@
     "arguments": {
         "install": [
             {
-                "name": "dendritenumber",
-                "type": "string",
+                "name": "homeserver_type",
+                "type": "select",
+                "choices": ["synapse","dendrite"],
                 "ask": {
-                    "en": "Choose the local dendrite instance number to communicate with mautrix_signal",
-                    "fr": "Choisissez le numéro de l'instance dendrite qui doit communiquer avec mautrix_signal"
+                    "en": "Choose the Home Server type of local Matrix instance to communicate with mautrix_signal",
+                    "fr": "Choisissez le type de Home Server de l'instance Matrix qui doit communiquer avec mautrix_signal"
+                },
+                "example": "synapse (for the instance synapse__2)",
+                "help": {
+                    "en": "For now, only synapse and dendrite are supported.",
+                    "fr": "Pour l'instant, seuls synapse et dendrite sont supportés."
+                },
+                "default": "synapse"
+            },
+            {
+                "name": "homeserver_id",
+                "type": "integer",
+                "ask": {
+                    "en": "Choose the local Matrix instance number to communicate with mautrix_signal",
+                    "fr": "Choisissez le numéro de l'instance Matrix qui doit communiquer avec mautrix_signal"
                 },
                 "example": "2 (for instance dendrite__2)",
                 "help": {
-                    "en": "If you installed dendrite only once time, then leave default value 1.",
-                    "fr": "Si vous n'avez installé qu'une fois dendrite, gardez la valeur par défaut 1."
+                    "en": "If you installed dendrite and synapse only once, then leave default value 1.",
+                    "fr": "Si vous n'avez installé qu'une fois dendrite et synapse, gardez la valeur par défaut 1."
                 },
-                "default": "1"
+                "default": 1
             },
             {
                 "name": "botname",

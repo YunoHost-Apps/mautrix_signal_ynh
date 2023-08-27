@@ -21,19 +21,33 @@ encryption=$(ynh_app_setting_get --app=$app --key=encryption)
 botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
 botusers=$(ynh_app_setting_get --app=$app --key=botusers)
 domain=$(ynh_app_setting_get --app=$app --key=domain)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 previous_mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
 port=$(ynh_app_setting_get --app=$app --key=port)
-dendrite_instance=$(ynh_app_setting_get --app=$app --key=dendrite_instance)
+homeserver_instance=$(ynh_app_setting_get --app=$app --key=homeserver_instance)
+homeserver_type=$(ynh_app_setting_get --app=$app --key=homeserver_type)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 mautrix_version=$(ynh_app_upstream_version)
 # TODO add admin support
 #synapse_db_name="matrix_$synapse_instance"
 signald_user="signald" # This is actually chosen by the signald dependency
 enable_relaybot=true
+
+if [ $homeserver_type -eq "synapse" ]
+homeserver_install_dir=$(ynh_app_setting_get --app $homeserver_instance --key final_path)
+elif [ $homeserver_type -eq "dendrite" ]
+homeserver_install_dir=$(ynh_app_setting_get --app $homeserver_instance --key install_dir)
+fi
+
+if [ $homeserver_type -eq "synapse" ]
+app_service_dir="$homeserver_install_dir/app-service"
+elif [ $homeserver_type -eq "dendrite" ]
+app_service_dir="/etc/matrix-$homeserver_instance/app-service"
+fi
+
 
 #=================================================
 # CHECK VERSION
@@ -97,7 +111,7 @@ chmod -R g+rwX /var/lib/signald/{avatars,attachments,stickers}
 ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$signald_user"
+ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$signald_user"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -108,12 +122,12 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=1
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path/src"
+	ynh_setup_source --dest_dir="$install_dir/src"
 fi
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # UPGRADE DEPENDENCIES
@@ -130,37 +144,35 @@ ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable 
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=2
 
-ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
+ynh_add_config --template="../conf/config.yaml" --destination="$install_dir/config.yaml"
 
-chmod 400 "$final_path/config.yaml"
-chown $app:$app "$final_path/config.yaml"
+chmod 400 "$install_dir/config.yaml"
+chown $app:$app "$install_dir/config.yaml"
 
 #=================================================
 # UPGRADE MAUTRIX-BRIDGE PYTHON MODULE
 #=================================================
 ynh_script_progression --message="Upgrading Mautrix-Bridge Python Module..." --weight=2
 
-python3 -m venv $final_path
-export HOME=$final_path
-$final_path/bin/pip3 install --upgrade pip setuptools wheel
-$final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
+python3 -m venv $install_dir
+export HOME=$install_dir
+$install_dir/bin/pip3 install --upgrade pip setuptools wheel
+$install_dir/bin/pip3 install --upgrade $install_dir/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
 
 #=================================================
-# REGISTER DENDRITE APP-SERVICE
+# REGISTER HOMESERVER APP-SERVICE
 #=================================================
-ynh_script_progression --message="Registering Dendrite app-service" --weight=1
+ynh_script_progression --message="Registering $homeserver_instance app-service" --weight=1
 
-mkdir -p /opt/yunohost/$dendrite_instance/app-services
 
-$final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /opt/yunohost/$dendrite_instance/app-services/$app.yaml
+$install_dir/bin/python3 -m mautrix_signal -g -c $install_dir/config.yaml -r $app_service_dir/$app.yaml
 
-#TODO add support for reloading appservices to dendrite_ynh
-# /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$homeserver_install_dir/update_synapse_for_appservice.sh || ynh_die "$homeserver_instance cannot restart with the app-service configuration"
 
 # Set permissions on app files
-chown -R $app:$app "$final_path"
-ynh_store_file_checksum --file="/opt/yunohost/$dendrite_instance/app-services/$app.yaml"
-ynh_store_file_checksum --file="$final_path/config.yaml"
+chown -R $app:$app "$install_dir"
+ynh_store_file_checksum --file="$app_service_dir/$app.yaml"
+ynh_store_file_checksum --file="$install_dir/config.yaml"
 
 #=================================================
 # SETUP SYSTEMD
@@ -188,7 +200,7 @@ chown -R $app:$app /var/log/$app
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages (dendrite)" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages ($homeserver_instance)" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE

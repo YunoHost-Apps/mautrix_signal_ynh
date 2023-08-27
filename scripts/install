@@ -23,9 +23,10 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-dendritenumber=$YNH_APP_ARG_DENDRITENUMBER
+homeserver_type=$YNH_APP_ARG_HOMESERVER_TYPE
+homeserver_id=$YNH_APP_ARG_HOMESERVER_ID
 botname=$YNH_APP_ARG_BOTNAME
-bot_dendrite_adm=true
+bot_is_homeserver_admin=true
 encryption=false
 botadmin=$YNH_APP_ARG_BOTADMIN
 botusers=$YNH_APP_ARG_BOTUSERS
@@ -37,31 +38,40 @@ then
 	botusers=$botadmin
 fi
 
-# ToDo check (in manifest?) if the selected dendrite instance is not already connected to a mautrix_bridge bridge
-if [ $dendritenumber -eq "1" ]
+# ToDo check (in manifest?) if the selected homeserver instance is not already connected to a mautrix_signal bridge
+if [ $homeserver_id -eq "1" ]
 then
-	dendrite_instance="dendrite"
+	homeserver_instance=$homeserver_type
 else
-	dendrite_instance="dendrite__$dendritenumber"
+	homeserver_instance="$homeserver_type__$homeserver_id"
 fi
-server_name=$(ynh_app_setting_get --app $dendrite_instance --key server_name)
-domain=$(ynh_app_setting_get --app $dendrite_instance --key domain)
+server_name=$(ynh_app_setting_get --app $homeserver_instance --key server_name)
+domain=$(ynh_app_setting_get --app $homeserver_instance --key domain)
+if [ $homeserver_type -eq "synapse" ]
+homeserver_install_dir=$(ynh_app_setting_get --app $homeserver_instance --key final_path)
+elif [ $homeserver_type -eq "dendrite" ]
+homeserver_install_dir=$(ynh_app_setting_get --app $homeserver_instance --key install_dir)
+fi
+
 mautrix_version=$(ynh_app_upstream_version)
 enable_relaybot=true
 # TODO add admin support
 #bot_dendrite_db_user="@$botname:$server_name"
 #dendrite_db_name="matrix_$synapse_instance"
 signald_user="signald" # This is actually chosen by the signald dependency
-app_service_dir="/opt/yunohost/$dendrite_instance/app-services"
-target_app_service_config="$app_service_dir/$app.yaml"
+if [ $homeserver_type -eq "synapse" ]
+app_service_dir="$homeserver_install_dir/app-service"
+elif [ $homeserver_type -eq "dendrite" ]
+app_service_dir="/etc/matrix-$homeserver_instance/app-service"
+fi
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --weight=1
 
-final_path=/opt/$app-env
-test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
+install_dir=/opt/yunohost/$app
+test ! -e "$install_dir" || ynh_die --message="This path already contains a folder"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -69,11 +79,12 @@ test ! -e "$final_path" || ynh_die --message="This path already contains a folde
 ynh_script_progression --message="Storing installation settings..." --weight=7
 
 ynh_app_setting_set --app=$app --key=botname --value=$botname
-ynh_app_setting_set --app=$app --key=bot_dendrite_adm --value=$bot_dendrite_adm
+ynh_app_setting_set --app=$app --key=bot_is_homeserver_admin --value=$bot_is_homeserver_admin
 ynh_app_setting_set --app=$app --key=encryption --value=$encryption
 ynh_app_setting_set --app=$app --key=botadmin --value=$botadmin
 ynh_app_setting_set --app=$app --key=botusers --value=$botusers
-ynh_app_setting_set --app=$app --key=dendrite_instance --value=$dendrite_instance
+ynh_app_setting_set --app=$app --key=homeserver_instance --value=$homeserver_instance
+ynh_app_setting_set --app=$app --key=homeserver_type --value=$homeserver_type
 ynh_app_setting_set --app=$app --key=server_name --value=$server_name
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=mautrix_version --value=$mautrix_version
@@ -85,7 +96,7 @@ ynh_app_setting_set --app=$app --key=mautrix_version --value=$mautrix_version
 #=================================================
 ynh_script_progression --message="Finding an available port..." --weight=1
 
-# Find a free port for communication between your local dendrite instance (home server) and its app service mautrix_bridge.
+# Find a free port for communication between your local homeserver instance (home server) and its app service mautrix_bridge.
 port=$(ynh_find_port --port=8449)
 ynh_app_setting_set --app=$app --key=port --value=$port
 
@@ -107,7 +118,7 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Add the user to the signald group. The signald group was created when the signald
 # package was installed from the extra repository
 # resolved by https://gitlab.com/signald/signald/-/commit/278240f3f1cc40a3b444c958b68ca3d6908e98a8
-ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$signald_user"
+ynh_system_user_create --username=$app --home_dir="$install_dir" --groups="$signald_user"
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -126,13 +137,13 @@ db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=3
 
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+ynh_app_setting_set --app=$app --key=install_dir --value=$install_dir
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path/src"
+ynh_setup_source --dest_dir="$install_dir/src"
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # SPECIFIC SETUP
@@ -141,10 +152,10 @@ chown -R $app:$app "$final_path"
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=2
 
-ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
+ynh_add_config --template="../conf/config.yaml" --destination="$install_dir/config.yaml"
 
-chmod 400 "$final_path/config.yaml"
-chown $app:$app "$final_path/config.yaml"
+chmod 400 "$install_dir/config.yaml"
+chown $app:$app "$install_dir/config.yaml"
 
 #=================================================
 # INSTALL MAUTRIX-BRIDGE PYTHON MODULE
@@ -153,28 +164,23 @@ ynh_script_progression --message="Installing Mautrix-Bridge Python Module..." --
 
 mkdir -p /var/log/$app
 # Configure Mautrix-Bridge
-python3 -m venv $final_path
-export HOME=$final_path
-$final_path/bin/pip3 install --upgrade pip setuptools wheel
-$final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
+python3 -m venv $install_dir
+export HOME=$install_dir
+$install_dir/bin/pip3 install --upgrade pip setuptools wheel
+$install_dir/bin/pip3 install --upgrade $install_dir/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
 
 #=================================================
-# REGISTER DENDRITE APP-SERVICE
+# REGISTER HOMESERVER APP-SERVICE
 #=================================================
-ynh_script_progression --message="Registering Dendrite app-service" --weight=1
+ynh_script_progression --message="Registering $homeserver_instance app-service" --weight=1
 
-$final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /tmp/generated_app_config.yaml
+$install_dir/bin/python3 -m mautrix_signal -g -c $install_dir/config.yaml -r $app_service_dir/$app.yaml
 
-mkdir -p $app_service_dir
+$homeserver_install_dir/update_synapse_for_appservice.sh || ynh_die --message="$homeserver_instance cannot restart with the app-service configuration"
 
-mv /tmp/generated_app_config.yaml $target_app_service_config
-
-#TODO add support for reloading appservices to dendrite_ynh
-#/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
-
-chown -R $app:$app "$final_path"
-ynh_store_file_checksum --file=$target_app_service_config
-ynh_store_file_checksum --file="$final_path/config.yaml"
+chown -R $app:$app "$install_dir"
+ynh_store_file_checksum --file=$app_service_dir/$app.yaml
+ynh_store_file_checksum --file="$install_dir/config.yaml"
 
 #=================================================
 # SETUP SYSTEMD
@@ -202,7 +208,7 @@ chown -R $app:$app /var/log/$app
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
-yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages (dendrite)" --log=/var/log/$app/$app.log
+yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages ($homeserver_instance)" --log=/var/log/$app/$app.log
 
 #=================================================
 # START SYSTEMD SERVICE

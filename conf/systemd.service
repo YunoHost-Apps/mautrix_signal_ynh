@@ -1,6 +1,6 @@
 [Unit]
 Description=Matrix Signal Bridge
-After=dendrite.service
+After=__HOMESERVER_INSTANCE__.service
 
 [Service]
 Type=simple

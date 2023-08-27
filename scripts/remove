@@ -17,17 +17,30 @@ ynh_script_progression --message="Loading installation settings..." --weight=1
 app=$YNH_APP_INSTANCE_NAME
 
 botname=$(ynh_app_setting_get --app=$app --key=botname)
-dendrite_instance=$(ynh_app_setting_get --app=$app --key=dendrite_instance)
+homeserver_instance=$(ynh_app_setting_get --app=$app --key=homeserver_instance)
+homeserver_type=$(ynh_app_setting_get --app=$app --key=homeserver_type)
 server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 # TODO add admin support
 #_db_name="matrix_$synapse_instance"
 #bot_synapse_db_user="@$botname:$server_name"
 signald_data="/var/lib/signald"
 signald_exe="/usr/bin/signald"
 signald_user="signald"
+
+if [ $homeserver_type -eq "synapse" ]
+homeserver_install_dir=$(ynh_app_setting_get --app $homeserver_instance --key final_path)
+elif [ $homeserver_type -eq "dendrite" ]
+homeserver_install_dir=$(ynh_app_setting_get --app $homeserver_instance --key install_dir)
+fi
+
+if [ $homeserver_type -eq "synapse" ]
+app_service_dir="$homeserver_install_dir/app-service"
+elif [ $homeserver_type -eq "dendrite" ]
+app_service_dir="/etc/matrix-$homeserver_instance/app-service"
+fi
 
 #=================================================
 # STANDARD REMOVE
@@ -66,23 +79,13 @@ ynh_script_progression --message="Removing the PostgreSQL database..." --weight=
 # Remove a database if it exists, along with the associated user
 ynh_psql_remove_db --db_user=$db_user --db_name=$db_name
 
-# TODO add admin support
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$app"";"
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$app"";"
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$bot_synapse_db_user"";"
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$bot_synapse_db_user"";"
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$botname"";"
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$botname"";"
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$signald_user"";"
-# ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP USER ""$signald_user"";"
-
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
 ynh_script_progression --message="Removing app main directory..." --weight=1
 
 # Remove the app directory securely
-ynh_secure_remove --file="$final_path"
+ynh_secure_remove --file="$install_dir"
 
 #=================================================
 # REMOVE DEPENDENCIES
@@ -103,10 +106,9 @@ ynh_secure_remove --file="$signald_data"
 ynh_secure_remove --file="$signald_exe"
 
 # Remove a directory securely
-ynh_secure_remove --file="/opt/yunohost/$dendrite_instance/app-services/$app.yaml"
+ynh_secure_remove --file="$app_service_dir/$app.yaml"
 
-#TODO add support for reloading appservices to dendrite_ynh
-#/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+$homeserver_install_dir/update_synapse_for_appservice.sh || ynh_die --message="$homeserver_instance cannot restart with the app-service configuration"
 
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"
