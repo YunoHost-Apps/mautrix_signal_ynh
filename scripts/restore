@@ -109,11 +109,28 @@ ynh_psql_execute_file_as_root --file="./db.sql" --database=$db_name
 #=================================================
 ynh_script_progression --message="Installing Mautrix-Bridge Python Module..." --weight=6
 
+if [ $YNH_ARCH == "armhf" ] || [ $YNH_ARCH == "armel" ]
+then
+# Install rustup is not already installed
+# We need this to be able to install cryptgraphy
+export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
+    if [ -e $final_path/.rustup ]; then
+    sudo -u "$app" env PATH=$PATH rustup update
+    else
+    sudo -u "$app" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain=stable --profile=minimal'
+    fi
+fi
+
+
 mkdir -p /var/log/$app
-# Configure Mautrix-Bridge
-python3 -m venv $final_path
-export HOME=$final_path
-$final_path/bin/pip3 install --upgrade pip setuptools wheel
+
+pushd $final_path
+	python3 -m venv $final_path/venv
+	source $final_path/venv/bin/activate
+	export HOME=$final_path
+	ynh_exec_warn_less pip install --upgrade pip setuptools wheel
+	#ynh_exec_warn_less pip install --upgrade $final_path/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
+popd
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
