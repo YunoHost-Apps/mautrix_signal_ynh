@@ -20,18 +20,21 @@ services = ["__APP__"]
         [main.permissions.listrelay]
         ask = "Users bridged thanks to Relay Mode"
         type = "tags"
-        help = "Relay Role: Talk on Signal through the RelayBot in a room where it has been activated with '!sg set-relay', no access otherwise."
+        help = "(!!! warning @#* caracters should be preceed with the \ character) 
+	Relay Role: Talk on Signal through the RelayBot in a room where it has been activated with '!sg set-relay', no access otherwise."
         visible = "enable_relaybot"
 
         [main.permissions.listuser]
         ask = "Bridge Users"
         type = "tags"
-        help = "User Role: Access to use the bridge to chat with a Signal account."
+        help = "(!!! warning @#* caracters should be preceed with the \ character) 
+	User Role: Access to use the bridge to chat with a Signal account."
 
         [main.permissions.listadmin]
         ask = "Bridge Administrators"
         type = "tags"
-        help = "Admin Role: User level and some additional administration tools."
+        help = "(!!! warning @#* caracters should be preceed with the \ character) 
+	Admin Role: User level and some additional administration tools."
 
     [main.bridge]
     name = "Puppetting Bridge Settings"
