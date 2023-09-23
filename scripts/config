@@ -28,7 +28,7 @@ get__botname() {
 
 get__listuser() {
     listuser=$(ynh_app_setting_get --app $app --key listuser)
-    echo "${listuser}"
+    echo "\"${listuser}\""
 
   # existingUsers=$(grep -- "\".*: user" "$final_path/config.yaml" | sed -r 's/: user//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
@@ -39,7 +39,7 @@ get__listuser() {
 
 get__listrelay() {
     listrelay=$(ynh_app_setting_get --app $app --key listrelay)
-    echo "${listrelay}"
+    echo "\"${listrelay}\""
 
  #existingRelayUsers=$(grep -- "\".*: relay" "$final_path/config.yaml" | sed -r 's/: relay//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
@@ -50,7 +50,7 @@ get__listrelay() {
 
 get__listadmin() {
     listadmin=$(ynh_app_setting_get --app $app --key listadmin)
-    echo "${listadmin}"
+    echo "\"${listadmin}\""
 
  #existingAdmins=$(grep -- "\".*: admin" "$final_path/config.yaml" | sed -r 's/: admin//' | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr '\n' ',')
 
