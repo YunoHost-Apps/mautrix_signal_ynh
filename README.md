@@ -101,7 +101,7 @@ In case you need to upload your logs somewhere, be aware that they contain your 
 
 * Official user documentation: <https://docs.mau.fi/bridges/python/signal/index.html>
 * Upstream app code repository: <https://github.com/mautrix/signal>
-* YunoHost documentation for this app: <https://yunohost.org/app_mautrix_signal>
+* YunoHost Store: <https://apps.yunohost.org/app/mautrix_signal>
 * Report a bug: <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>
 
 ## Developer info
