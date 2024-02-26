@@ -9,7 +9,7 @@
 		botname="signalbot"
 		encryption=0
 		botadmin="@johndoe:synapsedomain.tld"	(USER)
-		botusers="@johndoe:synapsedomain.tld"
+		botusers="*:synapsedomain.tld"
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=0
