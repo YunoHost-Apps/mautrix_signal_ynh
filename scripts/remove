@@ -38,15 +38,8 @@ ynh_remove_logrotate
 #=================================================
 ynh_script_progression --message="Removing the PostgreSQL configuration..." --weight=4
 
-# Remove a database if it exists, along with the associated user
+# Remove permissions of app to the synapse db
 ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP OWNED BY \"$app\";"
-ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP USER \"$app\";"
-ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP OWNED BY \"$bot_synapse_db_user\";"
-ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP USER \"$bot_synapse_db_user\";"
-ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP OWNED BY \"$botname\";"
-ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP USER \"$botname\";"
-ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP OWNED BY \"$signald_user\";"
-ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP USER \"$signald_user\";"
 
 #=================================================
 # SPECIFIC REMOVE
