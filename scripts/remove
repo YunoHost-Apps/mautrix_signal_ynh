@@ -36,7 +36,7 @@ ynh_remove_logrotate
 #=================================================
 # REMOVE THE POSTGRESQL DATABASE
 #=================================================
-#REMOVEME? ynh_script_progression --message="Removing the PostgreSQL database..." --weight=4
+ynh_script_progression --message="Removing the PostgreSQL configuration..." --weight=4
 
 # Remove a database if it exists, along with the associated user
 ynh_psql_execute_as_root --database=$synapse_db_name --sql="DROP OWNED BY ""$app"";"

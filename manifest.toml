@@ -15,7 +15,6 @@ maintainers = ["MayeulC"]
 license = "AGPL-3.0-or-later"
 userdoc = "https://docs.mau.fi/bridges/python/signal/index.html"
 code = "https://github.com/mautrix/signal"
-website = "https://github.com/mautrix/signal"
 fund = "https://github.com/sponsors/tulir"
 
 [integration]
