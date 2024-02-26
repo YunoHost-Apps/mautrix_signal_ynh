@@ -25,7 +25,6 @@ The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bri
 **Shipped version:** 0.4.3~ynh1
 ## Documentation and resources
 
-* Official app website: <https://github.com/mautrix/signal>
 * Official user documentation: <https://docs.mau.fi/bridges/python/signal/index.html>
 * Upstream app code repository: <https://github.com/mautrix/signal>
 * YunoHost Store: <https://apps.yunohost.org/app/mautrix_signal>
