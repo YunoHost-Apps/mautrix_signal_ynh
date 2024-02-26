@@ -17,7 +17,7 @@ source /usr/share/yunohost/helpers
 bot_synapse_adm=true
 encryption=false
 
-if [[ -z "${botusers}" ]] || [ "$botusers" == "admin" ]; then
+if [[ -z "$botusers" ]] || [ "$botusers" == "admin" ]; then
     if_botusers="# "
 else
     if_botusers=""
