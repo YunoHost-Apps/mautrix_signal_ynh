@@ -1,0 +1,107 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/master/schemas/manifest.v2.schema.json
+
+packaging_format = 2
+
+id = "mautrix_signal"
+name = "Matrix Signal bridge"
+description.en = "Matrix / Synapse puppeting bridge for Signal"
+description.fr = "Passerelle Matrix / Synapse pour Signal"
+
+version = "0.4.3~ynh1"
+
+maintainers = ["MayeulC"]
+
+[upstream]
+license = "AGPL-3.0-or-later"
+userdoc = "https://docs.mau.fi/bridges/python/signal/index.html"
+code = "https://github.com/mautrix/signal"
+website = "https://github.com/mautrix/signal"
+fund = "https://github.com/sponsors/tulir"
+
+[integration]
+yunohost = ">= 11.2"
+architectures = "all"
+multi_instance = true
+ldap = "not_relevant"
+sso = "not_relevant"
+disk = "50M" # FIXME: replace with an **estimate** minimum disk requirement. e.g. 20M, 400M, 1G, ...
+ram.build = "50M" # FIXME: replace with an **estimate** minimum ram requirement. e.g. 50M, 400M, 1G, ...
+ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requirement. e.g. 50M, 400M, 1G, ...
+
+[install]
+    [install.synapsenumber]
+    ask.en = "Choose the local synapse instance number to communicate with mautrix_signal"
+    ask.fr = "Choisissez le numéro de l'instance synapse qui doit communiquer avec mautrix_signal"
+    help.en = "If you installed synapse only once time, then leave default value 1."
+    help.fr = "Si vous n'avez installé qu'une fois synapse, gardez la valeur par défaut 1."
+    type = "string"
+    example = "2 (for instance synapse__2)"
+    default = "1"
+
+    [install.botname]
+    ask.en = "Choose a local synapse user name for the Signal bot"
+    ask.fr = "Choisissez un nom d'utilisateur synapse local pour le robot Signal"
+    help.en = "A system user will be created. Invite @signalbot:localsynapse.servername from an authorized Matrix account to start bridging. Give the matrix server_name, not the full domain/url."
+    help.fr = "Un utilisateur système sera créé. Inviter @signalbot:localsynapse.servername depuis un compte Matrix autorisé pour démarrer une passerelle. Donner le nom du serveur matrix, pas le domaine/url complet."
+    type = "string"
+    example = "signalbot"
+    default = "signalbot"
+
+    [install.botadmin]
+    ask.en = "Choose the Matrix account administrator of the Signal bot"
+    ask.fr = "Choisissez le compte Matrix administrateur du robot Signal"
+    help.en = "The Signal bot administrator does not need to be a local synapse account."
+    help.fr = "Le compte administrateur du robot Signal peut ne pas être un compte local synapse."
+    type = "string"
+    example = "@johndoe:localsynapse.servername or @johndoe:matrix.org"
+    default = "Your main Matrix account"
+
+    [install.botusers]
+    ask.en = "Choose Matrix user(s) authorized to bridge with the Signal bot"
+    ask.fr = "Choisissez le/les compte(s) Matrix autorisés à utiliser la passerelle Signal"
+    help.en = "Either the administrator only (admin), all local Synapse users (domain), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL."
+    help.fr = "L'administrateur seulement (admin), tous les comptes Synapse locaux (domain), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
+    type = "string"
+    example = "admin or domain or @johndoe:server.name or server.name or *"
+    default = "domain"
+
+[resources]
+    [resources.sources]
+    [resources.sources.main]
+    url = "https://github.com/mautrix/signal/archive/refs/tags/v0.4.3.tar.gz"
+    sha256 = "e75636e845d4b9d84070efec510b7358b93a4fb0d6ffe4300dbdb9260725ba53"
+    autoupdate.strategy = "latest_github_release"
+
+    [resources.sources.signald]
+    url = "https://gitlab.com/signald/signald/-/archive/0.17.0/signald-0.17.0.tar.gz"
+    sha256 = "225e36637daccf5f01138b7e29e3b2195bced7b13a290d163e34fe1f5d4a5d2a"
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+
+    [resources.ports]
+    main.default = 8449
+
+    [resources.apt]
+    packages = [
+        "postgresql",
+        "python3",
+        "python3-dev",
+        "build-essential",
+        "libolm-dev",
+    ]
+
+    [resources.apt.extras.signal]
+    repo = "https://updates.signald.org unstable main"
+    key = "https://updates.signald.org/apt-signing-key.asc"
+    packages = [
+        "libunixsocket-java",
+        "signald",
+        "signaldctl",
+    ]
+
+    [resources.database]
+    type = "postgresql"
