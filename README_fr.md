@@ -91,6 +91,7 @@ Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils c
 
 ## Documentations et ressources
 
+* Site officiel de l’app : <https://github.com/mautrix/signal>
 * Documentation officielle utilisateur : <https://docs.mau.fi/bridges/python/signal/index.html>
 * Dépôt de code officiel de l’app : <https://github.com/mautrix/signal>
 * YunoHost Store: <https://apps.yunohost.org/app/mautrix_signal>
