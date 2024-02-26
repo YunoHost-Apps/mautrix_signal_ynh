@@ -69,6 +69,9 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     [resources.sources.main]
     url = "https://github.com/mautrix/signal/archive/refs/tags/v0.4.3.tar.gz"
     sha256 = "e75636e845d4b9d84070efec510b7358b93a4fb0d6ffe4300dbdb9260725ba53"
+    rename = "mautrix-signal.tar.gz"
+    extract = false
+
     autoupdate.strategy = "latest_github_release"
 
     [resources.sources.signald]
