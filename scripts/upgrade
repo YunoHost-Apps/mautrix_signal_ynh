@@ -9,51 +9,10 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=1
-
-app=$YNH_APP_INSTANCE_NAME
-
-botname=$(ynh_app_setting_get --app=$app --key=botname)
-encryption=$(ynh_app_setting_get --app=$app --key=encryption)
-botadmin=$(ynh_app_setting_get --app=$app --key=botadmin)
-botusers=$(ynh_app_setting_get --app=$app --key=botusers)
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-previous_mautrix_version=$(ynh_app_setting_get --app=$app --key=mautrix_version)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
-db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
-port=$(ynh_app_setting_get --app=$app --key=port)
-synapse_instance=$(ynh_app_setting_get --app=$app --key=synapse_instance)
-server_name=$(ynh_app_setting_get --app=$app --key=server_name)
 mautrix_version=$(ynh_app_upstream_version)
 synapse_db_name="matrix_$synapse_instance"
-signald_user="signald" # This is actually chosen by the signald dependency
-enable_relaybot=true
-
-#=================================================
-# CHECK VERSION
-#=================================================
-ynh_script_progression --message="Checking version..." --weight=1
-
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=5
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -69,121 +28,75 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-# Upgrade from >0.2.0
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-
-# Upgrade from <=0.2.0
-if [ -z "$db_name" ]
-then
-    db_name=$(ynh_app_setting_get --app=$app --key=$app)
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-fi
-if [ -z "$db_pwd" ]
-then
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mautrix_bridge_db_pwd)
-    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
-fi
-
 # Fix possible permission issues with a previous signald version, esp. with stickers
 mkdir -p /var/lib/signald/{avatars,attachments,stickers}
-chown $signald_user:$signald_user /var/lib/signald/{avatars,attachments,stickers}
+chown "$signald_user:$signald_user" /var/lib/signald/{avatars,attachments,stickers}
 chmod -R g+rwX /var/lib/signald/{avatars,attachments,stickers}
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir="$final_path" --groups="$signald_user"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Upgrading source files..." --weight=1
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Upgrading source files..." --weight=1
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir/src" --full_replace=1
 
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path/src"
-fi
+chmod -R o-rwx "$install_dir"
+chown -R "$app:$app" "$install_dir"
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
-
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=5
-
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
-ynh_install_extra_app_dependencies --repo="https://updates.signald.org unstable main" --package="$extra_dependencies" --key="https://updates.signald.org/apt-signing-key.asc"
-
-#=================================================
-# SPECIFIC UPGRADE
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=2
 
-ynh_add_config --template="../conf/config.yaml" --destination="$final_path/config.yaml"
+if [[ -z "$botusers" ]] || [ "$botusers" == "admin" ]; then
+    if_botusers="# "
+else
+    if_botusers=""
+fi
 
-chmod 400 "$final_path/config.yaml"
-chown $app:$app "$final_path/config.yaml"
+ynh_add_config --template="config.yaml" --destination="$install_dir/config.yaml"
+
+chmod 400 "$install_dir/config.yaml"
+chown "$app:$app" "$install_dir/config.yaml"
 
 #=================================================
 # UPGRADE MAUTRIX-BRIDGE PYTHON MODULE
 #=================================================
 ynh_script_progression --message="Upgrading Mautrix-Bridge Python Module..." --weight=2
 
-python3 -m venv $final_path
-export HOME=$final_path
-$final_path/bin/pip3 install --upgrade pip setuptools wheel
-$final_path/bin/pip3 install --upgrade $final_path/src/mautrix-signal.tar.gz[metrics,e2be,formattednumbers,qrlink,stickers]
+if [ "$YNH_ARCH" == "armhf" ] || [ "$YNH_ARCH" == "armel" ]; then
+    # Install rustup is not already installed
+    # We need this to be able to install cryptgraphy
+    _install_rustup
+fi
+
+_mautrix_signal_build_venv
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
-$final_path/bin/python3 -m mautrix_signal -g -c $final_path/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+"$install_dir/venv/bin/python3" -m mautrix_signal -g -c "$install_dir/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 /opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 # Set permissions on app files
-chown -R $app:$app "$final_path"
+chown -R "$app:$app" "$install_dir"
 ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-ynh_store_file_checksum --file="$final_path/config.yaml"
+ynh_store_file_checksum --file="$install_dir/config.yaml"
 
 #=================================================
-# SETUP SYSTEMD
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading systemd configuration..." --weight=4
+ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
+yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --nonappend
-chmod -R 600 "/var/log/$app"
-chmod 700 "/var/log/$app"
-chown -R $app:$app /var/log/$app
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
-
-yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -191,7 +104,7 @@ yunohost service add $app --description="$app daemon for bridging Signal and Mat
 ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start"
+ynh_systemd_action --service_name="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT
