@@ -305,7 +305,7 @@ bridge:
     #     mxid - Specific user
     permissions:
         "*": "relay"
-        "__BOTUSERS__": "user"
+        __IF_BOTUSERS__"__BOTUSERS__": "user"
         "__BOTADMIN__": "admin"
 
     relay:
