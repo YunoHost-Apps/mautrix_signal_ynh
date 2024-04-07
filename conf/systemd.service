@@ -6,8 +6,8 @@ After=matrix-synapse.service
 Type=simple
 User=__APP__
 Group=__APP__
-WorkingDirectory=__FINALPATH__/
-ExecStart=__FINALPATH__/bin/python3 -m mautrix_signal
+WorkingDirectory=__INSTALL_DIR__/
+ExecStart=__INSTALL_DIR__/bin/python3 -m mautrix_signal
 
 [Install]
 WantedBy=multi-user.target
