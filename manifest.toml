@@ -7,7 +7,7 @@ name = "Matrix Signal bridge"
 description.en = "Matrix / Synapse puppeting bridge for Signal"
 description.fr = "Passerelle Matrix / Synapse pour Signal"
 
-version = "0.4.3~ynh2"
+version = "0.5.1~ynh1"
 
 maintainers = ["MayeulC"]
 
@@ -67,8 +67,8 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
 [resources]
     [resources.sources]
     [resources.sources.main]
-    url = "https://github.com/mautrix/signal/archive/refs/tags/v0.4.3.tar.gz"
-    sha256 = "e75636e845d4b9d84070efec510b7358b93a4fb0d6ffe4300dbdb9260725ba53"
+    url = "https://github.com/mautrix/signal/archive/refs/tags/v0.5.1.tar.gz"
+    sha256 = "646736a97421b4a3e25afa4410ef3168cba66b4964b3df0d2468d36ca409b193"
     rename = "mautrix-signal.tar.gz"
     extract = false
 
