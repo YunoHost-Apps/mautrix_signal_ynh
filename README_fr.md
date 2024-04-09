@@ -26,7 +26,7 @@ La passerelle ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index
 **Version incluse :** 0.5.1~ynh1
 ## Documentations et ressources
 
-- Documentation officielle utilisateur : <https://docs.mau.fi/bridges/python/signal/index.html>
+- Documentation officielle utilisateur : <https://docs.mau.fi/bridges/go/signal/index.html>
 - Dépôt de code officiel de l’app : <https://github.com/mautrix/signal>
 - YunoHost Store : <https://apps.yunohost.org/app/mautrix_signal>
 - Signaler un bug : <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>

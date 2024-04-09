@@ -25,7 +25,7 @@ The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bri
 **Shipped version:** 0.5.1~ynh1
 ## Documentation and resources
 
-- Official user documentation: <https://docs.mau.fi/bridges/python/signal/index.html>
+- Official user documentation: <https://docs.mau.fi/bridges/go/signal/index.html>
 - Upstream app code repository: <https://github.com/mautrix/signal>
 - YunoHost Store: <https://apps.yunohost.org/app/mautrix_signal>
 - Report a bug: <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>
