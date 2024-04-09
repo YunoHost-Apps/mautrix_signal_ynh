@@ -19,7 +19,7 @@ fund = "https://github.com/sponsors/tulir"
 
 [integration]
 yunohost = ">= 11.2"
-architectures = "all"
+architectures = ["amd64", "arm64"]
 multi_instance = true
 ldap = "not_relevant"
 sso = "not_relevant"
@@ -67,16 +67,17 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
 [resources]
     [resources.sources]
     [resources.sources.main]
-    url = "https://github.com/mautrix/signal/archive/refs/tags/v0.5.1.tar.gz"
-    sha256 = "646736a97421b4a3e25afa4410ef3168cba66b4964b3df0d2468d36ca409b193"
-    rename = "mautrix-signal.tar.gz"
+    in_subdir = false
     extract = false
+    rename = "mautrix-signal"
+    amd64.url = "https://github.com/mautrix/signal/releases/download/v0.5.1/mautrix-signal-amd64"
+    amd64.sha256 = "571919fa4402a22b6ff8bdcc451377174a2d0344a08d65d5dfcdbd2998902ba5"
+    arm64.url = "https://github.com/mautrix/signal/releases/download/v0.5.1/mautrix-signal-arm64"
+    arm64.sha256 = "55c5e685bf9d63a2cc5b436215adff1bc31cb78a8bc4845c94bb150e1d12760c"
 
     autoupdate.strategy = "latest_github_release"
-
-    [resources.sources.signald]
-    url = "https://gitlab.com/signald/signald/-/archive/0.17.0/signald-0.17.0.tar.gz"
-    sha256 = "225e36637daccf5f01138b7e29e3b2195bced7b13a290d163e34fe1f5d4a5d2a"
+    autoupdate.asset.amd64 = "^mautrix-signal-amd64$"
+    autoupdate.asset.arm64 = "^mautrix-signal-arm64$"
 
     [resources.system_user]
 
@@ -88,22 +89,7 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     main.default = 8449
 
     [resources.apt]
-    packages = [
-        "postgresql",
-        "python3",
-        "python3-dev",
-        "build-essential",
-        "libolm-dev",
-    ]
-
-    [resources.apt.extras.signal]
-    repo = "https://updates.signald.org unstable main"
-    key = "https://updates.signald.org/apt-signing-key.asc"
-    packages = [
-        "libunixsocket-java",
-        "signald",
-        "signaldctl",
-    ]
+   packages = "g++, postgresql, ffmpeg"
 
     [resources.database]
     type = "postgresql"
