@@ -31,7 +31,7 @@ appservice:
     address: http://localhost:__PORT__
 
     # The hostname and port where this appservice should listen.
-    hostname: 0.0.0.0
+    hostname: localhost
     port: __PORT__
 
     # Database config.
