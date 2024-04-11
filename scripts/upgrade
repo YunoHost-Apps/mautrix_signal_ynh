@@ -52,6 +52,7 @@ if [ -e "$install_dir/.rustup" ]; then
     ynh_exec_as "$app" env "PATH=$PATH" rustup self uninstall
 fi
 # Remove signald executable
+ynh_remove_systemd_config --service="signald"
 ynh_secure_remove --file="$signald_exe"
 
 # Remove signald data
