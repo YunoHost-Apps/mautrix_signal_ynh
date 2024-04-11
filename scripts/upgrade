@@ -114,7 +114,7 @@ ynh_add_systemd_config
 yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --nonappend
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
 
 #=================================================
 # START SYSTEMD SERVICE
