@@ -22,7 +22,7 @@ Currently the Matrix user can NOT invite other Matrix user in a bridged Signal r
 The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 
-**Versión proporcionada:** 0.4.3~ynh1
+**Versión proporcionada:** 0.4.3~ynh2
 ## Documentación e recursos
 
 - Documentación oficial para usuarias: <https://docs.mau.fi/bridges/python/signal/index.html>
