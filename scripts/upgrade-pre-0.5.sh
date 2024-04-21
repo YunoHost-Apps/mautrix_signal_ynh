@@ -31,3 +31,23 @@ ynh_secure_remove --file="$signald_data"
 # Remove signald system user
 ynh_system_user_delete --username=$signald_user
 
+
+#=================================================
+# MIGRATION 2 : MISSING CONFIGURATION VARIABLES
+#=================================================
+
+# Check if variable exists
+enable_relaybot="$(ynh_app_setting_get --app="$app" --key=enable_relaybot)"
+
+if [[ ! "$enable_relaybot" = "true" && ! "$enable_relaybot" = "false" ]] # Check setting is valid
+then
+    enable_relaybot=$(python yaml2json.py "$install_dir/config.yaml" | jq -r .bridge.relay.enabled)
+    if [[ ! "$enable_relaybot" = "true" && ! "$enable_relaybot" = "false" ]]
+    then
+	ynh_script_progression --message="Previous setting for enable_relaybot was invalid, defaulting to enabled" --weight=2
+	enable_relaybot="true"
+    else
+	ynh_script_progression --message="Migrating previous configuration value for enable_relaybot: $enable_relaybot" --weight=1
+    fi
+    ynh_app_setting_set --app="$app" --key=enable_relaybot --value="$enable_relaybot"
+fi
