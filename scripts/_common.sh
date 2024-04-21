@@ -4,10 +4,6 @@
 # COMMON VARIABLES
 #=================================================
 
-signald_data="/var/lib/signald"
-signald_exe="/usr/bin/signald"
-signald_user="signald"
-
 enable_relaybot=true
 
 #=================================================

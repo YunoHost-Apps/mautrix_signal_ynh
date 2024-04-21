@@ -12,11 +12,13 @@
 # Version 0.5.1 of Mautrix Signal Bridge is written in Go, whereas previous versions
 # were written in Python. Also signald data is not needed anymore.
 
-# Remove rustup
-export PATH="$PATH:$install_dir/.cargo/bin:$install_dir/.local/bin:/usr/local/sbin"
+signald_data="/var/lib/signald"
+signald_exe="/usr/bin/signald"
+signald_user="signald"
 
+# Remove rustup
 if [ -e "$install_dir/.rustup" ]; then
-    ynh_exec_as "$app" env "PATH=$PATH" rustup self uninstall
+    ynh_exec_as "$app" "$install_dir/.cargo/bin/rustup" self uninstall
 fi
 
 # Remove signald executable
@@ -25,6 +27,7 @@ ynh_secure_remove --file="$signald_exe"
 
 # Remove signald data
 ynh_secure_remove --file="$signald_data"
+
 # Remove signald system user
 ynh_system_user_delete --username=$signald_user
 
