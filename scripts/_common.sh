@@ -8,6 +8,13 @@
 # PERSONAL HELPERS
 #=================================================
 
+get_synapse_db_name() {
+	# Parameters: synapse instance identifier
+	# Returns: database name
+	ynh_app_setting_get --app="$1" --key=db_name
+}
+
+
 #=================================================
 # EXPERIMENTAL HELPERS
 #=================================================
