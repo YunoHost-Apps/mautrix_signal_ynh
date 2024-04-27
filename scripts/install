@@ -48,10 +48,7 @@ else
 fi
 
 server_name=$(ynh_app_setting_get --app "$synapse_instance" --key server_name)
-domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 mautrix_version=$(ynh_app_upstream_version)
-bot_synapse_db_user="@$botname:$server_name"
-synapse_db_name="matrix_$synapse_instance"
 
 ynh_app_setting_set --app="$app" --key=bot_synapse_adm --value="$bot_synapse_adm"
 ynh_app_setting_set --app="$app" --key=encryption --value="$encryption"
@@ -113,6 +110,9 @@ ynh_script_progression --message="Starting $app's systemd service..." --weight=2
 
 # Start a systemd service
 ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log"
+
+# Update bot admin status
+set_bot_admin_status
 
 #=================================================
 # END OF SCRIPT
