@@ -9,6 +9,10 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+# Satisfy shellcheck, those variables are known when starting the script:
+# shellcheck disable=SC2154
+echo From manifest: "$synapsenumber $bot_synapse_adm", \
+     From yunohost: "$app $install_dir" > /dev/null
 
 #=================================================
 # INITIALIZE AND STORE SETTINGS
@@ -21,7 +25,7 @@ else
 fi
 
 # ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_bridge bridge
-if [ $synapsenumber -eq "1" ]
+if [ "$synapsenumber" -eq "1" ]
 then
 	synapse_instance="synapse"
 else
@@ -43,18 +47,18 @@ else
   encryption="false"
 fi
 
-server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+server_name=$(ynh_app_setting_get --app "$synapse_instance" --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 mautrix_version=$(ynh_app_upstream_version)
 bot_synapse_db_user="@$botname:$server_name"
 synapse_db_name="matrix_$synapse_instance"
 
-ynh_app_setting_set --app=$app --key=bot_synapse_adm --value=$bot_synapse_adm
-ynh_app_setting_set --app=$app --key=encryption --value=$encryption
+ynh_app_setting_set --app="$app" --key=bot_synapse_adm --value="$bot_synapse_adm"
+ynh_app_setting_set --app="$app" --key=encryption --value="$encryption"
 ynh_app_setting_set --app="$app" --key=enable_relaybot --value="$enable_relaybot"
-ynh_app_setting_set --app=$app --key=synapse_instance --value=$synapse_instance
-ynh_app_setting_set --app=$app --key=server_name --value=$server_name
-ynh_app_setting_set --app=$app --key=mautrix_version --value=$mautrix_version
+ynh_app_setting_set --app="$app" --key=synapse_instance --value="$synapse_instance"
+ynh_app_setting_set --app="$app" --key=server_name --value="$server_name"
+ynh_app_setting_set --app="$app" --key=mautrix_version --value="$mautrix_version"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -66,7 +70,7 @@ ynh_setup_source --dest_dir="$install_dir"
 
 chmod 750 "$install_dir"
 chmod -R 750 "$install_dir"
-chown -R $app:$app "$install_dir"
+chown -R "$app":"$app" "$install_dir"
 
 #=================================================
 # ADD A CONFIGURATION
@@ -83,10 +87,10 @@ chown "$app:$app" "$install_dir/config.yaml"
 #=================================================
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
-$install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+"$install_dir"/mautrix-signal -g -c "$install_dir"/config.yaml -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+/opt/yunohost/matrix-"$synapse_instance"/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
-chown -R $app:$app "$install_dir"
+chown -R "$app":"$app" "$install_dir"
 ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
 ynh_store_file_checksum --file="$install_dir/config.yaml"
 
@@ -97,10 +101,10 @@ ynh_script_progression --message="Adding system configurations related to $app..
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log=/var/log/$app/$app.log
+yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user "$app/$app"
 
 #=================================================
 # START SYSTEMD SERVICE
