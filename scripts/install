@@ -14,9 +14,6 @@ source /usr/share/yunohost/helpers
 # INITIALIZE AND STORE SETTINGS
 #=================================================
 
-bot_synapse_adm=true
-encryption=false
-
 if [[ -z "$botusers" ]] || [ "$botusers" == "admin" ]; then
     if_botusers="# "
 else
@@ -37,6 +34,13 @@ then
   enable_relaybot="true"
 else
   enable_relaybot="false"
+fi
+
+if [ "$encryption" -eq "1" ]
+then
+  encryption="true"
+else
+  encryption="false"
 fi
 
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)

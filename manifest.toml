@@ -46,6 +46,22 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     example = "signalbot"
     default = "signalbot"
 
+    [install.bot_synapse_adm]
+    ask.en = "Give the Signal bot administrator rights to the Synapse instance?"
+    ask.fr = "Donner au robot Signal des droits administrateur à l'instance Synapse ?"
+    type = "boolean"
+    help.en = "If activated, the bot can group Signal chats in a Matrix space.Not required if you set up Synapse so that non-admins are authorized to create communities."
+    help.fr = "Si activé, le robot groupera les conversations Signal dans une communauté Matrix.Pas nécessaire si vous avez réglé Synapse pour qu'il autorise les non-admin à créer des communautés."
+    default = true
+
+    [install.encryption]
+    ask.en = "Enable end-to-bridge encryption?"
+    ask.fr = "Activer le chiffrement entre Synapse et le bridge ?"
+    type = "boolean"
+    help.en = "Only activate if you know the prerequisites and constraints related to E2B."
+    help.fr = "N'activer que si vous connaissez les prérequis et constraintes liées à E2B."
+    default = true
+
     [install.botadmin]
     ask.en = "Choose the Matrix account administrator of the Signal bot"
     ask.fr = "Choisissez le compte Matrix administrateur du robot Signal"
