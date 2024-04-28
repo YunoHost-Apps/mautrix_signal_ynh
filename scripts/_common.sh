@@ -50,8 +50,8 @@ set_bot_admin_status() {
 	ynh_print_info --message="Updating bot user admin status"
 	export -f wait_for_user_to_exist_in_synapse_db # Export function to subprocesses so that it may be called with timeout
 	# Wait until the user is created in synapse db
-	if ! timeout $timeout bash -c "wait_for_user_to_exist_in_synapse_db \"$bot_synapse_db_user\" \"$synapse_db_name" 2>&1; then
-		ynh_print_warn --message="Bot user $botname did not exist after $timeout seconds, skipping changing its admin status"
+	if ! timeout $timeout bash -c "wait_for_user_to_exist_in_synapse_db \"$bot_synapse_db_user\" \"$synapse_db_name\"" 2>&1; then
+		ynh_print_warn --message="Bot user $bot_synapse_db_user did not exist after $timeout seconds, skipping changing its admin status"
 	fi
 
 	# (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
