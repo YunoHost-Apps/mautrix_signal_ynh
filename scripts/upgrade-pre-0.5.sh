@@ -16,6 +16,12 @@ signald_data="/var/lib/signald"
 signald_exe="/usr/bin/signald"
 signald_user="signald"
 
+# Stop signald, and force stop all processes just in case
+# We do not care about data loss, since we are going to delete the data anyway
+ynh_systemd_action --service_name="signald" --action="stop"
+sleep 10 # Temporisation to allow signald to stop gracefully
+pkill -u "$signald_user" --signal 9 || true
+
 # Remove rustup
 if [ -e "$install_dir/.rustup" ]; then
     ynh_exec_as "$app" "$install_dir/.cargo/bin/rustup" self uninstall
