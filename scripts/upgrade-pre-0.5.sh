@@ -34,8 +34,11 @@ ynh_secure_remove --file="$signald_exe"
 # Remove signald data
 ynh_secure_remove --file="$signald_data"
 
-# Remove signald system user
+# Remove signald system user and group
 ynh_system_user_delete --username=$signald_user
+if ynh_system_group_exists --group="$signald_user"; then
+    groupdel "$signald_user"
+fi
 
 
 #=================================================
