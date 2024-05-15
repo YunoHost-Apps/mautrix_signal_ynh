@@ -12,7 +12,7 @@
 * Then, invite the bot (default @signalbot:yoursynapse.domain) in this new Mautrix-Signal bot administration room.
   * If the Bot does bot accept, see the [troubleshooting page](https://docs.mau.fi/bridges/general/troubleshooting.html)
 * Send ``!sg help`` to the bot in the created room to know how to control the bot.
-See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/python/signal/authentication.html)
+See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/signal/authentication.html)
 
 #### Linking the Bridge as a secondary device
 
@@ -50,12 +50,11 @@ and then restarting the mautrix_signal service.
 
 ## Documentation
 
-* Official "Mautrix-Signal" documentation: <https://docs.mau.fi/bridges/python/signal/index.html>
+* Official "Mautrix-Signal" documentation: <https://docs.mau.fi/bridges/go/signal/index.html>
 * Matrix room (Matrix Bridges in Yunohost): #mautrix_yunohost:matrix.fdn.fr
 * Matrix room (upstream app): #signal:maunium.net
 In case you need to upload your logs somewhere, be aware that they contain your contacts' and your phone numbers. Strip them out with
 ```| sed -r 's/[0-9]{10,}/📞/g'```
-* "Mautrix-Signal" bridge is based on the [signal daemon](https://gitlab.com/signald/signald) project.
 * YunoHost documentation: If more specific documentation is needed, feel free to contribute.
 
 ## YunoHost specific features

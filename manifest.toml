@@ -7,25 +7,25 @@ name = "Matrix Signal bridge"
 description.en = "Matrix / Synapse puppeting bridge for Signal"
 description.fr = "Passerelle Matrix / Synapse pour Signal"
 
-version = "0.4.3~ynh2"
+version = "0.5.1~ynh1"
 
-maintainers = ["MayeulC"]
+maintainers = ["MayeulC", "nathanael-h"]
 
 [upstream]
 license = "AGPL-3.0-or-later"
-userdoc = "https://docs.mau.fi/bridges/python/signal/index.html"
+userdoc = "https://docs.mau.fi/bridges/go/signal/index.html"
 code = "https://github.com/mautrix/signal"
 fund = "https://github.com/sponsors/tulir"
 
 [integration]
 yunohost = ">= 11.2"
-architectures = "all"
+architectures = ["amd64", "arm64"]
 multi_instance = true
 ldap = "not_relevant"
 sso = "not_relevant"
-disk = "50M" # FIXME: replace with an **estimate** minimum disk requirement. e.g. 20M, 400M, 1G, ...
-ram.build = "50M" # FIXME: replace with an **estimate** minimum ram requirement. e.g. 50M, 400M, 1G, ...
-ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requirement. e.g. 50M, 400M, 1G, ...
+disk = "1G"
+ram.build = "128M"
+ram.runtime = "128M"
 
 [install]
     [install.synapsenumber]
@@ -46,6 +46,22 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     example = "signalbot"
     default = "signalbot"
 
+    [install.bot_synapse_adm]
+    ask.en = "Give the Signal bot administrator rights to the Synapse instance?"
+    ask.fr = "Donner au robot Signal des droits administrateur à l'instance Synapse ?"
+    type = "boolean"
+    help.en = "If activated, the bot can group Signal chats in a Matrix space.Not required if you set up Synapse so that non-admins are authorized to create communities."
+    help.fr = "Si activé, le robot groupera les conversations Signal dans une communauté Matrix.Pas nécessaire si vous avez réglé Synapse pour qu'il autorise les non-admin à créer des communautés."
+    default = true
+
+    [install.encryption]
+    ask.en = "Enable end-to-bridge encryption?"
+    ask.fr = "Activer le chiffrement entre Synapse et le bridge ?"
+    type = "boolean"
+    help.en = "Only activate if you know the prerequisites and constraints related to E2B."
+    help.fr = "N'activer que si vous connaissez les prérequis et constraintes liées à E2B."
+    default = true
+
     [install.botadmin]
     ask.en = "Choose the Matrix account administrator of the Signal bot"
     ask.fr = "Choisissez le compte Matrix administrateur du robot Signal"
@@ -64,23 +80,34 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     example = "admin or domain or @johndoe:server.name or server.name or *"
     default = "domain"
 
+    [install.enable_relaybot]
+    ask.en = "Choose whether to enable the relay bot feature"
+    ask.fr = "Choisissez si vous souhaitez activer la fonctionnalité de relai par bot"
+    help.en = "If enabled, allows to use a single signal account (bot) to forward messages from multiple Matrix users. Messages will appear on Signal as if originating from a single user, with a prefix that indicates who is talking."
+    help.fr = "Si activé, permet d'utiliser un seul compte signal (bot) pour transmettre les messages de multiples utilisateurs Matrix. Les messages apparaîtront sur Signal comme envoyés par un seul utilisateur, avec un préfixe indiquant leur auteur."
+    type = "boolean"
+    default = true
+
 [resources]
     [resources.sources]
     [resources.sources.main]
-    url = "https://github.com/mautrix/signal/archive/refs/tags/v0.4.3.tar.gz"
-    sha256 = "e75636e845d4b9d84070efec510b7358b93a4fb0d6ffe4300dbdb9260725ba53"
-    rename = "mautrix-signal.tar.gz"
+    in_subdir = false
     extract = false
+    rename = "mautrix-signal"
+    amd64.url = "https://github.com/mautrix/signal/releases/download/v0.5.1/mautrix-signal-amd64"
+    amd64.sha256 = "571919fa4402a22b6ff8bdcc451377174a2d0344a08d65d5dfcdbd2998902ba5"
+    arm64.url = "https://github.com/mautrix/signal/releases/download/v0.5.1/mautrix-signal-arm64"
+    arm64.sha256 = "55c5e685bf9d63a2cc5b436215adff1bc31cb78a8bc4845c94bb150e1d12760c"
 
     autoupdate.strategy = "latest_github_release"
-
-    [resources.sources.signald]
-    url = "https://gitlab.com/signald/signald/-/archive/0.17.0/signald-0.17.0.tar.gz"
-    sha256 = "225e36637daccf5f01138b7e29e3b2195bced7b13a290d163e34fe1f5d4a5d2a"
+    autoupdate.asset.amd64 = "^mautrix-signal-amd64$"
+    autoupdate.asset.arm64 = "^mautrix-signal-arm64$"
 
     [resources.system_user]
+    home = "/opt/yunohost/__APP__"
 
     [resources.install_dir]
+    dir = "/opt/yunohost/__APP__"
 
     [resources.permissions]
 
@@ -88,22 +115,7 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     main.default = 8449
 
     [resources.apt]
-    packages = [
-        "postgresql",
-        "python3",
-        "python3-dev",
-        "build-essential",
-        "libolm-dev",
-    ]
-
-    [resources.apt.extras.signal]
-    repo = "https://updates.signald.org unstable main"
-    key = "https://updates.signald.org/apt-signing-key.asc"
-    packages = [
-        "libunixsocket-java",
-        "signald",
-        "signaldctl",
-    ]
+   packages = "g++, postgresql, ffmpeg"
 
     [resources.database]
     type = "postgresql"

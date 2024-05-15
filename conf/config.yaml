@@ -1,168 +1,185 @@
-# Homeserver details
+# Homeserver details.
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
     address: https://__DOMAIN__
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
     domain: __SERVER_NAME__
-    # Whether or not to verify the SSL certificate of the homeserver.
-    # Only applies if address starts with https://
-    verify_ssl: true
+
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
     software: standard
-    # Number of retries for all HTTP requests if the homeserver isn't reachable.
-    http_retry_count: 4
     # The URL to push real-time bridge status to.
     # If set, the bridge will make POST requests to this URL whenever a user's Signal connection state changes.
     # The bridge will use the appservice as_token to authorize requests.
     status_endpoint: null
     # Endpoint for reporting per-message status.
     message_send_checkpoint_endpoint: null
-    # Maximum number of simultaneous HTTP connections to the homeserver.
-    connection_limit: 100
-    # Whether asynchronous uploads via MSC2246 should be enabled for media.
-    # Requires a media repo that supports MSC2246.
+    # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
     async_media: false
 
-# Application service host/registration related details
+    # Should the bridge use a websocket for connecting to the homeserver?
+    # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
+    # mautrix-asmux (deprecated), and hungryserv (proprietary).
+    websocket: false
+    # How often should the websocket be pinged? Pinging will be disabled if this is zero.
+    ping_interval_seconds: 0
+
+# Application service host/registration related details.
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
     address: http://localhost:__PORT__
-    # When using https:// the TLS certificate and key files for the address.
-    tls_cert: false
-    tls_key: false
 
     # The hostname and port where this appservice should listen.
-    hostname: 0.0.0.0
+    hostname: localhost
     port: __PORT__
-    # The maximum body size of appservice API requests (from the homeserver) in mebibytes
-    # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
-    max_body_size: 1
 
-    # The full URI to the database. SQLite and Postgres are supported.
-    # Format examples:
-    #   SQLite:   sqlite:///filename.db
-    #   Postgres: postgres://username:password@hostname/dbname
-    database: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__
-    # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
-    # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
-    # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
-    # For sqlite, min_size is used as the connection thread pool size and max_size is ignored.
-    # Additionally, SQLite supports init_commands as an array of SQL queries to run on connect (e.g. to set PRAGMAs).
-    database_opts:
-        min_size: 5
-        max_size: 10
+    # Database config.
+    database:
+        # The database type. "sqlite3-fk-wal" and "postgres" are supported.
+        type: postgres
+        # The database URI.
+        #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
+        #           https://github.com/mattn/go-sqlite3#connection-string
+        #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
+        #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
+        uri: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__?sslmode=disable
+        # Maximum number of connections. Mostly relevant for Postgres.
+        max_open_conns: 20
+        max_idle_conns: 2
+        # Maximum connection idle time and lifetime before they're closed. Disabled if null.
+        # Parsed with https://pkg.go.dev/time#ParseDuration
+        max_conn_idle_time: null
+        max_conn_lifetime: null
 
     # The unique ID of this appservice.
     id: __BOTNAME__
-    # Username of the appservice bot.
-    bot_username: __BOTNAME__
-    # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
-    # to leave display name/avatar as-is.
-    bot_displayname: Signal bridge bot
-    bot_avatar: mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp
+    # Appservice bot details.
+    bot:
+        # Username of the appservice bot.
+        username: __BOTNAME__
+        # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+        # to leave display name/avatar as-is.
+        displayname: Signal bridge bot
+        avatar: mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp
 
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
-    # You should disable bridge -> sync_with_custom_puppets when this is enabled.
-    ephemeral_events: false
+    ephemeral_events: true
+
+    # Should incoming events be handled asynchronously?
+    # This may be necessary for large public instances with lots of messages going through.
+    # However, messages will not be guaranteed to be bridged in the same order they were sent in.
+    async_transactions: false
 
     # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
     as_token: "This value is generated when generating the registration"
     hs_token: "This value is generated when generating the registration"
 
-# Prometheus telemetry config. Requires prometheus-client to be installed.
+# Prometheus config.
 metrics:
+    # Enable prometheus metrics?
     enabled: false
-    listen_port: 8000
-
-# Manhole config.
-manhole:
-    # Whether or not opening the manhole is allowed.
-    enabled: false
-    # The path for the unix socket.
-    path: /var/tmp/mautrix-signal.manhole
-    # The list of UIDs who can be added to the whitelist.
-    # If empty, any UIDs can be specified in the open-manhole command.
-    whitelist:
-    - 0
+    # IP and port where the metrics listener should be. The path is always /metrics
+    listen: 127.0.0.1:8000
 
 signal:
-    # Path to signald unix socket
-    socket_path: /var/run/signald/signald.sock
-    # Directory for temp files when sending files to Signal. This should be an
-    # absolute path that signald can read. For attachments in the other direction,
-    # make sure signald is configured to use an absolute path as the data directory.
-    outgoing_attachment_dir: /tmp
-    # Directory where signald stores avatars for groups.
-    avatar_dir: ~/.config/signald/avatars
-    # Directory where signald stores auth data. Used to delete data when logging out.
-    data_dir: ~/.config/signald/data
-    # Whether or not unknown signald accounts should be deleted when the bridge is started.
-    # When this is enabled, any UserInUse errors should be resolved by restarting the bridge.
-    delete_unknown_accounts_on_start: false
-    # Whether or not message attachments should be removed from disk after they're bridged.
-    remove_file_after_handling: true
-    # Whether or not users can register a primary device
-    registration_enabled: true
-    # Whether or not to enable disappearing messages in groups. If enabled, then the expiration
-    # time of the messages will be determined by the first users to read the message, rather
-    # than individually. If the bridge has a single user, this can be turned on safely.
-    enable_disappearing_messages_in_groups: false
+    # Default device name that shows up in the Signal app.
+    device_name: mautrix-signal
 
 # Bridge config
 bridge:
     # Localpart template of MXIDs for Signal users.
-    # {userid} is replaced with the UUID of the Signal user.
-    username_template: "sg_{userid}"
-    # Displayname template for Signal users.
-    # {displayname} is replaced with the displayname of the Signal user, which is the first
-    # available variable in displayname_preference. The variables in displayname_preference
-    # can also be used here directly.
-    displayname_template: "{displayname} (SG)"
-    # Whether or not contact list displaynames should be used.
-    # Possible values: disallow, allow, prefer
-    #
-    # Multi-user instances are recommended to disallow contact list names, as otherwise there can
-    # be conflicts between names from different users' contact lists.
-    contact_list_names: disallow
-    # Available variables: full_name, first_name, last_name, phone, uuid
-    displayname_preference:
-    - full_name
-    - phone
+    # {{.}} is replaced with the internal ID of the Signal user.
+    username_template: sg_{{.}}
+    # Displayname template for Signal users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
+    # {{.ProfileName}} - The Signal profile name set by the user.
+    # {{.ContactName}} - The name for the user from your phone's contact list. This is not safe on multi-user instances.
+    # {{.PhoneNumber}} - The phone number of the user.
+    # {{.UUID}} - The UUID of the Signal user.
+    # {{.AboutEmoji}} - The emoji set by the user in their profile.
+    displayname_template: '{{or .ProfileName .PhoneNumber "Unknown user"}}'
+    # Whether to explicitly set the avatar and room name for private chat portal rooms.
+    # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
+    # If set to `always`, all DM rooms will have explicit names and avatars set.
+    # If set to `never`, DM rooms will never have names and avatars set.
+    private_chat_portal_meta: default
+    # Should avatars from the user's contact list be used? This is not safe on multi-user instances.
+    use_contact_avatars: false
+    # Should the bridge sync ghost user info even if profile fetching fails? This is not safe on multi-user instances.
+    use_outdated_profiles: false
+    # Should the Signal user's phone number be included in the room topic in private chat portal rooms?
+    number_in_topic: true
+    # Avatar image for the Note to Self room.
+    note_to_self_avatar: mxc://maunium.net/REBIVrqjZwmaWpssCZpBlmlL
 
-    # Whether or not to create portals for all groups on login/connect.
-    autocreate_group_portal: true
-    # Whether or not to create portals for all contacts on login/connect.
-    autocreate_contact_portal: false
-    # Whether or not to make portals of Signal groups in which joining via invite link does
-    # not need to be approved by an administrator publicly joinable on Matrix.
-    public_portals: false
-    # Whether or not to use /sync to get read receipts and typing notifications
-    # when double puppeting is enabled
-    sync_with_custom_puppets: true
-    # Whether or not to update the m.direct account data event when double puppeting is enabled.
+    portal_message_buffer: 128
+
+    # Should the bridge create a space for each logged-in user and add bridged rooms to it?
+    # Users who logged in before turning this on should run `!signal sync-space` to create and fill the space for the first time.
+    personal_filtering_spaces: true
+    # Should Matrix m.notice-type messages be bridged?
+    bridge_notices: true
+    # Should the bridge send a read receipt from the bridge bot when a message has been sent to Signal?
+    delivery_receipts: false
+    # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
+    message_status_events: false
+    # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
+    message_error_notices: true
+    # Should the bridge update the m.direct account data event when double puppeting is enabled.
     # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
     # and is therefore prone to race conditions.
     sync_direct_chat_list: false
-    # Allow using double puppeting from any server with a valid client .well-known file.
-    double_puppet_allow_discovery: false
-    # Servers to allow double puppeting from, even if double_puppet_allow_discovery is false.
-    double_puppet_server_map:
-        example.com: https://example.com
-    # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
-    #
-    # If set, custom puppets will be enabled automatically for local users
-    # instead of users having to find an access token and run `login-matrix`
-    # manually.
-    # If using this for other servers than the bridge's server,
-    # you must also set the URL in the double_puppet_server_map.
-    login_shared_secret_map:
-        example.com: foo
+    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
+    # This field will automatically be changed back to false after it, except if the config file is not writable.
+    resend_bridge_info: false
+    # Whether or not to make portals of groups that don't need approval of an admin to join by invite
+    # link publicly joinable on Matrix.
+    public_portals: false
+    # Send captions in the same message as images. This will send data compatible with both MSC2530.
+    # This is currently not supported in most clients.
+    caption_in_message: false
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
     federate_rooms: true
+    # Servers to always allow double puppeting from
+    double_puppet_server_map:
+        example.com: https://example.com
+    # Allow using double puppeting from any server with a valid client .well-known file.
+    double_puppet_allow_discovery: false
+    # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
+    #
+    # If set, double puppeting will be enabled automatically for local users
+    # instead of users having to find an access token and run `login-matrix`
+    # manually.
+    login_shared_secret_map:
+        example.com: foobar
+
+    # Maximum time for handling Matrix events. Duration strings formatted for https://pkg.go.dev/time#ParseDuration
+    # Null means there's no enforced timeout.
+    message_handling_timeout:
+        # Send an error message after this timeout, but keep waiting for the response until the deadline.
+        # This is counted from the origin_server_ts, so the warning time is consistent regardless of the source of delay.
+        # If the message is older than this when it reaches the bridge, the message won't be handled at all.
+        error_after: null
+        # Drop messages after this timeout. They may still go through if the message got sent to the servers.
+        # This is counted from the time the bridge starts handling the message.
+        deadline: 120s
+
+    # The prefix for commands. Only required in non-management rooms.
+    command_prefix: '!signal'
+    # Messages sent upon joining a management room.
+    # Markdown is supported. The defaults are listed below.
+    management_room_text:
+        # Sent when joining a room.
+        welcome: "Hello, I'm a Signal bridge bot."
+        # Sent when joining a management room and the user is already logged in.
+        welcome_connected: "Use `help` for help."
+        # Sent when joining a management room and the user is not logged in.
+        welcome_unconnected: "Use `help` for help or `login` to log in."
+        # Optional extra text sent when joining a management room.
+        additional_help: ""
+
     # End-to-bridge encryption support options.
     #
     # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
@@ -196,6 +213,10 @@ bridge:
             delete_on_device_delete: false
             # Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
             periodically_delete_expired: false
+            # Delete inbound megolm sessions that don't have the received_at field used for
+            # automatic ratcheting and expired session deletion. This is meant as a migration
+            # to delete old keys prior to the bridge update.
+            delete_outdated_inbound: false
         # What level of device verification should be required from users?
         #
         # Valid levels:
@@ -207,7 +228,7 @@ bridge:
         #   verified - Require manual per-device verification
         #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
         verification_levels:
-            # Minimum level for which the bridge should send keys to when bridging messages from Telegram to Matrix.
+            # Minimum level for which the bridge should send keys to when bridging messages from Signal to Matrix.
             receive: unverified
             # Minimum level that the bridge should accept for incoming Matrix messages.
             send: unverified
@@ -231,142 +252,62 @@ bridge:
             # default.
             messages: 100
 
-    # Whether to explicitly set the avatar and room name for private chat portal rooms.
-    # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
-    # If set to `always`, all DM rooms will have explicit names and avatars set.
-    # If set to `never`, DM rooms will never have names and avatars set.
-    private_chat_portal_meta: default
-    # Whether or not the bridge should send a read receipt from the bridge bot when a message has
-    # been sent to Signal. This let's you check manually whether the bridge is receiving your
-    # messages.
-    # Note that this is not related to Signal delivery receipts.
-    delivery_receipts: false
-    # Whether or not delivery errors should be reported as messages in the Matrix room.
-    delivery_error_reports: true
-    # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
-    message_status_events: false
-    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
-    # This field will automatically be changed back to false after it,
-    # except if the config file is not writable.
-    resend_bridge_info: false
-    # Interval at which to resync contacts (in seconds).
-    periodic_sync: 0
+            # Disable rotating keys when a user's devices change?
+            # You should not enable this option unless you understand all the implications.
+            disable_device_change_key_rotation: false
     # Should leaving the room on Matrix make the user leave on Signal?
     bridge_matrix_leave: true
-    # Should the bridge auto-create a group chat on Signal when a ghost is invited to a room?
-    # Requires the user to have sufficient power level and double puppeting enabled.
-    create_group_on_invite: true
-    hacky_contact_name_mixup_detection: false
-
-    # Provisioning API part of the web server for automated portal creation and fetching information.
-    # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
+    # Settings for provisioning API
     provisioning:
-        # Whether or not the provisioning API should be enabled.
-        enabled: false
-        # The prefix to use in the provisioning API endpoints.
+        # Prefix for the provisioning API paths.
         prefix: /_matrix/provision
-        # The shared secret to authorize users of the API.
-        # Set to "generate" to generate and save a new token.
+        # Shared secret for authentication. If set to "generate", a random secret will be generated,
+        # or if set to "disable", the provisioning API will be disabled.
         shared_secret: generate
-        # Segment API key to enable analytics tracking for web server
-        # endpoints. Set to null to disable.
-        # Currently the only events are login start, QR code scan, and login
-        # success/failure.
-        segment_key: null
-        # Optional user_id to use when sending Segment events. If null, defaults to using mxID.
-        segment_user_id: null
-
-    # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "!sg"
-
-    # Messages sent upon joining a management room.
-    # Markdown is supported. The defaults are listed below.
-    management_room_text:
-        # Sent when joining a room.
-        welcome: "Hello, I'm a Signal bridge bot."
-        # Sent when joining a management room and the user is already logged in.
-        welcome_connected: "Use `help` for help."
-        # Sent when joining a management room and the user is not logged in.
-        welcome_unconnected: "Use `help` for help or `link` to log in."
-        # Optional extra text sent when joining a management room.
-        additional_help: ""
-
-    # Send each message separately (for readability in some clients)
-    management_room_multiple_messages: false
+        # Enable debug API at /debug with provisioning authentication.
+        debug_endpoints: false
 
     # Permissions for using the bridge.
     # Permitted values:
-    #      relay - Allowed to be relayed through the bridge, no access to commands.
-    #       user - Use the bridge with puppeting.
-    #      admin - Use and administrate the bridge.
+    #    relay - Talk through the relaybot (if enabled), no access otherwise
+    #     user - Access to use the bridge to chat with a Signal account.
+    #    admin - User level and some additional administration tools
     # Permitted keys:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        "*": "relay"
-        __IF_BOTUSERS__"__BOTUSERS__": "user"
-        "__BOTADMIN__": "admin"
+        "*": relay
+        __IF_BOTUSERS__"__BOTUSERS__": user
+        "__BOTADMIN__": admin
 
+    # Settings for relay mode
     relay:
         # Whether relay mode should be allowed. If allowed, `!signal set-relay` can be used to turn any
         # authenticated user into a relaybot for that chat.
         enabled: __ENABLE_RELAYBOT__
-        # The formats to use when sending messages to Signal via a relay user.
-        #
-        # Available variables:
-        #   $sender_displayname - The display name of the sender (e.g. Example User)
-        #   $sender_username    - The username (Matrix ID localpart) of the sender (e.g. exampleuser)
-        #   $sender_mxid        - The Matrix ID of the sender (e.g. @exampleuser:example.com)
-        #   $message            - The message content
+        # Should only admins be allowed to set themselves as relay users?
+        admin_only: false
+        # The formats to use when sending messages to Signal via the relaybot.
         message_formats:
-            m.text: '$sender_displayname: $message'
-            m.notice: '$sender_displayname: $message'
-            m.emote: '* $sender_displayname $message'
-            m.file: '$sender_displayname sent a file'
-            m.image: '$sender_displayname sent an image'
-            m.audio: '$sender_displayname sent an audio file'
-            m.video: '$sender_displayname sent a video'
-            m.location: '$sender_displayname sent a location'
-        # Specify a dedicated relay account. Must be a regular matrix account logged into this bridge
-        # and double puppeting working to auto-accept invites. When this user is invited to a room
-        # it will automatically be set as the relay user. May be overridden with `set-relay` or `unset-relay`
-        # relaybot: '@relaybot:example.com'
-        # Whether or not invites from non-logged-in users should be relayed
-        invite: true
+            m.text: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
+            m.notice: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
+            m.emote: "* <b>{{ .Sender.Displayname }}</b> {{ .Message }}"
+            m.file: "<b>{{ .Sender.Displayname }}</b> sent a file"
+            m.image: "<b>{{ .Sender.Displayname }}</b> sent an image"
+            m.audio: "<b>{{ .Sender.Displayname }}</b> sent an audio file"
+            m.video: "<b>{{ .Sender.Displayname }}</b> sent a video"
+            m.location: "<b>{{ .Sender.Displayname }}</b> sent a location"
 
-    # Format for generating URLs from location messages for sending to Signal
-    # Google Maps: 'https://www.google.com/maps/place/{lat},{long}'
-    # OpenStreetMap: 'https://www.openstreetmap.org/?mlat={lat}&mlon={long}'
-    location_format: 'https://www.google.com/maps/place/{lat},{long}'
-
-# Python logging configuration.
-#
-# See section 16.7.2 of the Python documentation for more info:
-# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+# Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    version: 1
-    formatters:
-        colored:
-            (): mautrix_signal.util.ColorFormatter
-            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
-        normal:
-            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
-    handlers:
-        file:
-            class: logging.handlers.RotatingFileHandler
-            formatter: normal
-            filename: /var/log/__APP__/__APP__.log
-            maxBytes: 10485760
-            backupCount: 10
-        console:
-            class: logging.StreamHandler
-            formatter: colored
-    loggers:
-        mau:
-            level: INFO
-        aiohttp:
-            level: INFO
-    root:
-        level: INFO
-        handlers: [file, console]
+    min_level: info
+    writers:
+    - type: stdout
+      format: pretty-colored
+    - type: file
+      format: json
+      filename: /var/log/__APP__/__APP__.log
+      max_size: 100
+      max_backups: 10
+      compress: true

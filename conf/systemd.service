@@ -7,7 +7,7 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
-ExecStart=__INSTALL_DIR__/bin/python3 -m mautrix_signal
+ExecStart=__INSTALL_DIR__/mautrix-signal -c=__INSTALL_DIR__/config.yaml
 
 [Install]
 WantedBy=multi-user.target

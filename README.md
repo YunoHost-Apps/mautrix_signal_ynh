@@ -19,13 +19,13 @@ It shall NOT be edited by hand.
 A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Messages, notifications (and sometimes media) are bridged between a Signal user and a Matrix user.
 Currently the Matrix user can NOT invite other Matrix user in a bridged Signal room, so only someone with a Signal account can participate to Signal group conversations.
 
-The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
+The ["Mautrix-Signal"](https://docs.mau.fi/bridges/go/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 
-**Shipped version:** 0.4.3~ynh2
+**Shipped version:** 0.5.1~ynh1
 ## Documentation and resources
 
-- Official user documentation: <https://docs.mau.fi/bridges/python/signal/index.html>
+- Official user documentation: <https://docs.mau.fi/bridges/go/signal/index.html>
 - Upstream app code repository: <https://github.com/mautrix/signal>
 - YunoHost Store: <https://apps.yunohost.org/app/mautrix_signal>
 - Report a bug: <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>
