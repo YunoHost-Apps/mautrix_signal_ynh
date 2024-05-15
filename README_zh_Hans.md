@@ -3,7 +3,7 @@
 请勿手动编辑。
 -->
 
-# YunoHost 的 Matrix Signal bridge
+# YunoHost 上的 Matrix Signal bridge
 
 [![集成程度](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![工作状态](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
 
