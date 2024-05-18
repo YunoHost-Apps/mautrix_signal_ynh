@@ -11,7 +11,7 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 mautrix_version=$(ynh_app_upstream_version)
-synapse_db_name="matrix_$synapse_instance"
+synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
@@ -35,32 +35,22 @@ ynh_psql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name"
 # RESTORE VARIOUS FILES
 #=================================================
 
-ynh_systemd_action --service_name=signald --action="stop"
-ynh_restore_file --origin_path="$signald_data"
-ynh_systemd_action --service_name=signald --action="start"
+# TODO: check if there are some files to restore
 
 ynh_restore_file --origin_path="/var/log/$app/"
 
-#=================================================
-# INSTALL MAUTRIX-BRIDGE PYTHON MODULE
-#=================================================
-ynh_script_progression --message="Installing Mautrix-Bridge Python Module..." --weight=6
-
-if [ "$YNH_ARCH" == "armhf" ] || [ "$YNH_ARCH" == "armel" ]; then
-    # Install rustup is not already installed
-    # We need this to be able to install cryptgraphy
-    _install_rustup
-fi
-
-_mautrix_signal_build_venv
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
-"$install_dir/venv/bin/python3" -m mautrix_signal -g -c "$install_dir/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
-"/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die "Synapse can't restart with the appservice configuration"
+$install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+
+chown -R $app:$app "$install_dir"
+ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
+ynh_store_file_checksum --file="$install_dir/config.yaml"
 
 #=================================================
 # RESTORE SYSTEM CONFIGURATIONS
@@ -81,15 +71,8 @@ ynh_script_progression --message="Starting $app's systemd service..." --weight=1
 # Start a systemd service
 ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
-# Wait until the synapse user is created
-sleep 30
-# (Note that, by default, non-admins might not have your homeserver's permission to create communities.)
-if [ "$bot_synapse_adm" = true ]; then
-    ynh_psql_execute_as_root --database="$synapse_db_name" --sql="UPDATE users SET admin = 1 WHERE name = \"$botname\";"
-#    #yunohost app action run $synapse_instance set_admin_user -a username=$botname
-fi
-
-ynh_systemd_action --service_name="$app" --action="restart" --log_path="/var/log/$app/$app.log"
+# Update bot admin status
+set_bot_admin_status
 
 #=================================================
 # END OF SCRIPT

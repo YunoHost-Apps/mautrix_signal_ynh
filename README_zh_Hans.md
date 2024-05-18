@@ -3,7 +3,7 @@
 请勿手动编辑。
 -->
 
-# YunoHost 的 Matrix Signal bridge
+# YunoHost 上的 Matrix Signal bridge
 
 [![集成程度](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![工作状态](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
 
@@ -19,13 +19,13 @@
 A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Messages, notifications (and sometimes media) are bridged between a Signal user and a Matrix user.
 Currently the Matrix user can NOT invite other Matrix user in a bridged Signal room, so only someone with a Signal account can participate to Signal group conversations.
 
-The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
+The ["Mautrix-Signal"](https://docs.mau.fi/bridges/go/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 
-**分发版本：** 0.4.3~ynh2
+**分发版本：** 0.6.1~ynh1
 ## 文档与资源
 
-- 官方用户文档： <https://docs.mau.fi/bridges/python/signal/index.html>
+- 官方用户文档： <https://docs.mau.fi/bridges/go/signal/index.html>
 - 上游应用代码库： <https://github.com/mautrix/signal>
 - YunoHost 商店： <https://apps.yunohost.org/app/mautrix_signal>
 - 报告 bug： <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>

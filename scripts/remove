@@ -13,7 +13,7 @@ source /usr/share/yunohost/helpers
 # LOAD SETTINGS
 #=================================================
 
-synapse_db_name="matrix_$synapse_instance"
+synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
 
 #=================================================
@@ -48,8 +48,7 @@ ynh_psql_execute_as_root --database="$synapse_db_name" --sql="DROP OWNED BY \"$a
 #=================================================
 ynh_script_progression --message="Removing various files..." --weight=6
 
-ynh_secure_remove --file="$signald_data"
-ynh_secure_remove --file="$signald_exe"
+# TODO: check if there is a data dir or some files to remove
 
 # Remove a directory securely
 ynh_secure_remove --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"

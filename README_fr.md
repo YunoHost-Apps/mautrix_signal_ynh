@@ -23,10 +23,10 @@ La passerelle ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index
 **Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix-synapse et mautrix_signal en même temps!**
 
 
-**Version incluse :** 0.4.3~ynh2
+**Version incluse :** 0.6.1~ynh1
 ## Documentations et ressources
 
-- Documentation officielle utilisateur : <https://docs.mau.fi/bridges/python/signal/index.html>
+- Documentation officielle utilisateur : <https://docs.mau.fi/bridges/go/signal/index.html>
 - Dépôt de code officiel de l’app : <https://github.com/mautrix/signal>
 - YunoHost Store : <https://apps.yunohost.org/app/mautrix_signal>
 - Signaler un bug : <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>

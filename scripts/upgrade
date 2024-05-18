@@ -15,6 +15,13 @@ server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 
 #=================================================
+# CHECK VERSION
+#=================================================
+ynh_script_progression --message="Checking version..." --weight=1
+
+upgrade_type=$(ynh_check_app_version_changed)
+
+#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
@@ -28,27 +35,38 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-# Fix possible permission issues with a previous signald version, esp. with stickers
-mkdir -p /var/lib/signald/{avatars,attachments,stickers}
-chown "$signald_user:$signald_user" /var/lib/signald/{avatars,attachments,stickers}
-chmod -R g+rwX /var/lib/signald/{avatars,attachments,stickers}
+# TODO: check if there are some file that need some chown chmod
+# TODO: look at whatsapp to compare
+
+# Check if an old version of the bridge is in use
+# In this case it needs to be upgraded from python to go
+# Note that 0.5.0 was never released, but it makes for a good cut-off
+if ynh_compare_current_package_version --comparison lt --version 0.5.0~ynh1
+then
+    source upgrade-pre-0.5.sh
+fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Upgrading source files..." --weight=1
 
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir/src" --full_replace=1
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+	ynh_script_progression --message="Upgrading source files..." --weight=2
 
-chmod -R o-rwx "$install_dir"
-chown -R "$app:$app" "$install_dir"
+	# Download, check integrity, uncompress and patch the source from app.src
+    ynh_setup_source --dest_dir="$install_dir"
+fi
+
+chmod 750 "$install_dir"
+chmod -R 750 "$install_dir"
+chown -R $app:$app "$install_dir"
 
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=2
-
+echo "botusers=$botusers"
 if [[ -z "$botusers" ]] || [ "$botusers" == "admin" ]; then
     if_botusers="# "
 else
@@ -61,28 +79,14 @@ chmod 400 "$install_dir/config.yaml"
 chown "$app:$app" "$install_dir/config.yaml"
 
 #=================================================
-# UPGRADE MAUTRIX-BRIDGE PYTHON MODULE
-#=================================================
-ynh_script_progression --message="Upgrading Mautrix-Bridge Python Module..." --weight=2
-
-if [ "$YNH_ARCH" == "armhf" ] || [ "$YNH_ARCH" == "armel" ]; then
-    # Install rustup is not already installed
-    # We need this to be able to install cryptgraphy
-    _install_rustup
-fi
-
-_mautrix_signal_build_venv
-
-#=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
-"$install_dir/venv/bin/python3" -m mautrix_signal -g -c "$install_dir/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+$install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
-# Set permissions on app files
-chown -R "$app:$app" "$install_dir"
+chown -R $app:$app "$install_dir"
 ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
 ynh_store_file_checksum --file="$install_dir/config.yaml"
 
@@ -96,7 +100,7 @@ ynh_add_systemd_config
 yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --nonappend
+ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
 
 #=================================================
 # START SYSTEMD SERVICE
