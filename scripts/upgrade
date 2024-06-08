@@ -91,16 +91,32 @@ ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.y
 ynh_store_file_checksum --file="$install_dir/config.yaml"
 
 #=================================================
-# REAPPLY SYSTEM CONFIGURATIONS
+# SETUP SYSTEMD
 #=================================================
 ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
+chmod -R 600 "/var/log/$app"
+chmod 700 "/var/log/$app"
+chown -R $app:$app /var/log/$app
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+
+yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
