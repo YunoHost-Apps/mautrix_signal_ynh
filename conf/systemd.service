@@ -8,6 +8,8 @@ User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
 ExecStart=__INSTALL_DIR__/mautrix-signal -c=__INSTALL_DIR__/config.yaml
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
