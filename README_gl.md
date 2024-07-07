@@ -5,7 +5,7 @@ NON debe editarse manualmente.
 
 # Matrix Signal bridge para YunoHost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![Estado de funcionamento](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Estado de mantemento](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
+[![Nivel de integración](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/) ![Estado de funcionamento](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Estado de mantemento](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
 
 [![Instalar Matrix Signal bridge con YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
 

@@ -5,7 +5,7 @@ EZ editatu eskuz.
 
 # Matrix Signal bridge YunoHost-erako
 
-[![Integrazio maila](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://dash.yunohost.org/appci/app/mautrix_signal) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
+[![Integrazio maila](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
 
 [![Instalatu Matrix Signal bridge YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
 
