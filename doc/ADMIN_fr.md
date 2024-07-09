@@ -16,7 +16,7 @@ Voir aussi [upstream wiki Authentication page](https://docs.mau.fi/bridges/pytho
 
 #### Relier la passerelle comme un appareil secondaire
 
-* Tapez ``!sg link``
+* Tapez ``!signal link``
 * Ouvrez l'application Signal de votre appareil principal
 * Ouvrez Paramètres => Appareils reliés => + => filmer le QR
 * Par défaut, seules les conversations avec des messages très récents seront mises-en-miroir
@@ -24,9 +24,9 @@ Voir aussi [upstream wiki Authentication page](https://docs.mau.fi/bridges/pytho
 
 #### Enregistrer la passerelle comme appareil principal
 
-* Tapez ``!sg register <phone>``, où ``<phone>`` est votre numéro de téléphone au format international sans espace, p.ex. ``!sg register +33612345678``
+* Tapez ``!signal register <phone>``, où ``<phone>`` est votre numéro de téléphone au format international sans espace, p.ex. ``!signal register +33612345678``
 * Répondez dans le salon d'administration avec le code de vérification reçu par SMS.
-* Définissez une nom de profil ``!sg set-profile-name <name>``
+* Définissez une nom de profil ``!signal set-profile-name <name>``
 
 ### Robot-Relai "Relaybot": Relayer les conversations de TOUS les comptes Matrix et TOUS les comptes Signal présents dans UN groupe/salon
 
