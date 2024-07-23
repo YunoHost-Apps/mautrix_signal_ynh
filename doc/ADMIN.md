@@ -11,12 +11,12 @@
 * First your Matrix user or Synapse Server has to be authorized in the Configuration of the bridge (see below)
 * Then, invite the bot (default @signalbot:yoursynapse.domain) in this new Mautrix-Signal bot administration room.
   * If the Bot does bot accept, see the [troubleshooting page](https://docs.mau.fi/bridges/general/troubleshooting.html)
-* Send ``!sg help`` to the bot in the created room to know how to control the bot.
+* Send ``!signal help`` to the bot in the created room to know how to control the bot.
 See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/signal/authentication.html)
 
 #### Linking the Bridge as a secondary device
 
-* Type ``!sg link``
+* Type ``!signal link``
 * Open Signal App of your primary device
 * Open Settings => Linked Devices => + => Capture the QR code with the camera
 * By defaults, only conversations with very recent messages will be bridged
@@ -24,9 +24,9 @@ See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/sign
 
 #### Registering the Bridge as a primary device
 
-* Type ``!sg register <phone>``, where ``<phone>`` is your phone number in the international format with no space, e.g. ``!sg register +33612345678``
+* Type ``!signal register <phone>``, where ``<phone>`` is your phone number in the international format with no space, e.g. ``!signal register +33612345678``
 * Answer in the bot room with the verification code that you reveived in SMS.
-* Set a profile name with ``!sg set-profile-name <name>``
+* Set a profile name with ``!signal set-profile-name <name>``
 
 ### Double puppeting
 
@@ -38,7 +38,7 @@ See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/sign
 * Create a room on the signal side
 * Your bridged users will be invited on the Matrix side once they are invited on the Signal side
 * You can invite more people over on the Matrix side
-* Have one of the bridged users (who has the right permission) type `!sg set-relay` on the Matrix side. Their signal account will relay messages from other Matrix users
+* Have one of the bridged users (who has the right permission) type `!signal set-relay` on the Matrix side. Their signal account will relay messages from other Matrix users
 It is not yet possible to bridge to an existing signal room, or create a new signal room from the Matrix side.
 
 ## Configuration of the bridge

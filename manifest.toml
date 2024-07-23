@@ -7,7 +7,7 @@ name = "Matrix Signal bridge"
 description.en = "Matrix / Synapse puppeting bridge for Signal"
 description.fr = "Passerelle Matrix / Synapse pour Signal"
 
-version = "0.6.3~ynh1"
+version = "0.6.3~ynh2"
 
 maintainers = ["MayeulC", "nathanael-h"]
 
@@ -74,11 +74,10 @@ ram.runtime = "128M"
     [install.botusers]
     ask.en = "Choose Matrix user(s) authorized to bridge with the Signal bot"
     ask.fr = "Choisissez le/les compte(s) Matrix autorisés à utiliser la passerelle Signal"
-    help.en = "Either the administrator only (admin), all local Synapse users (domain), a remote or local user (@johndoe:server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL."
-    help.fr = "L'administrateur seulement (admin), tous les comptes Synapse locaux (domain), un compte local ou distant (@johndoe:server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet."
     type = "string"
-    example = "admin or domain or @johndoe:server.name or server.name or *"
-    default = "domain"
+    example = "@johndoe:server.name or server.name or *"
+    help.en = "A remote or local user (@johndoe:server.name),the local server (server.name), a remote server (matrix.org), or all remote/local servers (*) can be authorized. Give the Matrix server_name, not the full domain/URL. It is also possible to specify multiple values by separating them with comma. Example: @johndoe:server.name,domain.tld,matrix.org"
+    help.fr = "Un compte local ou distant (@johndoe:server.name), le serveur local (server.name), un serveur distant (matrix.org), ou tous les serveurs remote/local (*). Donner le nom du serveur Matrix, pas le domaine/URL complet. Il est également possible de spécifier plusieurs valeurs en les séparant par une virgule. Exemple : @johndoe:server.name,domain.tld,matrix.org"
 
     [install.enable_relaybot]
     ask.en = "Choose whether to enable the relay bot feature"
