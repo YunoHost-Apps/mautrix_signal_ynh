@@ -26,7 +26,7 @@ The ["Mautrix-Signal"](https://docs.mau.fi/bridges/go/signal/index.html) bridge 
 ## Dokumentasi dan sumber daya
 
 - Dokumentasi pengguna resmi: <https://docs.mau.fi/bridges/go/signal/index.html>
-- Repositori kode aplikasi hulu: <https://github.com/mautrix/signal>
+- Depot kode aplikasi hulu: <https://github.com/mautrix/signal>
 - Gudang YunoHost: <https://apps.yunohost.org/app/mautrix_signal>
 - Laporkan bug: <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>
 
