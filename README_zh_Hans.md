@@ -5,7 +5,9 @@
 
 # YunoHost 上的 Matrix Signal bridge
 
-[![集成程度](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/) ![工作状态](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
+[![集成程度](https://apps.yunohost.org/badge/integration/mautrix_signal)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/)
+![工作状态](https://apps.yunohost.org/badge/state/mautrix_signal)
+![维护状态](https://apps.yunohost.org/badge/maintained/mautrix_signal)
 
 [![使用 YunoHost 安装 Matrix Signal bridge](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
 
