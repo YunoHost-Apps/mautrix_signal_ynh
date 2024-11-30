@@ -103,10 +103,8 @@ ram.runtime = "128M"
     autoupdate.asset.arm64 = "^mautrix-signal-arm64$"
 
     [resources.system_user]
-    home = "/opt/yunohost/__APP__"
 
     [resources.install_dir]
-    dir = "/opt/yunohost/__APP__"
 
     [resources.permissions]
 
