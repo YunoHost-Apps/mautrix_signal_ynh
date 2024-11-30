@@ -5,7 +5,9 @@ Il NE doit PAS être modifié à la main.
 
 # Matrix Signal bridge pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
+[![Niveau d’intégration](https://apps.yunohost.org/badge/integration/mautrix_signal)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/)
+![Statut du fonctionnement](https://apps.yunohost.org/badge/state/mautrix_signal)
+![Statut de maintenance](https://apps.yunohost.org/badge/maintained/mautrix_signal)
 
 [![Installer Matrix Signal bridge avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
 
@@ -23,7 +25,7 @@ La passerelle ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index
 **Attention : sauvegardez et restaurez toujours les deux applications Yunohost matrix-synapse et mautrix_signal en même temps!**
 
 
-**Version incluse :** 0.7.2~ynh1
+**Version incluse :** 0.7.3~ynh1
 ## Documentations et ressources
 
 - Documentation officielle utilisateur : <https://docs.mau.fi/bridges/go/signal/index.html>

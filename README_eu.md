@@ -5,7 +5,9 @@ EZ editatu eskuz.
 
 # Matrix Signal bridge YunoHost-erako
 
-[![Integrazio maila](https://dash.yunohost.org/integration/mautrix_signal.svg)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/mautrix_signal.maintain.svg)
+[![Integrazio maila](https://apps.yunohost.org/badge/integration/mautrix_signal)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/)
+![Funtzionamendu egoera](https://apps.yunohost.org/badge/state/mautrix_signal)
+![Mantentze egoera](https://apps.yunohost.org/badge/maintained/mautrix_signal)
 
 [![Instalatu Matrix Signal bridge YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=mautrix_signal)
 
@@ -22,7 +24,7 @@ Currently the Matrix user can NOT invite other Matrix user in a bridged Signal r
 The ["Mautrix-Signal"](https://docs.mau.fi/bridges/go/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 
-**Paketatutako bertsioa:** 0.7.2~ynh1
+**Paketatutako bertsioa:** 0.7.3~ynh1
 ## Dokumentazioa eta baliabideak
 
 - Erabiltzaileen dokumentazio ofiziala: <https://docs.mau.fi/bridges/go/signal/index.html>
