@@ -7,7 +7,7 @@ name = "Matrix Signal bridge"
 description.en = "Matrix / Synapse puppeting bridge for Signal"
 description.fr = "Passerelle Matrix / Synapse pour Signal"
 
-version = "0.7.3~ynh1"
+version = "0.7.4~ynh1"
 
 maintainers = ["MayeulC", "nathanael-h"]
 
@@ -93,10 +93,10 @@ ram.runtime = "128M"
     in_subdir = false
     extract = false
     rename = "mautrix-signal"
-    amd64.url = "https://github.com/mautrix/signal/releases/download/v0.7.3/mautrix-signal-amd64"
-    amd64.sha256 = "1668b83eb28264c6d478b8db09f7088c2ba7a1eb107912a9145a44250227758c"
-    arm64.url = "https://github.com/mautrix/signal/releases/download/v0.7.3/mautrix-signal-arm64"
-    arm64.sha256 = "abe07ca281aee30af5bc7e4ecf1c8d8b2e99e000cd9d14cc93a75b667f12be64"
+    amd64.url = "https://github.com/mautrix/signal/releases/download/v0.7.4/mautrix-signal-amd64"
+    amd64.sha256 = "278f500823ec8ad5b729e4954fd080d55201a620ab72394de87f118283df69d5"
+    arm64.url = "https://github.com/mautrix/signal/releases/download/v0.7.4/mautrix-signal-arm64"
+    arm64.sha256 = "15ff357186986e4dfdc886c6e30ca116854ca1bd52a904f495df0e34b8b5deeb"
 
     autoupdate.strategy = "latest_github_release"
     autoupdate.asset.amd64 = "^mautrix-signal-amd64$"
