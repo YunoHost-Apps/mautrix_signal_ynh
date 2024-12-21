@@ -134,9 +134,6 @@ ynh_script_progression --message="Starting $app's systemd service..." --weight=2
 # Start a systemd service
 ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
-# Update bot admin status
-set_bot_admin_status
-
 #=================================================
 # END OF SCRIPT
 #=================================================
