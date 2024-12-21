@@ -72,6 +72,18 @@ then
     ynh_app_setting_set --app="$app" --key=username_template --value="$username_template"
 fi
 
+# We may have leftover files from the Python bridge version. This step tries to clean them up.
+# The version check is here to only run this cleanup step once. The version it checks for is the version
+# this cleanup was introduced in.
+if ynh_compare_current_package_version --comparison lt --version 0.8.4~ynh2
+then # We may have leftover python files to clean, as this step was introduced in 0.7.4~ynh2
+	ynh_print_info --message="Cleaning up possible leftovers from python bridge version"
+	for target in bin include lib lib64 pyvenv.cfg share src .python_history example-config.yaml
+	do
+		ynh_secure_remove --file="${install_dir:?}/$target"
+	done
+fi
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
