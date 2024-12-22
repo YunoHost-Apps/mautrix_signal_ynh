@@ -12,7 +12,7 @@
 * Invitez le Robot (par défaut @signalbot:synapse.votredomaine) à une nouvelle conversation.
 * Ce nouveau salon d'administration du Robot Mautrix-Signal est appelé "Administration Room".
 * Envoyez ``help`` au Robot dans le "Administration Room" pour une liste des commandes d'administration de la passerelle.
-Voir aussi [upstream wiki Authentication page](https://docs.mau.fi/bridges/python/signal/authentication.html)
+Voir aussi [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/signal/authentication.html)
 
 #### Relier la passerelle comme un appareil secondaire
 
@@ -41,7 +41,7 @@ puis en redémarrant le service:
 
 ## Documentation
 
-* Documentation officielle "Mautrix-Signal": <https://docs.mau.fi/bridges/python/signal/index.html>
+* Documentation officielle "Mautrix-Signal": <https://docs.mau.fi/bridges/go/signal/index.html>
 * Salon Matrix sur les Passerelles dans Yunohost): #mautrix_yunohost:matrix.fdn.fr
 * Salon Matrix (application principale): #signal:maunium.net
 Si vous devez téléverser vos fichiers log quelque-part, soyez avertis qu'ils contiennent des informations sur vos contacts et vos numéros de téléphone. Effacez-les avec :
