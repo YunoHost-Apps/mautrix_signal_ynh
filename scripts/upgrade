@@ -46,6 +46,15 @@ then
     source upgrade-pre-0.5.sh
 fi
 
+if ynh_compare_current_package_version --comparison lt --version 0.7.4~ynh2
+then # We may have leftover python files to clean, as this step was introduced in 0.7.4~ynh2
+	ynh_print_info --message="Cleaning up possible leftovers from python bridge version"
+	for target in bin include lib lib64 pyvenv.cfg share src .python_history example-config.yaml
+	do
+		rm -rf "${install_dir:?}/$target"
+	done
+fi
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================

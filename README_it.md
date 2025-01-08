@@ -16,7 +16,7 @@ NON DEVE essere modificato manualmente.
 
 ## Panoramica
 
-A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Messages, notifications (and sometimes media) are bridged between a Signal user and a Matrix user. Currently the Matrix user can NOT invite other Matrix user in a bridged Signal room, so only someone with a Signal account can participate to Signal group conversations. The ["Mautrix-Signal"](https://docs.mau.fi/bridges/python/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
+A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Messages, notifications (and sometimes media) are bridged between a Signal user and a Matrix user. Currently the Matrix user can NOT invite other Matrix user in a bridged Signal room, so only someone with a Signal account can participate to Signal group conversations. The ["Mautrix-Signal"](https://docs.mau.fi/bridges/go/signal/index.html) bridge consists in a Synapse App Service and relies on postgresql (mysql also possible). Therefore, [Synapse for YunoHost](https://github.com/YunoHost-Apps/synapse_ynh) should be installed beforehand.
 
 
 **Versione pubblicata:** 0.4.3~ynh1
@@ -34,7 +34,7 @@ A puppeting bridge between Matrix and Signal packaged as a YunoHost service. Mes
 * Then, invite the bot (default @signalbot:yoursynapse.domain) in this new Mautrix-Signal bot administration room.
   * If the Bot does bot accept, see the [troubleshooting page](https://docs.mau.fi/bridges/general/troubleshooting.html)
 * Send ``!sg help`` to the bot in the created room to know how to control the bot.
-See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/python/signal/authentication.html)
+See also [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/signal/authentication.html)
 
 #### Linking the Bridge as a secondary device
 * Type ``!sg link``
@@ -69,7 +69,7 @@ and then restarting the mautrix_signal service.
 
 ## Documentation
 
- * Official "Mautrix-Signal" documentation: https://docs.mau.fi/bridges/python/signal/index.html
+ * Official "Mautrix-Signal" documentation: https://docs.mau.fi/bridges/go/signal/index.html
  * Matrix room (Matrix Bridges in Yunohost): #mautrix_yunohost:matrix.fdn.fr
  * Matrix room (upstream app): #signal:maunium.net
 In case you need to upload your logs somewhere, be aware that they contain your contacts' and your phone numbers. Strip them out with 
@@ -99,7 +99,7 @@ In case you need to upload your logs somewhere, be aware that they contain your 
 
 ## Documentazione e risorse
 
-- Documentazione ufficiale per gli utenti: <https://docs.mau.fi/bridges/python/signal/index.html>
+- Documentazione ufficiale per gli utenti: <https://docs.mau.fi/bridges/go/signal/index.html>
 - Repository upstream del codice dell’app: <https://github.com/mautrix/signal>
 - Store di YunoHost: <https://apps.yunohost.org/app/mautrix_signal>
 - Segnala un problema: <https://github.com/YunoHost-Apps/mautrix_signal_ynh/issues>
