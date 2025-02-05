@@ -225,7 +225,7 @@ appservice:
 
     # Localpart template of MXIDs for remote users.
     # {{.}} is replaced with the internal ID of the user.
-    username_template: sg_{{.}}
+    username_template: __USERNAME_TEMPLATE__
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:
