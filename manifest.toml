@@ -7,7 +7,7 @@ name = "Matrix Signal bridge"
 description.en = "Matrix / Synapse puppeting bridge for Signal"
 description.fr = "Passerelle Matrix / Synapse pour Signal"
 
-version = "0.7.5~ynh1"
+version = "0.7.5~ynh2"
 
 maintainers = ["MayeulC", "nathanael-h"]
 
