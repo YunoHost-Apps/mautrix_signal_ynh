@@ -50,7 +50,7 @@ fi
 server_name=$(ynh_app_setting_get --app "$synapse_instance" --key server_name)
 domain=$(ynh_app_setting_get --app "$synapse_instance" --key domain)
 mautrix_version=$(ynh_app_upstream_version)
-username_template="signal_{{.}}"
+username_template="sg_{{.}}"
 
 ynh_app_setting_set --app="$app" --key=synapse_instance --value="$synapse_instance"
 ynh_app_setting_set --app="$app" --key=enable_relaybot --value="$enable_relaybot"
