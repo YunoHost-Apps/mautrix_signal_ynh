@@ -13,6 +13,7 @@ mautrix_version=$(ynh_app_upstream_version)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+username_template=$(ynh_app_setting_get --app $app --key username_template)
 
 #=================================================
 # CHECK VERSION
@@ -44,6 +45,30 @@ ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 if ynh_compare_current_package_version --comparison lt --version 0.5.0~ynh1
 then
     source upgrade-pre-0.5.sh
+fi
+
+# Between november 2024 to february 2025 the username_template was set to signal_{{.}}
+# This change broke previous installed instance which was declared with sg_{{.}}
+# Upstream doesn't allow to change this var, so we need to support both now.
+# That's why username_template config key was templatized
+# See https://github.com/YunoHost-Apps/mautrix_signal_ynh/pull/140
+if [ -z "$username_template" ]
+then
+    # Check any if user was created with the old "sg_" prefix
+    # First, check if the mx_registrations table exists: if not, no users have been created
+    ret=$(sudo -u postgres psql --dbname="$db_name" -q -t -c "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'mx_registrations');")
+    if [ "$ret" = t ]
+    then # The table exists, check for users
+        ret=$(sudo -u postgres psql --dbname="$db_name" -q -t -c "SELECT EXISTS(SELECT 1 FROM mx_registrations WHERE user_id LIKE '@sg_%');")
+    fi
+    if [ "$ret" = " t" ]
+    then # At least one @sg_* user exists in the database
+        username_template="sg_{{.}}"
+    else # The table does not exist, or no users named "@sg_*"
+        username_template="signal_{{.}}"
+    fi # Otherwise, we rely on the default from above
+    ynh_print_info "Detected username template $username_template from the database, saving it in settings"
+    ynh_app_setting_set --app="$app" --key=username_template --value="$username_template"
 fi
 
 #=================================================

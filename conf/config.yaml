@@ -6,7 +6,7 @@ network:
     # {{.PhoneNumber}} - The phone number of the user.
     # {{.UUID}} - The UUID of the Signal user.
     # {{.AboutEmoji}} - The emoji set by the user in their profile.
-    displayname_template: '{{or .ProfileName .PhoneNumber "Unknown user"}}'
+    displayname_template: '{{or .ProfileName .PhoneNumber "Unknown user"}} (SG)'
     # Should avatars from the user's contact list be used? This is not safe on multi-user instances.
     use_contact_avatars: false
     # Should the bridge request the user's contact list from the phone on startup?
@@ -225,7 +225,8 @@ appservice:
 
     # Localpart template of MXIDs for remote users.
     # {{.}} is replaced with the internal ID of the user.
-    username_template: signal_{{.}}
+    # Please never adjust this value once you have started using the bridge as changing it is not supported
+    username_template: __USERNAME_TEMPLATE__
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:
