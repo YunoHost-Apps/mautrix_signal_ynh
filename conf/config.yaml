@@ -22,8 +22,9 @@ network:
     # Format for generating URLs from location messages for sending to Signal.
     # Google Maps: 'https://www.google.com/maps/place/%[1]s,%[2]s'
     # OpenStreetMap: 'https://www.openstreetmap.org/?mlat=%[1]s&mlon=%[2]s'
-    location_format: 'https://www.google.com/maps/place/%[1]s,%[2]s'
-    
+    location_format: 'https://www.openstreetmap.org/?mlat=%[1]s&mlon=%[2]s'
+    # Should view-once messages disappear shortly after sending a read receipt on Matrix?
+    disappear_view_once: false
 
 # Config options that affect the central bridge module.
 bridge:
