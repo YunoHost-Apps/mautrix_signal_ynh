@@ -1,3 +1,5 @@
+
+
 # Network-specific config options
 network:
     # Displayname template for Signal users.
@@ -6,7 +8,7 @@ network:
     # {{.PhoneNumber}} - The phone number of the user.
     # {{.UUID}} - The UUID of the Signal user.
     # {{.AboutEmoji}} - The emoji set by the user in their profile.
-    displayname_template: '{{or .ProfileName .PhoneNumber "Unknown user"}} (SG)'
+    displayname_template: '{{or .ProfileName .PhoneNumber "Unknown user"}}'
     # Should avatars from the user's contact list be used? This is not safe on multi-user instances.
     use_contact_avatars: false
     # Should the bridge request the user's contact list from the phone on startup?
@@ -22,9 +24,10 @@ network:
     # Format for generating URLs from location messages for sending to Signal.
     # Google Maps: 'https://www.google.com/maps/place/%[1]s,%[2]s'
     # OpenStreetMap: 'https://www.openstreetmap.org/?mlat=%[1]s&mlon=%[2]s'
-    location_format: 'https://www.openstreetmap.org/?mlat=%[1]s&mlon=%[2]s'
+    location_format: 'https://www.google.com/maps/place/%[1]s,%[2]s'
     # Should view-once messages disappear shortly after sending a read receipt on Matrix?
     disappear_view_once: false
+    
 
 # Config options that affect the central bridge module.
 bridge:
@@ -46,9 +49,14 @@ bridge:
     split_portals: false
     # Should the bridge resend `m.bridge` events to all portals on startup?
     resend_bridge_info: false
+    # Should `m.bridge` events be sent without a state key?
+    # By default, the bridge uses a unique key that won't conflict with other bridges.
+    no_bridge_info_state_key: false
 
     # Should leaving Matrix rooms be bridged as leaving groups on the remote network?
     bridge_matrix_leave: false
+    # Should `m.notice` messages be bridged?
+    bridge_notices: false
     # Should room tags only be synced when creating the portal? Tags mean things like favorite/pin and archive/low priority.
     # Tags currently can't be synced back to the remote network, so a continuous sync means tagging from Matrix will be undone.
     tag_only_on_create: true
@@ -89,10 +97,10 @@ bridge:
     relay:
         # Whether relay mode should be allowed. If allowed, the set-relay command can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: __ENABLE_RELAYBOT__
+        enabled: false
         # Should only admins be allowed to set themselves as relay users?
         # If true, non-admins can only set users listed in default_relays as relays in a room.
-        admin_only: false
+        admin_only: true
         # List of user login IDs which anyone can set as a relay, as long as the relay user is in the room.
         default_relays: []
         # The formats to use when sending messages via the relaybot.
@@ -127,15 +135,15 @@ bridge:
     #     user - Access to use the bridge with puppeting.
     #    admin - Full access, user level with some additional administration tools.
     # Permitted keys:
-    #        * - All Matrix users
+    #        * - All Matrix users   
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
         "*": relay
-        __IF_BOTUSERS__"__BOTUSERS__": user
-        "__BOTADMIN__": admin
+        "example.com": user
+        "@admin:example.com": admin
 
-# Config for the bridge's database.
+# Config for the bridge's database. 
 database:
     # The database type. "sqlite3-fk-wal" and "postgres" are supported.
     type: postgres
@@ -144,22 +152,23 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: postgres://__APP__:__DB_PWD__@localhost:5432/__DB_NAME__?sslmode=disable
-    # Maximum number of connections. Mostly relevant for Postgres.
-    max_open_conns: 20
-    max_idle_conns: 2
+    uri: postgres://user:password@host/database?sslmode=disable
+    # Maximum number of connections.
+    max_open_conns: 5
+    max_idle_conns: 1  
     # Maximum connection idle time and lifetime before they're closed. Disabled if null.
     # Parsed with https://pkg.go.dev/time#ParseDuration
     max_conn_idle_time: null
     max_conn_lifetime: null
+
 # Homeserver details.
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
     # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
     # but https also works if they run on different machines.
-    address: https://__DOMAIN__
+    address: http://example.localhost:8008
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-    domain: __SERVER_NAME__
+    domain: example.com
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -178,7 +187,7 @@ homeserver:
     async_media: false
 
     # Should the bridge use a websocket for connecting to the homeserver?
-    # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
+    # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,   
     # mautrix-asmux (deprecated), and hungryserv (proprietary).
     websocket: false
     # How often should the websocket be pinged? Pinging will be disabled if this is zero.
@@ -191,28 +200,29 @@ appservice:
     # Like the homeserver address, a local non-https address is recommended when the bridge is on the same machine.
     # If the bridge is elsewhere, you must secure the connection yourself (e.g. with https or wireguard)
     # If you want to use https, you need to use a reverse proxy. The bridge does not have TLS support built in.
-    address: http://localhost:__PORT__    
+    address: http://localhost:29328
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    # public_address: https://bridge.example.com
+    public_address: https://bridge.example.com
+
     # The hostname and port where this appservice should listen.
-    hostname: localhost
-    port: __PORT__
+    # For Docker, you generally have to change the hostname to 0.0.0.0.
+    hostname: 127.0.0.1
+    port: 29328
 
     # The unique ID of this appservice.
-    id: __BOTNAME__
+    id: signal
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: __BOTNAME__
+        username: signalbot
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
         displayname: Signal bridge bot
         avatar: mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp
 
-    # Whether or not to receive ephemeral events via appservice transactions.
-    # Requires MSC2409 support (i.e. Synapse 1.22+).
+    # Whether to receive ephemeral events via appservice transactions.
     ephemeral_events: true
     # Should incoming events be handled asynchronously?
     # This may be necessary for large public instances with lots of messages going through.
@@ -226,8 +236,7 @@ appservice:
 
     # Localpart template of MXIDs for remote users.
     # {{.}} is replaced with the internal ID of the user.
-    # Please never adjust this value once you have started using the bridge as changing it is not supported
-    username_template: __USERNAME_TEMPLATE__
+    username_template: signal_{{.}}
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:
@@ -256,7 +265,7 @@ analytics:
     user_id: null
 
 # Settings for provisioning API
-provisioning:
+provisioning: 
     # Prefix for the provisioning API paths.
     prefix: /_matrix/provision
     # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
@@ -344,7 +353,7 @@ double_puppet:
     # Servers to always allow double puppeting from.
     # This is only for other servers and should NOT contain the server the bridge is on.
     servers:
-        # anotherserver.example.org: https://matrix.anotherserver.example.org
+        anotherserver.example.org: https://matrix.anotherserver.example.org
     # Whether to allow client API URL discovery for other servers. When using this option,
     # users on other servers can use double puppeting even if their server URLs aren't
     # explicitly added to the servers map above.
@@ -352,28 +361,33 @@ double_puppet:
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
     secrets:
-        # example.com: as_token:foobar
+        example.com: as_token:foobar
 
 # End-to-bridge encryption support options.
 #
 # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
 encryption:
-    # Allow encryption, work in group chat rooms with e2ee enabled
-    allow: __ENCRYPTION__
-    # Default to encryption, force-enable encryption in all portals the bridge creates
-    # This will cause the bridge bot to be in private chats for the encryption to work properly.
-    default: __ENCRYPTION__
-    # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
-    # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
-    appservice: false
-    # Require encryption, drop any unencrypted messages.
+    # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
+    allow: false
+    # Whether to force-enable encryption in all bridged rooms.
+    default: false
+    # Whether to require all messages to be encrypted and drop any unencrypted messages.
     require: false
+    # Whether to use MSC3202/MSC4203 instead of /sync long polling for receiving encryption-related data.
+    # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
+    # Changing this option requires updating the appservice registration file.
+    appservice: false
+    # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
+    # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
+    # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
+    # Changing this option requires updating the appservice registration file.
+    msc4190: false
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
     allow_key_sharing: true
     # Pickle key for encrypting encryption keys in the bridge database.
     # If set to generate, a random key will be generated.
-    pickle_key: mautrix.bridge.e2ee
+    pickle_key: generate
     # Options for deleting megolm sessions from the bridge.
     delete_keys:
         # Beeper-specific: delete outbound sessions when hungryserv confirms
@@ -432,13 +446,14 @@ encryption:
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    min_level: info
+    min_level: debug
     writers:
         - type: stdout
           format: pretty-colored
         - type: file
           format: json
-          filename: /var/log/__APP__/__APP__.log
+          filename: ./logs/bridge.log
           max_size: 100
           max_backups: 10
-          compress: true
+          compress: false
+
