@@ -36,7 +36,7 @@ The ["Mautrix-Signal"](https://docs.mau.fi/bridges/go/signal/index.html) bridge 
 
 Bidali `pull request`a [`testing` abarrera](https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing).
 
-`testing` abarra probatzeko, ondorengoa egin:
+`testing` abarra probatzeko, honakoa egin:
 
 ```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/mautrix_signal_ynh/tree/testing --debug

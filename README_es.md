@@ -3,7 +3,7 @@ Este archivo README esta generado automaticamente<https://github.com/YunoHost/ap
 No se debe editar a mano.
 -->
 
-# Matrix Signal bridge para Yunohost
+# Matrix Signal bridge para YunoHost
 
 [![Nivel de integración](https://apps.yunohost.org/badge/integration/mautrix_signal)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/)
 ![Estado funcional](https://apps.yunohost.org/badge/state/mautrix_signal)
