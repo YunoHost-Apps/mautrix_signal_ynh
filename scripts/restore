@@ -11,6 +11,7 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 mautrix_version=$(ynh_app_upstream_version)
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
 
@@ -46,7 +47,7 @@ ynh_restore_file --origin_path="/var/log/$app/"
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
 $install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 chown -R $app:$app "$install_dir/config.yaml"
 ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
