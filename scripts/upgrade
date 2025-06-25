@@ -10,6 +10,7 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 mautrix_version=$(ynh_app_upstream_version)
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
@@ -71,6 +72,18 @@ then
     ynh_app_setting_set --app="$app" --key=username_template --value="$username_template"
 fi
 
+# We may have leftover files from the Python bridge version. This step tries to clean them up.
+# The version check is here to only run this cleanup step once. The version it checks for is the version
+# this cleanup was introduced in.
+if ynh_compare_current_package_version --comparison lt --version 0.8.4~ynh2
+then # We may have leftover python files to clean, as this step was introduced in 0.7.4~ynh2
+	ynh_print_info --message="Cleaning up possible leftovers from python bridge version"
+	for target in bin include lib lib64 pyvenv.cfg share src .python_history example-config.yaml
+	do
+		ynh_secure_remove --file="${install_dir:?}/$target"
+	done
+fi
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -109,7 +122,7 @@ chown "$app:$app" "$install_dir/config.yaml"
 ynh_script_progression --message="Registering Synapse app-service" --weight=1
 
 $install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
 chown -R $app:$app "$install_dir"
 ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
