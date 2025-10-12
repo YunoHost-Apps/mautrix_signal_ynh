@@ -46,6 +46,7 @@ server_name=$(ynh_app_setting_get --app "$synapse_instance" --key server_name)
 domain=$(ynh_app_setting_get --app "$synapse_instance" --key domain)
 mautrix_version=$(ynh_app_upstream_version)
 username_template="sg_{{.}}"
+appserviceid=$app
 
 ynh_app_setting_set --key=synapse_instance --value="$synapse_instance"
 ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
@@ -57,6 +58,7 @@ ynh_app_setting_set --key=mautrix_version --value="$mautrix_version"
 
 ynh_app_setting_set --key=bot_synapse_adm --value="$bot_synapse_adm"
 ynh_app_setting_set --key=username_template --value="$username_template"
+ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
