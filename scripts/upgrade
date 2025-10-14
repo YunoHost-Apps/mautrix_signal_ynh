@@ -72,16 +72,12 @@ then # We may have leftover python files to clean, as this step was introduced i
 fi
 
 # Previously the appservice.id value in config.yaml was set to $botname. This created
-# issue with multi instances installations, as this value must be unique. Else as this 
-# value must not be changed, according to synapse documentation, we must use any custom
-# $botname set by a user during install time for the appserviceid.
+# issues with multi instances installations, as this value must be unique.
+# If the appserviceid variable is not yet set, simply use botname to avoid changing this
+# value. Resetting this value woulr require re-registering the appservice.
 if [ -z "$appserviceid" ]
 then
-    # Get the instance id of the app, "" empty if first instance, "__2" for the 2nd
-    instance_number=$(echo $app | grep -oE '__[[:digit:]]$') || true
-    # Get the botname already used
-    appserviceid="$botname$instance_number"
-    ynh_app_setting_set --app=$app --key=appserviceid --value=$appserviceid
+    ynh_app_setting_set --app="$app" --key=appserviceid --value="$botname"
 fi
 
 #=================================================
