@@ -1,11 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -16,26 +10,19 @@ server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
 domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 username_template=$(ynh_app_setting_get --app $app --key username_template)
 
-#=================================================
-# CHECK VERSION
-#=================================================
-ynh_script_progression --message="Checking version..." --weight=1
+ynh_script_progression "Checking version..."
 
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service=$app --action="stop"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+ynh_script_progression "Ensuring downward compatibility..."
 
 # TODO: check if there are some file that need some chown chmod
 # TODO: look at whatsapp to compare
@@ -43,7 +30,7 @@ ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 # Check if an old version of the bridge is in use
 # In this case it needs to be upgraded from python to go
 # Note that 0.5.0 was never released, but it makes for a good cut-off
-if ynh_compare_current_package_version --comparison lt --version 0.5.0~ynh1
+if ynh_app_upgrading_from_version_before 0.5.0~ynh1
 then
     source upgrade-pre-0.5.sh
 fi
@@ -75,35 +62,42 @@ fi
 # We may have leftover files from the Python bridge version. This step tries to clean them up.
 # The version check is here to only run this cleanup step once. The version it checks for is the version
 # this cleanup was introduced in.
-if ynh_compare_current_package_version --comparison lt --version 0.8.4~ynh2
+if ynh_app_upgrading_from_version_before 0.8.4~ynh2
 then # We may have leftover python files to clean, as this step was introduced in 0.7.4~ynh2
 	ynh_print_info --message="Cleaning up possible leftovers from python bridge version"
 	for target in bin include lib lib64 pyvenv.cfg share src .python_history example-config.yaml
 	do
-		ynh_secure_remove --file="${install_dir:?}/$target"
+		ynh_safe_rm --file="${install_dir:?}/$target"
 	done
+fi
+
+# Previously the appservice.id value in config.yaml was set to $botname. This created
+# issues with multi instances installations, as this value must be unique.
+# If the appserviceid variable is not yet set, simply use botname to avoid changing this
+# value. Resetting this value woulr require re-registering the appservice.
+if [ -z "$appserviceid" ]
+then
+    ynh_app_setting_set --app="$app" --key=appserviceid --value="$botname"
 fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
+if ynh_app_upstream_version_changed
 then
-	ynh_script_progression --message="Upgrading source files..." --weight=2
+	ynh_script_progression "Upgrading source files..."
 
 	# Download, check integrity, uncompress and patch the source from app.src
-    ynh_setup_source --dest_dir="$install_dir"
+	ynh_setup_source --dest_dir="$install_dir"
+	chmod u+x "$install_dir"/mautrix-signal # Execute permissions for app user
 fi
-
-chmod 750 "$install_dir"
-chmod -R 750 "$install_dir"
-chown -R $app:$app "$install_dir"
 
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Updating a configuration file..." --weight=2
+ynh_script_progression "Updating configuration..."
 echo "botusers=$botusers"
 if [[ -z "$botusers" ]] || [ "$botusers" == "admin" ]; then
     if_botusers="# "
@@ -111,61 +105,52 @@ else
     if_botusers=""
 fi
 
-ynh_add_config --template="config.yaml" --destination="$install_dir/config.yaml"
-
-chmod 400 "$install_dir/config.yaml"
-chown "$app:$app" "$install_dir/config.yaml"
+ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
-ynh_script_progression --message="Registering Synapse app-service" --weight=1
+ynh_script_progression "Registering Synapse app-service"
 
 $install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
 $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
 
-chown -R $app:$app "$install_dir"
-ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"
-ynh_store_file_checksum --file="$install_dir/config.yaml"
+ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+ynh_store_file_checksum "$install_dir/config.yaml"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression "Upgrading system configurations related to $app..."
 
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_config_add_systemd
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
+ynh_script_progression "Upgrading logrotate configuration..."
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --logfile "/var/log/$app/$app.log" --nonappend --specific_user $app/$app
-chmod -R 600 "/var/log/$app"
-chmod 700 "/var/log/$app"
-chown -R $app:$app /var/log/$app
+ynh_config_add_logrotate  "/var/log/$app/$app.log"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+ynh_script_progression "Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name="$app" --action="start"
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"
