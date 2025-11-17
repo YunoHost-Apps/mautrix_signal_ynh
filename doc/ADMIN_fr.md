@@ -35,7 +35,7 @@ Voir aussi [upstream wiki Authentication page](https://docs.mau.fi/bridges/go/si
 ## Configuration de la passerelle
 
 La passerelle est [configurée avec les paramètres standards adaptés pour votre YunoHost et l'instance Matrix-Synapse sélectionnée](https://github.com/YunoHost-Apps/mautrix_signal_ynh/blob/master/conf/config.yaml). Vous pouvez par exemple ajouter des administrateur.ice.s et utilisateur.ice.s du Robot autorisés en modifiant le fichier de configuration par liaison SSH:
-```sudo nano /opt/yunohost/mautrix_signal/config.yaml```
+```sudo nano /var/www/mautrix_signal/config.yaml```
 puis en redémarrant le service:
 ```sudo yunohost service restart mautrix_signal```
 
