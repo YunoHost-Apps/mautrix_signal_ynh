@@ -41,6 +41,11 @@ else
   encryption="false"
 fi
 
+if [[ -z "$admin_only" ]]
+then
+  admin_only="true"
+fi
+
 synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 server_name=$(ynh_app_setting_get --app "$synapse_instance" --key server_name)
 domain=$(ynh_app_setting_get --app "$synapse_instance" --key domain)
@@ -51,6 +56,7 @@ appserviceid="$app"
 ynh_app_setting_set --key=synapse_instance --value="$synapse_instance"
 ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
 ynh_app_setting_set --key=encryption --value="$encryption"
+ynh_app_setting_set --key=admin_only --value="$admin_only"
 
 ynh_app_setting_set --key=server_name --value="$server_name"
 ynh_app_setting_set --key=domain --value="$domain"
