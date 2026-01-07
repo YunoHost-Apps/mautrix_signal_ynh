@@ -29,9 +29,9 @@ ynh_script_progression "Ensuring downward compatibility..."
 
 if [[ -z "$admin_only" ]]
 then
-  admin_only="true"
+  admin_only=true
+  ynh_app_setting_set --key=admin_only --value="$admin_only"
 fi
-ynh_app_setting_set --key=admin_only --value="$admin_only"
 
 # Check if an old version of the bridge is in use
 # In this case it needs to be upgraded from python to go
