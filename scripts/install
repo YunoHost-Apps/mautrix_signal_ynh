@@ -81,6 +81,7 @@ chmod u+x "$install_dir"/mautrix-signal # Execute permissions for app user
 ynh_script_progression "Adding $app's configuration..."
 
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
+chown -R $app:$app $install_dir/config.yaml
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE

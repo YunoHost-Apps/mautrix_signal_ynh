@@ -45,7 +45,7 @@ It is not yet possible to bridge to an existing signal room, or create a new sig
 
 The bridge is [roughly configured at installation](https://github.com/YunoHost-Apps/mautrix_signal_ynh/blob/master/conf/config.yaml), e.g. allowed admin and user of the bot. Finer configuration can be done by modifying the
 following configuration file with SSH:
-```/opt/yunohost/mautrix_signal/config.yaml```
+```/var/www/mautrix_signal/config.yaml```
 and then restarting the mautrix_signal service.
 
 ## Documentation
