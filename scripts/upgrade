@@ -27,6 +27,12 @@ ynh_script_progression "Ensuring downward compatibility..."
 # TODO: check if there are some file that need some chown chmod
 # TODO: look at whatsapp to compare
 
+if [[ -z "$admin_only" ]]
+then
+  admin_only="true"
+fi
+ynh_app_setting_set --key=admin_only --value="$admin_only"
+
 # Check if an old version of the bridge is in use
 # In this case it needs to be upgraded from python to go
 # Note that 0.5.0 was never released, but it makes for a good cut-off
