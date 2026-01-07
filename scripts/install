@@ -41,10 +41,6 @@ else
   encryption="false"
 fi
 
-if [[ -z "$admin_only" ]]
-then
-  admin_only="true"
-fi
 
 synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 server_name=$(ynh_app_setting_get --app "$synapse_instance" --key server_name)
@@ -52,6 +48,7 @@ domain=$(ynh_app_setting_get --app "$synapse_instance" --key domain)
 mautrix_version=$(ynh_app_upstream_version)
 username_template="sg_{{.}}"
 appserviceid="$app"
+admin_only="true"
 
 ynh_app_setting_set --key=synapse_instance --value="$synapse_instance"
 ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
