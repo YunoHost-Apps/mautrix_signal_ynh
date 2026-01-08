@@ -56,7 +56,7 @@ mkdir --parents "/var/log/$app"
 #=================================================
 ynh_script_progression "Integrating service in YunoHost..."
 
-yunohost service add $app --description="$app daemon for bridging WhatsApp and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
