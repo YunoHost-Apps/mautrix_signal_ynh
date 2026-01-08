@@ -55,7 +55,7 @@ set__botname() {
     synapse_instance=$(ynh_app_setting_get --app $app --key synapse_instance)
 
     sed -i "s/username:.*/username: $botname/" "$install_dir/config.yaml"
-    "$install_dir/mautrix-whatsapp" -g -c "$install_dir/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    "$install_dir/mautrix-signal" -g -c "$install_dir/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
     "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die --message="Synapse can't restart with the appservice configuration"
     chown -R "$app:$app" "$install_dir"
     ynh_store_file_checksum --file="/etc/matrix-$synapse_instance/app-service/$app.yaml"

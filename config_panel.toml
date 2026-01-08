@@ -153,16 +153,23 @@ services = ["__APP__"]
     help = "There are security and privacy risks if you change these settings without knowing what you do!"
 
     [advanced.network]
-    name = "Signal specific config options"
+    name = "__NETWORK_NAME__ specific config options"
+
+        [advanced.network.username_template]
+        ask = "Localpart template of MXIDs for remote users."
+        type = "string"
+        help = "Defaults to 'sg_{{.}}'. '{{.}}' is replaced with the internal ID of the user."
+        bind = ":__INSTALL_DIR__/config.yaml"
+        visible = "false"
 
         [advanced.network.displayname_template]
         ask = "Displayname template for Signal users"
         type = "string"
-        help = "Defaults to '{{or .ProfileName .PhoneNumber "Unknown user"}} (SG)'. Name from phone's contact list, nickname in native Signal App, UUID or Emoji also available"
+        help = "Defaults to '{{or .ProfileName .AboutEmoji 'Unknown user'}} (SG)'. The Signal profile name set by the user or The emoji set by the user in their profile."
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [advanced.network.device_name]
-        ask = "Default device name that shows up in the Signal app"
+        ask = "Default device name that shows up in the Signal app."
         type = "string"
         help = "Defaults to 'mautrix-signal'"
         bind = ":__INSTALL_DIR__/config.yaml"

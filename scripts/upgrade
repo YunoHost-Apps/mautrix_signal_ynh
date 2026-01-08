@@ -3,12 +3,40 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-mautrix_version=$(ynh_app_upstream_version)
+#=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
+# Retrieve some values from selected Synapse instance and store them
 synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
-synapse_db_name="$(get_synapse_db_name $synapse_instance)"
-server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
-domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
-username_template=$(ynh_app_setting_get --app $app --key username_template)
+
+bot_synapse_db_user="@$botname:$server_name"
+
+#=================================================
+# GET CONFIG PANEL SETTINGS
+#=================================================
+
+personal_filtering_spaces=$(ynh_app_setting_get --key=personal_filtering_spaces)
+enable_relaybot=$(ynh_app_setting_get --key=enable_relaybot)
+admin_only=$(ynh_app_setting_get --key=admin_only)
+displayname=$(ynh_app_setting_get --key=displayname)
+listrelay=$(ynh_app_setting_get --key=listrelay)
+listuser=$(ynh_app_setting_get --key=listuser)
+listadmin=$(ynh_app_setting_get --key=listadmin)
+
+async_media=$(ynh_app_setting_get --key=async_media)
+
+avatar=$(ynh_app_setting_get --key=avatar)
+ephemeral_events=$(ynh_app_setting_get --key=ephemeral_events)
+username_template=$(ynh_app_setting_get --key=username_template)
+
+delivery_receipts=$(ynh_app_setting_get --key=delivery_receipts)
+
+encryption=$(ynh_app_setting_get --key=encryption)
+encryption_default=$(ynh_app_setting_get --key=encryption_default)
+encryption_require=$(ynh_app_setting_get --key=encryption_require)
+pickle_key=$(ynh_app_setting_get --key=pickle_key)
+
+print_level=$(ynh_app_setting_get --key=print_level)
 
 ynh_script_progression "Checking version..."
 
@@ -17,30 +45,93 @@ ynh_script_progression "Checking version..."
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service=$app --action="stop"
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression "Ensuring downward compatibility..."
 
-# TODO: check if there are some file that need some chown chmod
-# TODO: look at whatsapp to compare
-
-if [[ -z "$admin_only" ]]
-then
-  admin_only=true
-  ynh_app_setting_set --key=admin_only --value="$admin_only"
+# We may have leftover files from the Python bridge version. This step tries to clean them up.
+# The version check is here to only run this cleanup step once. The version it checks for is the version
+# this cleanup was introduced in.
+if ynh_app_upgrading_from_version_before 0.8.4~ynh2
+then # We may have leftover python files to clean, as this step was introduced in 0.7.4~ynh2
+	ynh_print_info --message="Cleaning up possible leftovers from python bridge version"
+	for target in bin include lib lib64 pyvenv.cfg share src .python_history example-config.yaml
+	do
+		ynh_safe_rm --file="${install_dir:?}/$target"
+	done
 fi
 
-# Check if an old version of the bridge is in use
-# In this case it needs to be upgraded from python to go
-# Note that 0.5.0 was never released, but it makes for a good cut-off
-if ynh_app_upgrading_from_version_before 0.5.0~ynh1
+# Previously the appservice.id value in config.yaml was set to $botname. This created
+# issues with multi instances installations, as this value must be unique.
+# If the appserviceid variable is not yet set, simply use botname to avoid changing this
+# value. Resetting this value woulr require re-registering the appservice.
+if [ -z "${appserviceid-}" ]
 then
-    source upgrade-pre-0.5.sh
+    ynh_app_setting_set --app="$app" --key=appserviceid --value="$botname"
+    appserviceid="$botname"
 fi
 
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
+
+if [ -z "$personal_filtering_spaces" ]
+then
+  personal_filtering_spaces="false"
+  ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
+fi
+if [ -z "$enable_relaybot" ]
+then
+  enable_relaybot="true"
+  ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
+fi
+if [ -z "$admin_only" ]
+then
+  admin_only="true"
+  ynh_app_setting_set --key=admin_only --value=$admin_only
+fi
+if [ -z "$displayname" ]
+then
+  displayname="WhatsApp bridge bot"
+  ynh_app_setting_set --key=displayname --value=$displayname
+fi
+if [ -z "$listrelay" ]
+then
+    listrelay="*"
+    ynh_app_setting_set --key=listrelay --value=$listrelay
+fi
+if [ -z "$listuser" ]
+then
+    listuser=$(ynh_app_setting_get --key=botusers)
+    ynh_app_setting_set --key=listuser --value=$listuser
+    ynh_app_setting_delete --key=botusers
+fi
+if [ -z "$listadmin" ]
+then
+    listadmin=$(ynh_app_setting_get --key=botadmin)
+    ynh_app_setting_set --key=listadmin --value=$listadmin
+    ynh_app_setting_delete --key=botadmin
+fi
+
+
+if [ -z "$async_media" ]
+then
+  async_media="false"
+  ynh_app_setting_set --key=async_media --value=$async_media
+fi
+
+
+if [ -z "$avatar" ]
+then
+  avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+  ynh_app_setting_set --key=avatar --value=$avatar
+fi
+if [ -z "$ephemeral_events" ]
+then
+  ephemeral_events="true"
+  ynh_app_setting_set --key=ephemeral_events --value=$ephemeral_events
+fi
 # Between november 2024 to february 2025 the username_template was set to signal_{{.}}
 # This change broke previous installed instance which was declared with sg_{{.}}
 # Upstream doesn't allow to change this var, so we need to support both now.
@@ -65,41 +156,48 @@ then
     ynh_app_setting_set --app="$app" --key=username_template --value="$username_template"
 fi
 
-# We may have leftover files from the Python bridge version. This step tries to clean them up.
-# The version check is here to only run this cleanup step once. The version it checks for is the version
-# this cleanup was introduced in.
-if ynh_app_upgrading_from_version_before 0.8.4~ynh2
-then # We may have leftover python files to clean, as this step was introduced in 0.7.4~ynh2
-	ynh_print_info --message="Cleaning up possible leftovers from python bridge version"
-	for target in bin include lib lib64 pyvenv.cfg share src .python_history example-config.yaml
-	do
-		ynh_safe_rm --file="${install_dir:?}/$target"
-	done
+
+if [ -z "$delivery_receipts" ]
+then
+  delivery_receipts="false"
+  ynh_app_setting_set --key=delivery_receipts --value=$delivery_receipts
 fi
 
-# Previously the appservice.id value in config.yaml was set to $botname. This created
-# issues with multi instances installations, as this value must be unique.
-# If the appserviceid variable is not yet set, simply use botname to avoid changing this
-# value. Resetting this value woulr require re-registering the appservice.
-if [ -z "${appserviceid-}" ]
+
+if [ -z "$encryption_default" ]
 then
-    ynh_app_setting_set --app="$app" --key=appserviceid --value="$botname"
-    appserviceid="$botname"
+  encryption_default="false"
+  ynh_app_setting_set --key=encryption_default --value=$encryption_default
 fi
+if [ -z "$encryption_require" ]
+then
+  encryption_require="false"
+  ynh_app_setting_set --key=encryption_require --value=$encryption_require
+fi
+# Upgrade from <v0.11
+if [ -z "$pickle_key" ]
+then
+    pickle_key="maunium.net/go/mautrix-whatsapp"
+    ynh_app_setting_set --key=pickle_key --value=$pickle_key
+fi
+
+
+if [ -z "$print_level" ]
+then
+  print_level="info"
+  ynh_app_setting_set --key=print_level --value=$print_level
+fi
+
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
-if ynh_app_upstream_version_changed
-then
 	ynh_script_progression "Upgrading source files..."
 
 	# Download, check integrity, uncompress and patch the source from app.src
 	ynh_setup_source --dest_dir="$install_dir"
-	chmod u+x "$install_dir"/mautrix-signal # Execute permissions for app user
-fi
+	#chmod u+x "$install_dir"/mautrix-signal # Execute permissions for app user
 
 #=================================================
 # UPDATE A CONFIG FILE
@@ -112,7 +210,28 @@ else
     if_botusers=""
 fi
 
+# reset permissions to be able to apply_permissions with app_setting values after upgrade
+listrelay_=$listrelay
+listuser_=$listuser
+listadmin_=$listadmin
+listrelay="*"
+listuser="@user:domain.tld"
+listadmin="@admin:domain.tld"
+
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
+# Set permissions on app files
+chmod 750 "$install_dir"
+chmod -R 750 "$install_dir"
+chown -R $app:$app "$install_dir"
+
+listrelay=$listrelay_
+listuser=$listuser_
+listadmin=$listadmin_
+
+# apply_permissions to have correct syntax in config file
+set__listuser
+set__listrelay
+set__listadmin
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
@@ -120,7 +239,7 @@ ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
 ynh_script_progression "Registering Synapse app-service"
 
 $install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 ynh_store_file_checksum "$install_dir/config.yaml"
@@ -128,7 +247,7 @@ ynh_store_file_checksum "$install_dir/config.yaml"
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression "Upgrading system configurations related to $app..."
+ynh_script_progression "Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
 ynh_config_add_systemd
@@ -138,15 +257,15 @@ ynh_config_add_systemd
 #=================================================
 ynh_script_progression "Upgrading logrotate configuration..."
 
-# Use logrotate to manage app-specific logfile(s)
-ynh_config_add_logrotate  "/var/log/$app/$app.log"
+# Use logrotate to manage application logfile(s)
+ynh_config_add_logrotate "/var/log/$app/$app.log" $app/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression "Integrating service in YunoHost..."
 
-yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE

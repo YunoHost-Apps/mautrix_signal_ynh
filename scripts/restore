@@ -4,7 +4,6 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-mautrix_version=$(ynh_app_upstream_version)
 synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
 synapse_db_name="$(get_synapse_db_name $synapse_instance)"
 bot_synapse_db_user="@$botname:$server_name"
@@ -17,22 +16,13 @@ ynh_script_progression "Restoring the app main directory..."
 ynh_restore "$install_dir"
 
 #=================================================
+# SPECIFIC RESTORATION
+#=================================================
 # RESTORE THE POSTGRESQL DATABASE
 #=================================================
 ynh_script_progression "Restoring the PostgreSQL database..."
 
-ynh_psql_db_shell < ./db.sql
-
-#=================================================
-# RESTORE VARIOUS FILES
-#=================================================
-
-# TODO: check if there are some files to restore
-
-ynh_restore "/var/log/$app/"
-chmod -R 600 "/var/log/$app"
-chmod 700 "/var/log/$app"
-chown -R $app:$app /var/log/$app
+ynh_psql_db_shell  < "./db.sql"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
@@ -40,22 +30,33 @@ chown -R $app:$app /var/log/$app
 ynh_script_progression "Registering Synapse app-service"
 
 $install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
-chown -R $app:$app "$install_dir/config.yaml"
-ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
-ynh_store_file_checksum "$install_dir/config.yaml"
+chmod 400 "$install_dir/config.yaml"
+chown $app:$app "$install_dir/config.yaml"
 
 #=================================================
-# RESTORE SYSTEM CONFIGURATIONS
+# RESTORE SYSTEMD
 #=================================================
-ynh_script_progression "Restoring system configurations related to $app..."
+ynh_script_progression "Restoring $app's systemd service..."
 
 ynh_restore "/etc/systemd/system/$app.service"
-systemctl enable "$app.service" --quiet
-yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
+systemctl enable $app.service --quiet
+
+#=================================================
+# RESTORE THE LOGROTATE CONFIGURATION
+#=================================================
+ynh_script_progression "Restoring the logrotate configuration..."
 
 ynh_restore "/etc/logrotate.d/$app"
+mkdir --parents "/var/log/$app"
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression "Integrating service in YunoHost..."
+
+yunohost service add $app --description="$app daemon for bridging WhatsApp and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
