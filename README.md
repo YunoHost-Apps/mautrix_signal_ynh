@@ -10,6 +10,7 @@ It shall NOT be edited by hand.
 
 Matrix / Synapse puppeting bridge for Signal
 
+[![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://maunium.net/go/mautrix-signal/)
 [![Version: 0.2512.0~ynh1](https://img.shields.io/badge/Version-0.2512.0~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/mautrix_signal/)
 
 <div align="center">
