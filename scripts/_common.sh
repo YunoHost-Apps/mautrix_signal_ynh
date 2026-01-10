@@ -4,9 +4,6 @@
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
-network_name="Signal"
-network_script="signal"
-
 get_synapse_db_name() {
 	# Parameters: synapse instance identifier
 	# Returns: database name
