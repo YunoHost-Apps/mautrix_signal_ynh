@@ -37,11 +37,6 @@ domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
 ynh_app_setting_set --key=server_name --value=$server_name
 ynh_app_setting_set --key=domain --value=$domain
 
-## To be removed
-appserviceid=$app
-ynh_app_setting_set --app="$app" --key=appserviceid --value="$appserviceid"
-##
-
 #=================================================
 # SET STANDARD SETTINGS FROM DEFAULT CONFIG
 #=================================================
@@ -52,7 +47,7 @@ ynh_app_setting_set --app="$app" --key=appserviceid --value="$appserviceid"
 personal_filtering_spaces="false"
 enable_relaybot="true"
 admin_only="true"
-displayname="WhatsApp bridge bot"
+displayname="Signal bridge bot"
 listrelay="*"
 listuser="$botusers"
 listadmin="$botadmin"
@@ -61,7 +56,7 @@ listadmin="$botadmin"
 async_media="false"
 
 # Application service host/registration related details.
-avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
 ephemeral_events="true"
 username_template="sg_{{.}}"  # Localpart template of MXIDs for remote users.
                               # {{.}} is replaced with the internal ID of the user.
@@ -82,6 +77,8 @@ ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
 ynh_app_setting_set --key=admin_only --value=$admin_only
 ynh_app_setting_set --key=displayname --value=$displayname
 ynh_app_setting_set --key=listrelay --value=$listrelay
+ynh_app_setting_set --key=listuser --value=$listuser
+ynh_app_setting_set --key=listadmin --value=$listadmin
 
 ynh_app_setting_set --key=async_media --value=$async_media
 
@@ -113,8 +110,11 @@ ynh_setup_source --dest_dir="$install_dir"
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression "Adding $app's configuration..."
+# as_token="\"This value is generated when generating the registration\""
+# hs_token="\"This value is generated when generating the registration\""
 
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
+# Set permissions on app files
 chmod 750 "$install_dir"
 chmod -R 750 "$install_dir"
 chown -R $app:$app "$install_dir"
