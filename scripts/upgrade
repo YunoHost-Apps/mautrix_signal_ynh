@@ -169,7 +169,7 @@ fi
 # Upgrade from <v0.11
 if [ -z "$pickle_key" ]
 then
-    pickle_key="maunium.net/go/mautrix-whatsapp"
+    pickle_key="mautrix.bridge.e2ee"
     ynh_app_setting_set --key=pickle_key --value=$pickle_key
 fi
 
