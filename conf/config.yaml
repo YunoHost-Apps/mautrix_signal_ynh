@@ -223,7 +223,7 @@ appservice:
     port: __PORT__
 
     # The unique ID of this appservice.
-    id: __APPSERVICEID__
+    id: __APP__
     # Appservice bot details.
     bot:
         # Username of the appservice bot.

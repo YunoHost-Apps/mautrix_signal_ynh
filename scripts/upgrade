@@ -64,15 +64,7 @@ then # We may have leftover python files to clean, as this step was introduced i
 	done
 fi
 
-# Previously the appservice.id value in config.yaml was set to $botname. This created
-# issues with multi instances installations, as this value must be unique.
-# If the appserviceid variable is not yet set, simply use botname to avoid changing this
-# value. Resetting this value woulr require re-registering the appservice.
-if [ -z "${appserviceid-}" ]
-then
-    ynh_app_setting_set --app="$app" --key=appserviceid --value="$botname"
-    appserviceid="$botname"
-fi
+ynh_app_setting_delete --key=appserviceid
 
 # SET STANDARD SETTINGS FROM DEFAULT CONFIG
 
