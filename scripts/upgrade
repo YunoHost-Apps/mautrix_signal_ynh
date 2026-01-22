@@ -116,7 +116,7 @@ fi
 
 if [ -z "$avatar" ]
 then
-  avatar="mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr"
+  avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
   ynh_app_setting_set --key=avatar --value=$avatar
 fi
 if [ -z "$ephemeral_events" ]
