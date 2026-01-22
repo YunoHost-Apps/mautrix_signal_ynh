@@ -85,7 +85,7 @@ then
 fi
 if [ -z "$displayname" ]
 then
-  displayname="WhatsApp bridge bot"
+  displayname="Signal bridge bot"
   ynh_app_setting_set --key=displayname --value=$displayname
 fi
 if [ -z "$listrelay" ]

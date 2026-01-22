@@ -22,13 +22,13 @@ services = ["__APP__"]
         [main.permissions.listrelay]
         ask = "Users bridged thanks to Relay Mode"
         type = "tags"
-        help = "Relay Role: Talk on WhatsApp through the RelayBot in a room where it has been activated with '!wa set-relay', no access otherwise."
+        help = "Relay Role: Talk on Signal through the RelayBot in a room where it has been activated with '!wa set-relay', no access otherwise."
         visible = "enable_relaybot"
 
         [main.permissions.listuser]
         ask = "Bridge Users"
         type = "tags"
-        help = "User Role: Access to use the bridge to chat with a WhatsApp account."
+        help = "User Role: Access to use the bridge to chat with a Signal account."
 
         [main.permissions.listadmin]
         ask = "Bridge Administrators"
@@ -43,7 +43,7 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
 		no = "false"
-        help = "If allowed, '!wa set-relay' can be used to turn any Bridge User into a RelayBot for that chat. This allows people to talk on WhatsApp without an own account."
+        help = "If allowed, '!wa set-relay' can be used to turn any Bridge User into a RelayBot for that chat. This allows people to talk on Signal without an own account."
         bind = "relay>enabled:__INSTALL_DIR__/config.yaml"
 
         [main.bridge.admin_only]
@@ -67,13 +67,13 @@ services = ["__APP__"]
         [main.bot.displayname]
         ask = "Display name for Bot"
         type = "string"
-        help = "Set to 'remove' to remove display name, leave empty to set default 'WhatsApp bridge bot'"
+        help = "Set to 'remove' to remove display name, leave empty to set default 'Signal bridge bot'"
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [main.bot.avatar]
         ask = "Avatar for Bot"
         type = "string"
-        help = "Should be in format 'mxc://server_name/NeXNQarUbrlYBiPCpprYsRqr', see README for tutorial. Set to 'remove' to remove avatar, leave empty to use standard WhatsApp logo."
+        help = "Should be in format 'mxc://server_name/NeXNQarUbrlYBiPCpprYsRqr', see README for tutorial. Set to 'remove' to remove avatar, leave empty to use standard Signal logo."
         bind = ":__INSTALL_DIR__/config.yaml"
 
 [privacy]
@@ -125,7 +125,7 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Should the bridge send a read Receipt from the bridge bot when a message has been sent to WhatsApp?"
+        help = "Should the bridge send a read Receipt from the bridge bot when a message has been sent to Signal?"
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [privacy.config.send_presence_on_typing]
@@ -133,7 +133,7 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Send the Presence as 'available' to WhatsApp when Users start typing on a Portal."
+        help = "Send the Presence as 'available' to Signal when Users start typing on a Portal."
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [privacy.config.url_previews]
@@ -141,7 +141,7 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Should the Bridge detect URLs in outgoing messages, ask the HomeServer to generate a Preview, and send it to WhatsApp?"
+        help = "Should the Bridge detect URLs in outgoing messages, ask the HomeServer to generate a Preview, and send it to Signal?"
         bind = ":__INSTALL_DIR__/config.yaml"
 
 [advanced]
@@ -201,7 +201,7 @@ services = ["__APP__"]
         type = "boolean"
         yes = "true"
         no = "false"
-        help = "Enable only if HomeServer supports https://github.com/matrix-org/matrix-spec-proposals/pull/2246?"
+        help = "Enable only if HomeServer supports https://github.com/matrix-org/matrix-spec-proposals/pull/2246"
         bind = ":__INSTALL_DIR__/config.yaml"
 
         [advanced.appservice.ephemeral_events]
