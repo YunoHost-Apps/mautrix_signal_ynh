@@ -22,18 +22,20 @@ ynh_restore "$install_dir"
 #=================================================
 ynh_script_progression "Restoring the PostgreSQL database..."
 
-ynh_psql_db_shell  < "./db.sql"
+ynh_psql_db_shell < "./db.sql"
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 ynh_script_progression "Registering Synapse app-service"
 
+chmod u+x "$install_dir/mautrix-signal" # Execute permissions for app user
 $install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
-
-chmod 400 "$install_dir/config.yaml"
+# We need to run mautrix-signal -g (registration) as root to be able to write in /etc/matrix-...
+# Then config.yaml somehow gets chown root:root , so we need to chown $app:$app
 chown $app:$app "$install_dir/config.yaml"
+
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
 
 #=================================================
 # RESTORE SYSTEMD

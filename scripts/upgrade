@@ -211,10 +211,6 @@ listuser="@user:domain.tld"
 listadmin="@admin:domain.tld"
 
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
-# Set permissions on app files
-chmod 750 "$install_dir"
-chmod -R 750 "$install_dir"
-chown -R $app:$app "$install_dir"
 
 listrelay=$listrelay_
 listuser=$listuser_
@@ -230,11 +226,15 @@ set__listadmin
 #=================================================
 ynh_script_progression "Registering Synapse app-service"
 
+chmod u+x "$install_dir/mautrix-signal" # Execute permissions for app user
 $install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
-
-ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+# We need to run mautrix-signal -g (registration) as root to be able to write in /etc/matrix-...
+# Then config.yaml somehow gets chown root:root , so we need to chown $app:$app
+chown $app:$app "$install_dir/config.yaml"
 ynh_store_file_checksum "$install_dir/config.yaml"
+
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 
 #=================================================
 # SETUP SYSTEMD
