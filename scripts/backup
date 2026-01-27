@@ -16,17 +16,9 @@ ynh_backup "$install_dir"
 # SYSTEM CONFIGURATION
 #=================================================
 
-ynh_backup "/etc/systemd/system/$app.service"
-
 ynh_backup "/etc/logrotate.d/$app"
 
-#=================================================
-# BACKUP VARIOUS FILES
-#=================================================
-
-# TODO: check if there are some files to backup
-
-ynh_backup "/var/log/$app/"
+ynh_backup "/etc/systemd/system/$app.service"
 
 #=================================================
 # BACKUP THE POSTGRESQL DATABASE

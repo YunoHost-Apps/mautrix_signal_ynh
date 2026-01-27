@@ -1,0 +1,72 @@
+#!/bin/bash
+source _common.sh
+source /usr/share/yunohost/helpers
+#REMOVEME? ynh_abort_if_errors
+
+#=================================================
+# SPECIFIC GETTERS FOR TOML SHORT KEY
+#=================================================
+
+get_config_permission() {
+  result=$(grep -- ".*: $role" "$install_dir/config.yaml" | sed -r "s/: $role//" | tr -d '[:blank:]' | sed '/^#/d' | tr -d '\"' | tr -d "'" | tr '\n' ',')
+  echo $result
+}
+
+get__botname() {
+    botname=$(ynh_app_setting_get --key botname)
+    echo "${botname}"
+}
+
+get__listrelay() {
+  role="relay"
+  existingRelayUsers=$(get_config_permission)
+
+  cat <<EOF
+"$existingRelayUsers"
+EOF
+}
+
+get__listuser() {
+  role="user"
+  existingUsers=$(get_config_permission)
+
+  cat <<EOF
+"$existingUsers"
+EOF
+}
+
+get__listadmin() {
+  role="admin"
+  existingAdmins=$(get_config_permission)
+
+  cat <<EOF
+"$existingAdmins"
+EOF
+}
+
+#=================================================
+# SPECIFIC VALIDATORS FOR TOML SHORT KEYS
+#=================================================
+
+#=================================================
+# SPECIFIC SETTERS FOR TOML SHORT KEYS
+#=================================================
+
+set__botname() {
+    old_botname=$(ynh_app_setting_get --key botname)
+    if [ "$botname" -eq "$old_botname" ] # Check to avoid updating botname when it's not needed.
+    then
+      return
+    fi
+
+    ynh_app_setting_set --key=botname --value="$botname"
+    synapse_instance=$(ynh_app_setting_get --key synapse_instance)
+
+    sed -i "s/username:.*/username: $botname/" "$install_dir/config.yaml"
+    "$install_dir/mautrix-signal" -g -c "$install_dir/config.yaml" -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    "/opt/yunohost/matrix-$synapse_instance/update_synapse_for_appservice.sh" || ynh_die "Synapse can't restart with the appservice configuration"
+    ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+    ynh_store_file_checksum "$install_dir/config.yaml"
+}
+
+ynh_app_config_run $1

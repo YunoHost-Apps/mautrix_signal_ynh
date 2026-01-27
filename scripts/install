@@ -5,27 +5,15 @@ source /usr/share/yunohost/helpers
 
 # Satisfy shellcheck, those variables are known when starting the script:
 # shellcheck disable=SC2154
-echo From manifest: "$synapsenumber $bot_synapse_adm", \
+echo From manifest: "$synapse_instance", \
      From yunohost: "$app $install_dir" > /dev/null
 
 #=================================================
 # INITIALIZE AND STORE SETTINGS
 #=================================================
 
-if [[ -z "$botusers" ]] || [ "$botusers" == "admin" ]; then
-    if_botusers="# "
-else
-    if_botusers=""
-fi
-
-# ToDo check (in manifest?) if the selected synapse instance is not already connected to a mautrix_bridge bridge
-if [ "$synapsenumber" -eq "1" ]
-then
-	synapse_instance="synapse"
-else
-	synapse_instance="synapse__$synapsenumber"
-fi
-
+# This is needed to convert the value from the manifest to a valid value for the config.yaml file.
+# Without this the install script will throw a warning.
 # Convert user choice boolean from the manifest into a config value
 if [ "$enable_relaybot" -eq "1" ]
 then
@@ -41,24 +29,71 @@ else
   encryption="false"
 fi
 
-synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
-server_name=$(ynh_app_setting_get --app "$synapse_instance" --key server_name)
-domain=$(ynh_app_setting_get --app "$synapse_instance" --key domain)
-mautrix_version=$(ynh_app_upstream_version)
-username_template="sg_{{.}}"
-appserviceid="$app"
-
+# Retrieve some values from selected Synapse instance and store them
 ynh_app_setting_set --key=synapse_instance --value="$synapse_instance"
-ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
-ynh_app_setting_set --key=encryption --value="$encryption"
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
+server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+ynh_app_setting_set --key=server_name --value=$server_name
+ynh_app_setting_set --key=domain --value=$domain
 
-ynh_app_setting_set --key=server_name --value="$server_name"
-ynh_app_setting_set --key=domain --value="$domain"
-ynh_app_setting_set --key=mautrix_version --value="$mautrix_version"
+#=================================================
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
+#=================================================
 
-ynh_app_setting_set --key=bot_synapse_adm --value="$bot_synapse_adm"
-ynh_app_setting_set --key=username_template --value="$username_template"
-ynh_app_setting_set --app="$app" --key=appserviceid --value="$appserviceid"
+
+
+# Config options that affect the central bridge module.
+personal_filtering_spaces="false"
+enable_relaybot="true"
+admin_only="true"
+displayname="Signal bridge bot"
+listrelay="*"
+listuser="$botusers"
+listadmin="$botadmin"
+
+# Homeserver details.
+async_media="false"
+
+# Application service host/registration related details.
+avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
+ephemeral_events="true"
+username_template="sg_{{.}}"  # Localpart template of MXIDs for remote users.
+                              # {{.}} is replaced with the internal ID of the user.
+
+# Config options that affect the Matrix connector of the bridge.
+delivery_receipts="false"
+
+# End-to-bridge encryption support options.
+encryption_default="false"
+encryption_require="false"
+pickle_key=$(ynh_string_random)
+
+# Logging config. See https://github.com/tulir/zeroconfig for details.
+print_level="info"
+
+ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
+ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
+ynh_app_setting_set --key=admin_only --value=$admin_only
+ynh_app_setting_set --key=displayname --value=$displayname
+ynh_app_setting_set --key=listrelay --value=$listrelay
+ynh_app_setting_set --key=listuser --value=$listuser
+ynh_app_setting_set --key=listadmin --value=$listadmin
+
+ynh_app_setting_set --key=async_media --value=$async_media
+
+ynh_app_setting_set --key=avatar --value=$avatar
+ynh_app_setting_set --key=ephemeral_events --value=$ephemeral_events
+ynh_app_setting_set --key=username_template --value=$username_template
+
+ynh_app_setting_set --key=delivery_receipts --value=$delivery_receipts
+
+ynh_app_setting_set --key=encryption --value=$encryption
+ynh_app_setting_set --key=encryption_default --value=$encryption_default
+ynh_app_setting_set --key=encryption_require --value=$encryption_require
+ynh_app_setting_set --key=pickle_key --value=$pickle_key
+
+ynh_app_setting_set --key=print_level --value=$print_level
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -67,53 +102,61 @@ ynh_script_progression "Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
-chmod u+x "$install_dir"/mautrix-signal # Execute permissions for app user
+#chmod u+x "$install_dir"/mautrix-signal # Execute permissions for app user
 
+#=================================================
+# SPECIFIC SETUP
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression "Adding $app's configuration..."
+# as_token="\"This value is generated when generating the registration\""
+# hs_token="\"This value is generated when generating the registration\""
 
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
+
+# This calls allows to set multiple users during install question "botusers" specifying them separated by a comma
+set__listuser
+set__listrelay
+set__listadmin
 
 #=================================================
 # REGISTER SYNAPSE APP-SERVICE
 #=================================================
 ynh_script_progression "Registering Synapse app-service"
 
-"$install_dir"/mautrix-signal -g -c "$install_dir"/config.yaml -r "/etc/matrix-$synapse_instance/app-service/$app.yaml"
-$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die --message="Synapse can't restart with the appservice configuration"
-
-ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+chmod u+x "$install_dir/mautrix-signal" # Execute permissions for app user
+$install_dir/mautrix-signal -g -c $install_dir/config.yaml -r /etc/matrix-$synapse_instance/app-service/$app.yaml
+# We need to run mautrix-signal -g (registration) as root to be able to write in /etc/matrix-...
+# Then config.yaml somehow gets chown root:root , so we need to chown $app:$app
+chown $app:$app "$install_dir/config.yaml"
 ynh_store_file_checksum "$install_dir/config.yaml"
+
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression "Adding system configurations related to $app..."
+ynh_script_progression "Configuring $app's systemd service..."
 
 # Create a dedicated systemd config
 ynh_config_add_systemd
 
 #=================================================
-# GENERIC FINALIZATION
-#=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Setup logrotate configuration..." --weight=1
+ynh_script_progression "Configuring log rotation..."
 
 # Use logrotate to manage application logfile(s)
-ynh_config_add_logrotate "/var/log/$app/$app.log"
-chmod -R 600 "/var/log/$app"
-chmod 700 "/var/log/$app"
-chown -R $app:$app /var/log/$app
+ynh_config_add_logrotate "/var/log/$app/$app.log" $app/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+ynh_script_progression "Integrating service in YunoHost..."
 
-yunohost service add "$app" --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="$app daemon for bridging Signal and Matrix messages" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
