@@ -36,7 +36,7 @@ args.botusers = "matrix.domain.tld"
 # -------------------------------
 
 test_upgrade_from.427e17e.name = "Upgrade from 0.8.4~ynh2"
-test_upgrade_from.656d47e.name = "Upgrade from 0.2512.0"
+test_upgrade_from.1fe6abd.name = "Upgrade from 0.8.6~ynh1"
 
 # -------------------------------
 # This is an additional test suite
