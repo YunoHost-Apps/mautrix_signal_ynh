@@ -98,6 +98,7 @@ then
     listuser=$(ynh_app_setting_get --key=botusers)
     ynh_app_setting_set --key=listuser --value=$listuser
     ynh_app_setting_delete --key=botusers
+    ynh_app_setting_delete --key=if_botusers
 fi
 if [ -z "$listadmin" ]
 then
@@ -195,12 +196,6 @@ fi
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression "Updating configuration..."
-echo "botusers=$botusers"
-if [[ -z "$botusers" ]] || [ "$botusers" == "admin" ]; then
-    if_botusers="# "
-else
-    if_botusers=""
-fi
 
 # reset permissions to be able to apply_permissions with app_setting values after upgrade
 listrelay_=$listrelay
