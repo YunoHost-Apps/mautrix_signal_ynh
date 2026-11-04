@@ -71,39 +71,39 @@ ynh_app_setting_delete --key=appserviceid
 if [ -z "$personal_filtering_spaces" ]
 then
   personal_filtering_spaces="false"
-  ynh_app_setting_set --key=personal_filtering_spaces --value=$personal_filtering_spaces
+  ynh_app_setting_set --key=personal_filtering_spaces --value="$personal_filtering_spaces"
 fi
 if [ -z "$enable_relaybot" ]
 then
   enable_relaybot="true"
-  ynh_app_setting_set --key=enable_relaybot --value=$enable_relaybot
+  ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
 fi
 if [ -z "$admin_only" ]
 then
   admin_only="true"
-  ynh_app_setting_set --key=admin_only --value=$admin_only
+  ynh_app_setting_set --key=admin_only --value="$admin_only"
 fi
 if [ -z "$displayname" ]
 then
   displayname="Signal bridge bot"
-  ynh_app_setting_set --key=displayname --value=$displayname
+  ynh_app_setting_set --key=displayname --value="$displayname"
 fi
 if [ -z "$listrelay" ]
 then
     listrelay="*"
-    ynh_app_setting_set --key=listrelay --value=$listrelay
+    ynh_app_setting_set --key=listrelay --value="$listrelay"
 fi
 if [ -z "$listuser" ]
 then
     listuser=$(ynh_app_setting_get --key=botusers)
-    ynh_app_setting_set --key=listuser --value=$listuser
+    ynh_app_setting_set --key=listuser --value="$listuser"
     ynh_app_setting_delete --key=botusers
     ynh_app_setting_delete --key=if_botusers
 fi
 if [ -z "$listadmin" ]
 then
     listadmin=$(ynh_app_setting_get --key=botadmin)
-    ynh_app_setting_set --key=listadmin --value=$listadmin
+    ynh_app_setting_set --key=listadmin --value="$listadmin"
     ynh_app_setting_delete --key=botadmin
 fi
 
@@ -111,19 +111,19 @@ fi
 if [ -z "$async_media" ]
 then
   async_media="false"
-  ynh_app_setting_set --key=async_media --value=$async_media
+  ynh_app_setting_set --key=async_media --value="$async_media"
 fi
 
 
 if [ -z "$avatar" ]
 then
   avatar="mxc://maunium.net/wPJgTQbZOtpBFmDNkiNEMDUp"
-  ynh_app_setting_set --key=avatar --value=$avatar
+  ynh_app_setting_set --key=avatar --value="$avatar"
 fi
 if [ -z "$ephemeral_events" ]
 then
   ephemeral_events="true"
-  ynh_app_setting_set --key=ephemeral_events --value=$ephemeral_events
+  ynh_app_setting_set --key=ephemeral_events --value="$ephemeral_events"
 fi
 # Between november 2024 to february 2025 the username_template was set to signal_{{.}}
 # This change broke previous installed instance which was declared with sg_{{.}}
@@ -153,19 +153,19 @@ fi
 if [ -z "$delivery_receipts" ]
 then
   delivery_receipts="false"
-  ynh_app_setting_set --key=delivery_receipts --value=$delivery_receipts
+  ynh_app_setting_set --key=delivery_receipts --value="$delivery_receipts"
 fi
 
 
 if [ -z "$encryption_default" ]
 then
   encryption_default="false"
-  ynh_app_setting_set --key=encryption_default --value=$encryption_default
+  ynh_app_setting_set --key=encryption_default --value="$encryption_default"
 fi
 if [ -z "$encryption_require" ]
 then
   encryption_require="false"
-  ynh_app_setting_set --key=encryption_require --value=$encryption_require
+  ynh_app_setting_set --key=encryption_require --value="$encryption_require"
 fi
 # The pickle key encrypts the e2ee keys stored in the bridge database: it must never change,
 # otherwise the bridge can't decrypt the sessions it already has.
@@ -191,7 +191,7 @@ ynh_app_setting_set --key=pickle_key --value="$pickle_key"
 if [ -z "$print_level" ]
 then
   print_level="info"
-  ynh_app_setting_set --key=print_level --value=$print_level
+  ynh_app_setting_set --key=print_level --value="$print_level"
 fi
 
 
