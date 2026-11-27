@@ -167,12 +167,25 @@ then
   encryption_require="false"
   ynh_app_setting_set --key=encryption_require --value=$encryption_require
 fi
+# The pickle key encrypts the e2ee keys stored in the bridge database: it must never change,
+# otherwise the bridge can't decrypt the sessions it already has.
+# config.yaml is also rewritten by the bridge itself (it persists the secrets set to "generate"),
+# so the key actually in use is the one on disk, not necessarily the one in the app settings.
+# Read it back before the template overwrites it.
+if [ -f "$install_dir/config.yaml" ]
+then
+    config_pickle_key=$(sed -n 's/^[[:space:]]*pickle_key:[[:space:]]*//p' "$install_dir/config.yaml" | head -n1 | tr -d '"')
+    if [ -n "$config_pickle_key" ] && [ "$config_pickle_key" != "generate" ]
+    then
+        pickle_key="$config_pickle_key"
+    fi
+fi
 # Upgrade from <v0.11
 if [ -z "$pickle_key" ]
 then
     pickle_key="mautrix.bridge.e2ee"
-    ynh_app_setting_set --key=pickle_key --value=$pickle_key
 fi
+ynh_app_setting_set --key=pickle_key --value="$pickle_key"
 
 
 if [ -z "$print_level" ]
